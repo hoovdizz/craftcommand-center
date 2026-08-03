@@ -6,37 +6,78 @@ CraftCommand Center is a lightweight, mobile-friendly companion dashboard for **
 
 General game panels such as Pterodactyl, PufferPanel, Crafty Controller, AMP, and Bedrock Server Manager can provision or fully manage servers. CraftCommand Center is intentionally narrower: it adds safe family/admin shortcuts to a Binhex Bedrock server that is already working.
 
-## 2.2 beta features
+## Current version
 
-- Phone, tablet, and desktop interface
-- Username/password authentication using salted scrypt hashes and `HttpOnly` session cookies
-- Persistent **viewer**, **operator**, and **admin** accounts
-- At-a-Glance diagnostics for Docker, appdata, the Binhex container, and the active screen session
-- Persistent activity history showing who sent what, to which player, and whether it succeeded
-- Operators and viewers can only read their own activity; admins can review the full audit trail
-- Case-insensitive dashboard usernames
-- Automatic rediscovery of screen names such as `140.minecraft` after server/container restarts
-- Dedicated **Status** tab with Docker uptime, last player connection, online players, whitelist, blacklist, permissions, and public Bedrock UDP reachability
-- Admin-only compressed server backup/export with persistent Unraid storage and browser download
-- Installable mobile PWA with Android install prompting and iPhone/iPad Add to Home Screen guidance
-- Player discovery from the live `list` command, Docker logs, allowlist/whitelist files, permissions files, and a persistent manual list
-- Quick item and XP buttons
-- Text-only item buttons by default, with optional Minecraft Wiki inventory sprites when remote artwork loads
-- Icon-only, text-only, or icon-plus-text display modes
+| Component | Version |
+|---|---|
+| CraftCommand Center | **2.3.0-beta.1** |
+| Bundled Bedrock item catalog | **26.34/35** |
+| Item identifiers | **1,914** |
+| Bedrock achievement records | **131** |
+| Catalog snapshot | **August 3, 2026** |
+
+CraftCommand Center uses semantic prerelease versions:
+
+- `2.3.0-beta.1` identifies the application release.
+- `2.3` is the feature line.
+- `beta.1` is the prerelease iteration and may change before the stable `2.3.0` release.
+- GHCR publishes `latest`, version tags, and immutable commit-SHA tags.
+
+The application version is defined in `package.json`, shown by diagnostics, and used to identify support reports. The Minecraft release tag is tracked separately because Mojang item data can change independently of the dashboard.
+
+## Features
+
+### Mobile interface and appearance
+
+- Responsive phone, tablet, and desktop interface
+- Automatic button text and icon fitting when portrait-mode space is limited
+- Deep Ocean, Ember, and Daylight color schemes stored in the browser
+- Correct high-contrast native selectors, kit dialogs, item lists, and action buttons across themes
+- Text-only, icon-only, or icon-plus-text item display modes
+- XP labels remain visible in icon-only mode so level and point actions remain distinguishable
+- Installable PWA with Android installation and iPhone/iPad Add to Home Screen guidance located only under **Help**
+
+### Players, items, XP, and kits
+
+- Player discovery from the live `list` command, Docker logs, allowlist files, permissions files, and a persistent manual list
+- Configurable Quick Items that admins can add, remove, restore to factory defaults, and drag to reorder
+- Persistent Quick Item ordering and configuration across container updates
+- Quick Item, custom item, and clearly labeled XP actions
 - Starter, recovery, mining, and enchanting kits
-- Kit previews, confirmation dialogs, and a persistent custom-kit builder
-- Searchable Bedrock item catalog with 1,914 IDs, categories, descriptions, and give buttons
-- Bedrock achievement guide with system filters, per-player checklists, completion help, and suggested practice supplies
-- Unraid DockerMan template for normal right-click **Edit**, port settings, credentials, icon, WebUI, and updates from GHCR
+- Kit previews, confirmation dialogs, inventory artwork, and a persistent custom-kit builder
+- Searchable Bedrock item catalog with 1,914 identifiers, categories, descriptions, and give buttons
+
+### Achievement guide
+
+- Dedicated **Achievements** tab with 131 published Bedrock achievement records
+- Search, category, completion-state, platform, and player filters
+- Coverage for Xbox, Windows, Android, iOS, Nintendo Switch, and supported PlayStation trophies
+- Completion instructions, platform availability, gamerscore/trophy information, and suggested preparation items
+- Private per-player and per-platform checklists stored in the current browser
+- Optional practice-supply actions for operators
+
+Achievement progress is not read from or written to Microsoft or PlayStation accounts. Minecraft only awards achievements in an eligible Survival world. Using dashboard commands to grant practice supplies can make a world ineligible, so the interface warns and requests confirmation before sending them.
+
+### Status, security, and administration
+
+- Username/password authentication using salted scrypt hashes and `HttpOnly` session cookies
+- Persistent **viewer**, **operator**, and **admin** accounts with case-insensitive usernames
+- Persistent activity history showing who sent each action, its target, and whether it succeeded
+- Operators and viewers can only read their own activity; admins can review the full audit trail
+- Automatic rediscovery of GNU screen names such as `140.minecraft` after server or container restarts
+- Dedicated **Status** tab with Docker uptime, last player connection, online players, whitelist, blacklist, permissions, public Bedrock UDP reachability, and Home Server Links
+- At-a-Glance diagnostics for Docker, appdata, authentication, backup storage, the public endpoint, and the active screen session
+- Admin-only compressed server backup/export with persistent Unraid storage and browser download
+- Unraid DockerMan template for normal **Edit**, port settings, credentials, icon, WebUI, and GHCR updates
 - GitHub Actions validation and multi-architecture GHCR publishing
 
 ## Role permissions
 
 | Role | Access |
 |---|---|
-| Viewer | Status, diagnostics, players, kits, catalog, and only their own activity history |
-| Operator | Viewer access plus item, XP, kit, player-refresh, and attachment-refresh actions; activity remains limited to their own account |
-| Admin | Operator access plus account management, manual players, custom kits, all activity, and server backup/export |
+| Viewer | Dashboard, Status, diagnostics, players, kits, catalogs, achievement checklists, and only their own activity history |
+| Operator | Viewer access plus item, XP, kit, achievement practice-supply, player-refresh, and attachment-refresh actions; activity remains limited to their own account |
+| Admin | Operator access plus account management, manual players, Quick Item management, custom kits, all activity, and server backup/export |
 
 The primary admin username/password is managed in the Unraid template. Additional accounts are created from the **Accounts** page and stored in `/app/data/users.json`.
 
@@ -109,11 +150,14 @@ Persistent files include:
 ```text
 manual-players.json
 custom-kits.json
+quick-items.json
 users.json
 activity.jsonl
 ```
 
 Only `Everyone` is hard-coded in the default target config. Player names come from discovery or the manual player list.
+
+Color scheme, display mode, achievement checklists, and the dismissed install prompt are browser-local preferences. They are not written to `/app/data` and do not synchronize between browsers or devices.
 
 The default `external` reachability mode asks the public `mcsrvstat.us` Bedrock API to probe the configured public hostname and port. Select `local` to avoid the third-party lookup, or `both` to compare the external result with Unraid/NAT loopback.
 
@@ -121,16 +165,6 @@ Admin-created server exports are stored separately at:
 
 ```text
 /mnt/user/backups/craftcommand-center → /app/backups
-```
-
-## Migrating from MC QuickButtons
-
-```bash
-mkdir -p /mnt/user/appdata/craftcommand-center/data
-cp -n /mnt/user/appdata/mc-quickbuttons/data/manual-players.json \
-  /mnt/user/appdata/craftcommand-center/data/ 2>/dev/null || true
-cp -n /mnt/user/appdata/mc-quickbuttons/data/custom-kits.json \
-  /mnt/user/appdata/craftcommand-center/data/ 2>/dev/null || true
 ```
 
 ## Environment variables
