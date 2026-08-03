@@ -8,7 +8,7 @@ services:
     environment:
       CCC_APP_TITLE: "CraftCommand Center"
       CCC_USERNAME: "admin"
-      CCC_PASSWORD: "change-me-now"
+      CCC_PASSWORD: "changemenow"
       CCC_MINECRAFT_CONTAINER: "binhex-minecraftbedrockserver"
       CCC_DOCKER_USER: "nobody"
       CCC_SCREEN_SESSION: "auto"
