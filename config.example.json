@@ -3,7 +3,7 @@
   "appSubtitle": "A mobile-friendly companion dashboard for binhex-minecraftbedrockserver on Unraid.",
   "auth": {
     "username": "admin",
-    "passwordHash": "scrypt$855959b37a41ef86b76f00d062674ea5$7a6516be98b534ae101d523b447d4ad150c64e5303b3b4e505a9123364de6e22e39542c02a8ae6fd3b8473b34768a1f320af1cd8b21f174b50609eeb35ccb098",
+    "passwordHash": "scrypt$5738c3d10cb4e1ed34a5b5737a1594a1$6fcc933cec9c07a7bed36f517b544d0b62e91ebc61332442a71f5a3b59cad1ad152994944eeb51aa83553c8843170bb4a2b3668f0b30c43031d572fd92fe3a9e",
     "sessionHours": 12,
     "role": "admin",
     "users": []
@@ -24,12 +24,12 @@
     {
       "label": "Minecraft WebUI Console",
       "url": "http://[IP]:8222",
-      "icon": "\ud83d\udda5\ufe0f"
+      "icon": "🖥️"
     },
     {
       "label": "Unraid Docker",
       "url": "http://[IP]/Docker",
-      "icon": "\ud83d\udc33"
+      "icon": "🐳"
     }
   ],
   "display": {

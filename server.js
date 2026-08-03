@@ -492,7 +492,7 @@ async function runDiagnostics(cfg, req) {
 
   const users = normalizedAuthUsers(cfg);
   add('auth', 'Dashboard account', users.length > 0, `${users.length} enabled account(s)`);
-  const weakDefault = String(process.env.CCC_PASSWORD || '') === 'change-me-now' || String(process.env.MCQB_PASSWORD || '') === 'change-me-now';
+  const weakDefault = String(process.env.CCC_PASSWORD || '') === 'changemenow' || String(process.env.MCQB_PASSWORD || '') === 'changemenow';
   add('default-password', 'Default password changed', !weakDefault, weakDefault ? 'Change the default password before beta testing' : 'No default environment password detected', 'warning');
 
   const errors = checks.filter(c => !c.ok && c.severity !== 'warning').length;

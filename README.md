@@ -125,7 +125,7 @@ cp -n /mnt/user/appdata/mc-quickbuttons/data/custom-kits.json \
 |---|---|---|
 | `CCC_APP_TITLE` | `CraftCommand Center` | Dashboard title |
 | `CCC_USERNAME` | `admin` | Primary admin username |
-| `CCC_PASSWORD` | `change-me-now` | Primary admin password |
+| `CCC_PASSWORD` | `changemenow` | Primary admin password |
 | `CCC_PASSWORD_HASH` | blank | Optional scrypt hash overriding the password |
 | `CCC_SESSION_HOURS` | `12` | Login session duration |
 | `CCC_MINECRAFT_CONTAINER` | `binhex-minecraftbedrockserver` | Exact Binhex Docker name |
