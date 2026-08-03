@@ -222,7 +222,7 @@ function renderXpButtons() {
   if (!box) return;
   box.innerHTML = '';
   (cfg.xpButtons || []).forEach(entry => {
-    const button = makeVisualButton({ label: entry.label || `${entry.amount}${entry.levels ? ' levels' : ' XP'}`, icon: '✨', subtext: entry.levels ? 'Levels' : 'Experience points', className: 'good itemButton', click: () => api('/api/xp', { target: target(), amount: entry.amount, levels: entry.levels !== false }) });
+    const button = makeVisualButton({ label: entry.label || `${entry.amount}${entry.levels ? ' levels' : ' XP'}`, icon: entry.levels === false ? '⭐' : '✨', subtext: entry.levels ? 'Levels' : 'Experience points', className: 'good itemButton xpButton', click: () => api('/api/xp', { target: target(), amount: entry.amount, levels: entry.levels !== false }) });
     button.disabled = !can('operator');
     box.appendChild(button);
   });
