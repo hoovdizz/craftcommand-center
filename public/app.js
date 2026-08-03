@@ -199,8 +199,17 @@ function renderQuickItems() {
     button.disabled = !can('operator');
     const wrap = document.createElement('div');
     wrap.className = 'quickItemWrap';
+    wrap.dataset.quickIndex = String(index);
     wrap.appendChild(button);
     if (can('admin') && !$('#quickItemManager')?.classList.contains('hidden')) {
+      const handle = document.createElement('span');
+      handle.className = 'quickItemDrag';
+      handle.textContent = '⠿';
+      handle.title = 'Drag to reorder';
+      handle.setAttribute('role', 'button');
+      handle.setAttribute('aria-label', `Drag ${item.label || info.name} to reorder`);
+      handle.draggable = true;
+      wrap.appendChild(handle);
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.className = 'danger quickItemRemove';
@@ -215,6 +224,74 @@ function renderQuickItems() {
       wrap.appendChild(remove);
     }
     box.appendChild(wrap);
+  });
+  if (can('admin') && !$('#quickItemManager')?.classList.contains('hidden')) setupQuickItemDrag(box);
+}
+
+function setupQuickItemDrag(box) {
+  let dragged = null;
+  let changed = false;
+  const positionBefore = (target, x, y) => {
+    const rect = target.getBoundingClientRect();
+    const draggedRect = dragged.getBoundingClientRect();
+    const sameRow = Math.abs((draggedRect.top + draggedRect.height / 2) - (rect.top + rect.height / 2)) < rect.height / 2;
+    return sameRow ? x < rect.left + rect.width / 2 : y < rect.top + rect.height / 2;
+  };
+  const moveNear = (target, x, y) => {
+    if (!dragged || target === dragged) return;
+    box.insertBefore(dragged, positionBefore(target, x, y) ? target : target.nextSibling);
+    changed = true;
+  };
+  const save = async () => {
+    if (!changed) return;
+    const order = [...box.querySelectorAll('.quickItemWrap')].map(element => Number(element.dataset.quickIndex));
+    const data = await api('/api/quick-items/reorder', { order });
+    cfg.quickItems = data.quickItems || [];
+    renderQuickItems();
+  };
+
+  box.querySelectorAll('.quickItemDrag').forEach(handle => {
+    const wrap = handle.closest('.quickItemWrap');
+    handle.addEventListener('dragstart', event => {
+      dragged = wrap;
+      changed = false;
+      wrap.classList.add('dragging');
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', wrap.dataset.quickIndex);
+    });
+    handle.addEventListener('dragend', async () => {
+      wrap.classList.remove('dragging');
+      await save().catch(error => show(`Could not reorder quick buttons: ${error.message}`));
+      dragged = null;
+    });
+    handle.addEventListener('pointerdown', event => {
+      if (event.pointerType === 'mouse') return;
+      event.preventDefault();
+      dragged = wrap;
+      changed = false;
+      wrap.classList.add('dragging');
+      handle.setPointerCapture(event.pointerId);
+    });
+    handle.addEventListener('pointermove', event => {
+      if (!dragged || event.pointerType === 'mouse') return;
+      event.preventDefault();
+      const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.quickItemWrap');
+      if (target && target.parentElement === box) moveNear(target, event.clientX, event.clientY);
+    });
+    handle.addEventListener('pointerup', async event => {
+      if (!dragged || event.pointerType === 'mouse') return;
+      wrap.classList.remove('dragging');
+      await save().catch(error => show(`Could not reorder quick buttons: ${error.message}`));
+      dragged = null;
+    });
+  });
+  box.querySelectorAll('.quickItemWrap').forEach(target => {
+    target.addEventListener('dragover', event => {
+      if (!dragged) return;
+      event.preventDefault();
+      moveNear(target, event.clientX, event.clientY);
+    });
+    target.addEventListener('drop', event => event.preventDefault());
   });
 }
 function renderXpButtons() {
@@ -310,11 +387,9 @@ async function initializeApp() {
   if ($('#transportBadge')) { $('#transportBadge').textContent=cfg.security?.transportEncrypted?'HTTPS':'HTTP'; $('#transportBadge').title=cfg.security?.note||''; }
   setDisplayMode(localStorage.getItem('cccDisplayMode') || cfg.display?.defaultMode || 'text');
   $('#displayMode').addEventListener('change',e=>setDisplayMode(e.target.value));
-  const links=$('#links'); links.innerHTML=''; (cfg.links||[]).forEach(l=>{const a=document.createElement('a');a.className='linkButton';a.href=l.url;a.target='_blank';a.rel='noopener noreferrer';a.innerHTML=`<span class="btnIcon">${escapeHtml(l.icon||'🔗')}</span><span class="btnText">${escapeHtml(l.label)}</span>`;links.appendChild(a);});
   populateCatalogInputs(); renderQuickItems(); renderXpButtons(); updateCustomHelp();
   await Promise.all([loadPlayers(),loadKits()]);
   document.querySelectorAll('[data-admin-nav]').forEach(el => el.classList.toggle('hidden', !can('admin')));
-  window.CCCPwa?.offerInstall();
   const urlItem=new URLSearchParams(location.search).get('item'); if(urlItem){$('#customItem').value=urlItem;updateCustomHelp();$('#customItem').scrollIntoView({behavior:'smooth'});}
 }
 

@@ -24,12 +24,17 @@
       <a class="navButton" href="/activity.html">Activity</a>
       <a class="navButton" href="/accounts.html" data-admin-nav>Accounts</a>
       <a class="navButton" href="/help.html">Help</a>
-      <button class="navButton hidden" type="button" data-install-app>Install App</button>
       <span id="userBadge" class="badge">Signed in</span>
     </nav>
   </header>
 
   <main>
+    <section class="card wide">
+      <h2>Home Server Links</h2>
+      <p class="hint">Shortcuts to the services configured for this server.</p>
+      <div id="serverLinks" class="buttonGrid"></div>
+    </section>
+
     <section class="card wide">
       <div class="sectionHeading"><div><h2>At a Glance</h2><p class="hint">Plain-language checks for Docker, appdata, authentication, backup storage, the public endpoint, and the Minecraft console.</p></div><button id="runDiagnostics" class="warn">Run Diagnostics</button></div>
       <div id="healthSummary" class="healthSummary">Checking readiness…</div>
