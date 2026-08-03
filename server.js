@@ -272,7 +272,9 @@ function requireAuth(req, res) {
 function loadConfig() {
   const p = fs.existsSync(CONFIG_PATH) ? CONFIG_PATH : FALLBACK_CONFIG;
   const cfg = JSON.parse(fs.readFileSync(p, 'utf8'));
-  return applyEnvOverrides(cfg);
+  const resolved = applyEnvOverrides(cfg);
+  resolved.quickItems = readQuickItems(resolved);
+  return resolved;
 }
 
 
@@ -351,6 +353,64 @@ function safeAmount(amount, max = 2304) {
   const n = Number(amount);
   if (!Number.isInteger(n) || n < 1 || n > max) throw new Error(`Amount must be 1-${max}`);
   return n;
+}
+
+function quickItemsPath() {
+  return path.join(DEFAULT_DATA_DIR, 'quick-items.json');
+}
+
+function sanitizeQuickItem(entry) {
+  const item = safeItemName(entry?.item);
+  const amount = safeAmount(entry?.amount || 1, 2304);
+  const fallbackLabel = `${item.replace(/^minecraft:/, '').split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')} x${amount}`;
+  const label = String(entry?.label || fallbackLabel).trim().slice(0, 60);
+  if (!label) throw new Error('Quick button label is required');
+  return { label, item, amount };
+}
+
+function factoryQuickItems() {
+  const factory = JSON.parse(fs.readFileSync(FALLBACK_CONFIG, 'utf8'));
+  return (factory.quickItems || []).map(sanitizeQuickItem);
+}
+
+function readQuickItems(cfg) {
+  const filePath = quickItemsPath();
+  if (!fs.existsSync(filePath)) return (cfg.quickItems || []).map(sanitizeQuickItem);
+  try {
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const list = Array.isArray(raw) ? raw : raw.quickItems;
+    return (Array.isArray(list) ? list : []).map(sanitizeQuickItem);
+  } catch (err) {
+    console.log(`Could not load quick buttons: ${err.message}`);
+    return (cfg.quickItems || []).map(sanitizeQuickItem);
+  }
+}
+
+function writeQuickItems(items) {
+  const clean = items.map(sanitizeQuickItem);
+  if (clean.length > 50) throw new Error('A maximum of 50 quick buttons is allowed');
+  fs.mkdirSync(DEFAULT_DATA_DIR, { recursive: true });
+  fs.writeFileSync(quickItemsPath(), `${JSON.stringify({ quickItems: clean, updatedAt: new Date().toISOString() }, null, 2)}\n`, 'utf8');
+  return clean;
+}
+
+function addQuickItem(cfg, entry) {
+  const item = sanitizeQuickItem(entry);
+  const items = readQuickItems(cfg);
+  items.push(item);
+  return { item, quickItems: writeQuickItems(items) };
+}
+
+function deleteQuickItem(cfg, index) {
+  const items = readQuickItems(cfg);
+  const position = Number(index);
+  if (!Number.isInteger(position) || position < 0 || position >= items.length) throw new Error('Quick button was not found');
+  const [deleted] = items.splice(position, 1);
+  return { deleted, quickItems: writeQuickItems(items) };
+}
+
+function resetQuickItems() {
+  return writeQuickItems(factoryQuickItems());
 }
 
 
@@ -1828,6 +1888,30 @@ async function handleApi(req, res, url, cfg) {
       deleteCustomKit(cfg, body.kitId);
       appendActivity(cfg, { username: session.username, role: session.role, action: 'delete-kit', summary: `Deleted custom kit ${body.kitId}`, ok: true, ip: clientIp(req) });
       json(res, 200, { ok: true, kits: mergedKits(cfg) });
+      return;
+    }
+
+    if (url.pathname === '/api/quick-items/add') {
+      requireRole(session, 'admin');
+      const saved = addQuickItem(cfg, body);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'add-quick-item', summary: `Added quick button ${saved.item.label}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, ...saved });
+      return;
+    }
+
+    if (url.pathname === '/api/quick-items/delete') {
+      requireRole(session, 'admin');
+      const deleted = deleteQuickItem(cfg, body.index);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'delete-quick-item', summary: `Removed quick button ${deleted.deleted.label}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, ...deleted });
+      return;
+    }
+
+    if (url.pathname === '/api/quick-items/reset') {
+      requireRole(session, 'admin');
+      const quickItems = resetQuickItems();
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'reset-quick-items', summary: 'Restored factory quick buttons', ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, quickItems });
       return;
     }
 

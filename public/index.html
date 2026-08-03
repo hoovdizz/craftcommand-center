@@ -11,6 +11,7 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
+  <script src="/theme.js?v=2.2.0"></script>
   <link rel="stylesheet" href="/styles.css?v=2.2.0" />
 </head>
 <body data-display="text">
@@ -52,6 +53,13 @@
             <option value="text">Text only</option>
           </select>
         </label>
+        <label class="compactLabel">Color scheme
+          <select data-color-theme aria-label="Color scheme">
+            <option value="default">Deep Ocean</option>
+            <option value="ember">Ember</option>
+            <option value="daylight">Daylight</option>
+          </select>
+        </label>
         <button id="logout" class="danger smallButton">Log out</button>
       </nav>
     </header>
@@ -82,9 +90,25 @@
       <section class="card wide">
         <div class="sectionHeading">
           <div><h2>Quick Items</h2><p class="hint">Pick a target, then tap an item.</p></div>
-          <a class="linkButton compact" href="/items.html">📚 Browse all items</a>
+          <div class="buttonRow">
+            <a class="linkButton compact" href="/items.html">📚 Browse all items</a>
+            <button id="manageQuickItems" class="compact" type="button" data-min-role="admin">Manage buttons</button>
+          </div>
         </div>
         <div id="quickItems" class="buttonGrid itemButtons"></div>
+        <div id="quickItemManager" class="quickItemManager hidden" data-min-role="admin">
+          <h3>Add a quick button</h3>
+          <div class="quickItemForm">
+            <label>Item ID<input id="quickItemId" list="itemOptions" placeholder="diamond_block" autocomplete="off" /></label>
+            <label>Amount<input id="quickItemAmount" type="number" min="1" max="2304" value="64" /></label>
+            <label>Button label<input id="quickItemLabel" maxlength="60" placeholder="Optional automatic label" /></label>
+            <button id="addQuickItem" class="good" type="button">Add button</button>
+          </div>
+          <div class="buttonRow smallRow">
+            <button id="resetQuickItems" class="danger" type="button">Restore factory defaults</button>
+          </div>
+          <p class="hint">Use the remove control on a quick button to delete it. Factory restore replaces the full list.</p>
+        </div>
       </section>
 
       <section class="card wide">
