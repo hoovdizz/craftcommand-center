@@ -1,0 +1,3252 @@
+{
+  "metadata": {
+    "edition": "Bedrock Edition",
+    "count": 131,
+    "snapshotDate": "2026-08-03",
+    "source": "https://minecraft.fandom.com/wiki/Achievement",
+    "platformNote": "Xbox, Windows, Android, iOS, and Nintendo Switch use Microsoft-account achievements. PlayStation records supported goals as PSN trophies."
+  },
+  "achievements": [
+    {
+      "id": "taking-inventory",
+      "order": 1,
+      "title": "Taking Inventory",
+      "description": "Open your inventory.",
+      "guide": "Open your inventory.",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "getting-wood",
+      "order": 2,
+      "title": "Getting Wood",
+      "description": "Punch a tree until a block of wood pops out.",
+      "guide": "Pick up a log from the ground.",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "log",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "benchmaking",
+      "order": 3,
+      "title": "Benchmaking",
+      "description": "Craft a workbench with four blocks of wooden planks.",
+      "guide": "Pick up a crafting table from the inventory's crafting field output or a crafting table output.",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "crafting_table",
+          "amount": 1
+        },
+        {
+          "item": "planks",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "time-to-mine",
+      "order": 4,
+      "title": "Time to Mine!",
+      "description": "Use planks and sticks to make a pickaxe.",
+      "guide": "Pick up any type of pickaxe from a crafting table output.",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "stick",
+          "amount": 1
+        },
+        {
+          "item": "crafting_table",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "hot-topic",
+      "order": 5,
+      "title": "Hot Topic",
+      "description": "Construct a furnace out of eight cobblestone blocks.",
+      "guide": "Pick up a furnace from a crafting table output.",
+      "category": "Engineering",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "furnace",
+          "amount": 1
+        },
+        {
+          "item": "cobblestone",
+          "amount": 1
+        },
+        {
+          "item": "crafting_table",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "acquire-hardware",
+      "order": 6,
+      "title": "Acquire Hardware",
+      "description": "Smelt an iron ingot",
+      "guide": "Pick up an iron ingot from a furnace output.",
+      "category": "Engineering",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "iron_ingot",
+          "amount": 1
+        },
+        {
+          "item": "furnace",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "time-to-farm",
+      "order": 7,
+      "title": "Time to Farm!",
+      "description": "Make a Hoe.",
+      "guide": "Pick up any type of hoe from a crafting table output.",
+      "category": "Farming",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "crafting_table",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "bake-bread",
+      "order": 8,
+      "title": "Bake Bread",
+      "description": "Turn wheat into bread.",
+      "guide": "Pick up bread from a crafting table output.",
+      "category": "Farming",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "wheat",
+          "amount": 3
+        }
+      ]
+    },
+    {
+      "id": "the-lie",
+      "order": 9,
+      "title": "The Lie",
+      "description": "Bake a cake using: wheat, sugar, milk, and eggs.",
+      "guide": "Pick up a cake from a crafting table output.",
+      "category": "Farming",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "wheat",
+          "amount": 3
+        },
+        {
+          "item": "sugar",
+          "amount": 2
+        },
+        {
+          "item": "milk_bucket",
+          "amount": 3
+        },
+        {
+          "item": "egg",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "getting-an-upgrade",
+      "order": 10,
+      "title": "Getting an Upgrade",
+      "description": "Construct a better pickaxe.",
+      "guide": "Pick up a stone pickaxe from a crafting table output.",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "crafting_table",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "delicious-fish",
+      "order": 11,
+      "title": "Delicious Fish",
+      "description": "Catch and cook a fish!",
+      "guide": "Pick up a cooked cod after cooking it in a Furnace, Smoker, Campfire, or Soul Campfire. Doesn't work if the block used is hooked up to a hopper, as the player is not getting the item directly from the output.",
+      "category": "Ocean",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "cooked_cod",
+          "amount": 1
+        },
+        {
+          "item": "furnace",
+          "amount": 1
+        },
+        {
+          "item": "smoker",
+          "amount": 1
+        },
+        {
+          "item": "campfire",
+          "amount": 1
+        },
+        {
+          "item": "soul_campfire",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "on-a-rail",
+      "order": 12,
+      "title": "On A Rail",
+      "description": "Travel by minecart to a point at least 500m in a single direction from where you started.",
+      "guide": "Travel by minecart 500 blocks in a straight line away from the player's starting point.",
+      "category": "Exploration",
+      "gamerscore": 40,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": [
+        {
+          "item": "minecart",
+          "amount": 1
+        },
+        {
+          "item": "rail",
+          "amount": 500
+        }
+      ]
+    },
+    {
+      "id": "time-to-strike",
+      "order": 13,
+      "title": "Time to Strike!",
+      "description": "Use planks and sticks to make a sword.",
+      "guide": "Pick up any type of sword from a crafting table output.",
+      "category": "Combat",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "stick",
+          "amount": 1
+        },
+        {
+          "item": "crafting_table",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "monster-hunter",
+      "order": 14,
+      "title": "Monster Hunter",
+      "description": "Attack and destroy a monster.",
+      "guide": "Kill a hostile mob or one of the following neutral mobs: an enderman, a piglin, a zombified piglin, a spider, or a cave spider.",
+      "category": "Nether",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "cow-tipper",
+      "order": 15,
+      "title": "Cow Tipper",
+      "description": "Harvest some leather.",
+      "guide": "Pick up leather from the ground.",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "leather",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "when-pigs-fly",
+      "order": 16,
+      "title": "When Pigs Fly",
+      "description": "Use a saddle to ride a pig, and then have the pig get hurt from fall damage while riding it.",
+      "guide": "Be riding a pig (e.g. using a saddle) when it hits the ground with a fall distance greater than 5.",
+      "category": "Combat",
+      "gamerscore": 40,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "saddle",
+          "amount": 1
+        },
+        {
+          "item": "carrot_on_a_stick",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "sniper-duel",
+      "order": 17,
+      "title": "Sniper Duel",
+      "description": "Kill a Skeleton with an arrow from more than 50 meters.",
+      "guide": "Use a launched arrow to kill a skeleton, spider jockey, wither skeleton, or a stray from 50 or more blocks away, horizontally.",
+      "category": "Combat",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "bow",
+          "amount": 1
+        },
+        {
+          "item": "arrow",
+          "amount": 16
+        }
+      ]
+    },
+    {
+      "id": "diamonds",
+      "order": 18,
+      "title": "DIAMONDS!",
+      "description": "Acquire diamonds with your iron tools.",
+      "guide": "Pick up a diamond from the ground.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "diamond",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "into-the-nether",
+      "order": 19,
+      "title": "Into The Nether",
+      "description": "Construct a Nether Portal.",
+      "guide": "Light a nether portal.",
+      "category": "Nether",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "obsidian",
+          "amount": 10
+        },
+        {
+          "item": "flint_and_steel",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "return-to-sender",
+      "order": 20,
+      "title": "Return to Sender",
+      "description": "Destroy a Ghast with a fireball.",
+      "guide": "Kill a ghast using a ghast fireball.",
+      "category": "Nether",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "into-fire",
+      "order": 21,
+      "title": "Into Fire",
+      "description": "Relieve a Blaze of its rod.",
+      "guide": "Pick up a blaze rod from the ground.",
+      "category": "Nether",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "blaze_rod",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "local-brewery",
+      "order": 22,
+      "title": "Local Brewery",
+      "description": "Brew a potion.",
+      "guide": "Pick up a potion from a brewing stand potion slot. An already-created potion placed and removed qualifies.",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "brewing_stand",
+          "amount": 1
+        },
+        {
+          "item": "glass_bottle",
+          "amount": 3
+        },
+        {
+          "item": "nether_wart",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "the-end-question",
+      "order": 23,
+      "title": "The End?",
+      "description": "Enter an End Portal",
+      "guide": "Enter a stronghold End Portal activated with all twelve eyes of ender.",
+      "category": "The End",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": [
+        {
+          "item": "ender_eye",
+          "amount": 12
+        }
+      ]
+    },
+    {
+      "id": "the-end",
+      "order": 24,
+      "title": "The End",
+      "description": "Kill the Enderdragon",
+      "guide": "Enter the end exit portal.",
+      "category": "The End",
+      "gamerscore": 40,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "enchanter",
+      "order": 25,
+      "title": "Enchanter",
+      "description": "Construct an Enchantment Table.",
+      "guide": "Pick up an enchantment table from a crafting table output.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "enchanting_table",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "overkill",
+      "order": 26,
+      "title": "Overkill",
+      "description": "Deal nine hearts of damage in a single hit.",
+      "guide": "Damage can be dealt to any mob, even those that do not have nine hearts of health overall.",
+      "category": "Combat",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "diamond_sword",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "librarian",
+      "order": 27,
+      "title": "Librarian",
+      "description": "Build some bookshelves to improve your enchantment table.",
+      "guide": "Pick up a bookshelf from a crafting table output.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "bookshelf",
+          "amount": 15
+        }
+      ]
+    },
+    {
+      "id": "adventuring-time",
+      "order": 28,
+      "title": "Adventuring Time",
+      "description": "Discover 17 biomes.",
+      "guide": "Visit any 17 biomes. Does not have to be in a single world.",
+      "category": "Exploration",
+      "gamerscore": 40,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "the-beginning-question",
+      "order": 29,
+      "title": "The Beginning?",
+      "description": "Spawn the Wither",
+      "guide": "Be within a 100.9×100.9×103.5 cuboid centered on the Wither when it is spawned.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "wither_skeleton_skull",
+          "amount": 3
+        },
+        {
+          "item": "soul_sand",
+          "amount": 4
+        }
+      ]
+    },
+    {
+      "id": "the-beginning",
+      "order": 30,
+      "title": "The Beginning.",
+      "description": "Kill the Wither",
+      "guide": "Be within a 100.9×100.9×203.5 cuboid centered on the Wither when it drops the nether star.",
+      "category": "Nether",
+      "gamerscore": 40,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "nether_star",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "the-beaconator",
+      "order": 31,
+      "title": "The Beaconator",
+      "description": "Create and fully power a Beacon",
+      "guide": "Be within a 20×20×14 cuboid centered on the pyramid when the beacon block realizes it is fully powered.",
+      "category": "Progression",
+      "gamerscore": 60,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": [
+        {
+          "item": "beacon",
+          "amount": 1
+        },
+        {
+          "item": "iron_block",
+          "amount": 164
+        }
+      ]
+    },
+    {
+      "id": "repopulation",
+      "order": 32,
+      "title": "Repopulation",
+      "description": "Breed two cows with wheat.",
+      "guide": "Breed two cows or two mooshrooms.",
+      "category": "Farming",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "wheat",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "diamonds-to-you",
+      "order": 33,
+      "title": "Diamonds to you!",
+      "description": "Throw diamonds at another player.",
+      "guide": "Drop a diamond. Another player or a mob must then pick up this diamond.",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "diamond",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "overpowered",
+      "order": 34,
+      "title": "Overpowered",
+      "description": "Eat an Enchanted Apple",
+      "guide": "Eat an Enchanted Apple",
+      "category": "Progression",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "enchanted_golden_apple",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "moar-tools",
+      "order": 35,
+      "title": "MOAR Tools",
+      "description": "Construct one type of each tool.",
+      "guide": "Construct one pickaxe, one shovel, one axe, and one hoe with the same material.",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "dispense-with-this",
+      "order": 36,
+      "title": "Dispense with This",
+      "description": "Construct a Dispenser.",
+      "guide": "Construct a Dispenser.",
+      "category": "Engineering",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "dispenser",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "leader-of-the-pack",
+      "order": 37,
+      "title": "Leader of the Pack",
+      "description": "Befriend five wolves.",
+      "guide": "This does not have to be in a single game, so multiple games or reloading old saves does count toward this achievement.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "bone",
+          "amount": 32
+        }
+      ]
+    },
+    {
+      "id": "pork-chop",
+      "order": 38,
+      "title": "Pork Chop",
+      "description": "Cook and eat a pork chop.",
+      "guide": "Cook and eat a pork chop.",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "cooked_porkchop",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "passing-the-time",
+      "order": 39,
+      "title": "Passing the Time",
+      "description": "Play for 100 days.",
+      "guide": "Play for 100 Minecraft days, which is equivalent to 33 hours in real time.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "the-haggler",
+      "order": 40,
+      "title": "The Haggler",
+      "description": "Acquire or spend 30 Emeralds by trading with villagers or with wandering trader.",
+      "guide": "Acquire or spend 30 Emeralds by trading with villagers or with wandering trader.",
+      "category": "Village",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "pot-planter",
+      "order": 41,
+      "title": "Pot Planter",
+      "description": "Craft and place a Flower Pot.",
+      "guide": "Craft and place a Flower Pot.",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "flower_pot",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "it-s-a-sign",
+      "order": 42,
+      "title": "It's a Sign!",
+      "description": "Craft and place an Oak Sign.",
+      "guide": "Craft and place an Oak Sign.",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "iron-belly",
+      "order": 43,
+      "title": "Iron Belly",
+      "description": "Stop starvation using Rotten Flesh.",
+      "guide": "Eat a piece of rotten flesh while starving (zero hunger points).",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "rotten_flesh",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "have-a-shearful-day",
+      "order": 44,
+      "title": "Have a Shearful Day",
+      "description": "Use Shears to obtain wool from a sheep.",
+      "guide": "Use Shears to obtain wool from a sheep.",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "wool",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "rainbow-collection",
+      "order": 45,
+      "title": "Rainbow Collection",
+      "description": "Gather all 16 colors of wool.",
+      "guide": "All the colors of wool do not have to be in the inventory at the same time, but must have been picked up by the player at least once.",
+      "category": "Farming",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "white_wool",
+          "amount": 1
+        },
+        {
+          "item": "orange_wool",
+          "amount": 1
+        },
+        {
+          "item": "magenta_wool",
+          "amount": 1
+        },
+        {
+          "item": "light_blue_wool",
+          "amount": 1
+        },
+        {
+          "item": "yellow_wool",
+          "amount": 1
+        },
+        {
+          "item": "lime_wool",
+          "amount": 1
+        },
+        {
+          "item": "pink_wool",
+          "amount": 1
+        },
+        {
+          "item": "gray_wool",
+          "amount": 1
+        },
+        {
+          "item": "light_gray_wool",
+          "amount": 1
+        },
+        {
+          "item": "cyan_wool",
+          "amount": 1
+        },
+        {
+          "item": "purple_wool",
+          "amount": 1
+        },
+        {
+          "item": "blue_wool",
+          "amount": 1
+        },
+        {
+          "item": "brown_wool",
+          "amount": 1
+        },
+        {
+          "item": "green_wool",
+          "amount": 1
+        },
+        {
+          "item": "red_wool",
+          "amount": 1
+        },
+        {
+          "item": "black_wool",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "stayin-frosty",
+      "order": 46,
+      "title": "Stayin' Frosty",
+      "description": "Swim in lava while having the Fire Resistance effect.",
+      "guide": "Swim in lava while having the Fire Resistance effect.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "chestful-of-cobblestone",
+      "order": 47,
+      "title": "Chestful of Cobblestone",
+      "description": "Mine 1,728 Cobblestone and place it in a chest.",
+      "guide": "A player must mine 1,728 cobblestone and place 1,728 cobblestone, or 27 stacks, in a chest. The cobblestone placed in the chest does not have to be the same cobblestone that was mined.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "cobblestone",
+          "amount": 1728
+        },
+        {
+          "item": "chest",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "renewable-energy",
+      "order": 48,
+      "title": "Renewable Energy",
+      "description": "Smelt wood trunks using charcoal to make more charcoal.",
+      "guide": "Smelt a wooden log with charcoal as the fuel.",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "charcoal",
+          "amount": 1
+        },
+        {
+          "item": "log",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "body-guard",
+      "order": 49,
+      "title": "Body Guard",
+      "description": "Create an Iron Golem",
+      "guide": "Create an Iron Golem",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "iron_block",
+          "amount": 4
+        },
+        {
+          "item": "carved_pumpkin",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "iron-man",
+      "order": 50,
+      "title": "Iron Man",
+      "description": "Wear a full suit of Iron Armor.",
+      "guide": "Wear a full suit of Iron Armor.",
+      "category": "Combat",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "iron_helmet",
+          "amount": 1
+        },
+        {
+          "item": "iron_chestplate",
+          "amount": 1
+        },
+        {
+          "item": "iron_leggings",
+          "amount": 1
+        },
+        {
+          "item": "iron_boots",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "zombie-doctor",
+      "order": 51,
+      "title": "Zombie Doctor",
+      "description": "Cure a zombie villager.",
+      "guide": "Throw a splash potion of weakness at a zombie villager and give it a golden apple (by facing the zombie and pressing the use key with a golden apple in your hand)",
+      "category": "Village",
+      "gamerscore": 40,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": [
+        {
+          "item": "golden_apple",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "lion-hunter",
+      "order": 52,
+      "title": "Lion Hunter",
+      "description": "Gain the trust of an Ocelot.",
+      "guide": "Gain the trust of an Ocelot.",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "archer",
+      "order": 53,
+      "title": "Archer",
+      "description": "Kill a creeper with arrows.",
+      "guide": "Kill a creeper with arrows.",
+      "category": "Combat",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "bow",
+          "amount": 1
+        },
+        {
+          "item": "arrow",
+          "amount": 16
+        }
+      ]
+    },
+    {
+      "id": "tie-dye-outfit",
+      "order": 54,
+      "title": "Tie Dye Outfit",
+      "description": "Use a cauldron to dye all 4 unique pieces of leather armor.",
+      "guide": "Use a cauldron to dye all 4 unique pieces of leather armor.",
+      "category": "Combat",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "cauldron",
+          "amount": 1
+        },
+        {
+          "item": "leather_helmet",
+          "amount": 1
+        },
+        {
+          "item": "leather_chestplate",
+          "amount": 1
+        },
+        {
+          "item": "leather_leggings",
+          "amount": 1
+        },
+        {
+          "item": "leather_boots",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "trampoline",
+      "order": 55,
+      "title": "Trampoline",
+      "description": "Bounce 30 blocks upward off a slime block.",
+      "guide": "Bounce 30 blocks upward off a slime block.",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "camouflage",
+      "order": 56,
+      "title": "Camouflage",
+      "description": "Kill a mob while wearing the same type of mob head.",
+      "guide": "Kill a mob while wearing the same type of mob head.",
+      "category": "Combat",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "map-room",
+      "order": 57,
+      "title": "Map Room",
+      "description": "Place 9 fully explored, adjacent map items into 9 item frames in a 3 by 3 square.",
+      "guide": "The frames have to be on a wall, not the floor.",
+      "category": "Exploration",
+      "gamerscore": 40,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "empty_map",
+          "amount": 9
+        }
+      ]
+    },
+    {
+      "id": "freight-station",
+      "order": 58,
+      "title": "Freight Station",
+      "description": "Use a Hopper to move an item from a Chest Minecart to a Chest.",
+      "guide": "Use a Hopper to move an item from a Chest Minecart to a Chest.",
+      "category": "Engineering",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "hopper",
+          "amount": 1
+        },
+        {
+          "item": "chest_minecart",
+          "amount": 1
+        },
+        {
+          "item": "chest",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "smelt-everything",
+      "order": 59,
+      "title": "Smelt Everything!",
+      "description": "Connect 3 Chests to a single Furnace using 3 Hoppers.",
+      "guide": "Be within the range of three chests connected to a Furnace with 3 Hoppers.",
+      "category": "Engineering",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "furnace",
+          "amount": 1
+        },
+        {
+          "item": "hopper",
+          "amount": 3
+        },
+        {
+          "item": "chest",
+          "amount": 3
+        }
+      ]
+    },
+    {
+      "id": "taste-of-your-own-medicine",
+      "order": 60,
+      "title": "Taste of Your Own Medicine",
+      "description": "Poison a witch with a splash potion.",
+      "guide": "Throw a splash potion of poison at a witch (by facing the witch and pressing the use key).",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "inception",
+      "order": 61,
+      "title": "Inception",
+      "description": "Push a piston with a piston, then pull the original piston with that piston.",
+      "guide": "Push a piston with a piston, then pull the original piston with that piston.",
+      "category": "Engineering",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "piston",
+          "amount": 2
+        },
+        {
+          "item": "redstone",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "id": "saddle-up",
+      "order": 62,
+      "title": "Saddle Up",
+      "description": "Tame a horse.",
+      "guide": "Tame a horse.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "artificial-selection",
+      "order": 63,
+      "title": "Artificial Selection",
+      "description": "Breed a mule from a horse and a donkey.",
+      "guide": "Breed a mule from a horse and a donkey.",
+      "category": "Farming",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "free-diver",
+      "order": 64,
+      "title": "Free Diver",
+      "description": "Stay underwater for 2 minutes",
+      "guide": "Drink a potion of water breathing that can last for 2 minutes or more, then jump into the water or activate a conduit or sneak on a magma block underwater for 2 minutes.",
+      "category": "Ocean",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "rabbit-season",
+      "order": 65,
+      "title": "Rabbit Season",
+      "description": "Cook and Eat Rabbit Meat",
+      "guide": "Cook and Eat Rabbit Meat",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "cooked_rabbit",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "the-deep-end",
+      "order": 66,
+      "title": "The Deep End",
+      "description": "Defeat an Elder Guardian",
+      "guide": "Defeat an Elder Guardian",
+      "category": "Progression",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "dry-spell",
+      "order": 67,
+      "title": "Dry Spell",
+      "description": "Dry a sponge in a furnace",
+      "guide": "Dry a sponge in a furnace",
+      "category": "Engineering",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "sponge",
+          "amount": 1
+        },
+        {
+          "item": "furnace",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "super-fuel",
+      "order": 68,
+      "title": "Super Fuel",
+      "description": "Power a Furnace with Lava",
+      "guide": "Power a Furnace with Lava",
+      "category": "Engineering",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "lava_bucket",
+          "amount": 1
+        },
+        {
+          "item": "furnace",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "you-need-a-mint",
+      "order": 69,
+      "title": "You Need a Mint",
+      "description": "Collect dragons breath in a glass bottle",
+      "guide": "Have a dragon's breath bottle in your inventory",
+      "category": "The End",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "glass_bottle",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "beam-me-up",
+      "order": 70,
+      "title": "Beam Me Up",
+      "description": "Teleport over 100 meters from a single throw of an Ender Pearl",
+      "guide": "Throw an ender pearl 100 blocks in any direction",
+      "category": "The End",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "ender_pearl",
+          "amount": 4
+        }
+      ]
+    },
+    {
+      "id": "the-end-again",
+      "order": 71,
+      "title": "The End... Again...",
+      "description": "Respawn the Enderdragon",
+      "guide": "Respawn the Enderdragon",
+      "category": "The End",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "end_crystal",
+          "amount": 4
+        }
+      ]
+    },
+    {
+      "id": "great-view-from-up-here",
+      "order": 72,
+      "title": "Great View From Up Here",
+      "description": "Levitate up 50 blocks from the attacks of a Shulker",
+      "guide": "Levitate up 50 blocks from the attacks of a Shulker",
+      "category": "The End",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "super-sonic",
+      "order": 73,
+      "title": "Super Sonic",
+      "description": "Use Elytra to fly through a 1 by 1 gap while moving faster than 40 m/s",
+      "guide": "Use Elytra to fly through a 1 by 1 gap while moving faster than 40 m/s",
+      "category": "The End",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": [
+        {
+          "item": "elytra",
+          "amount": 1
+        },
+        {
+          "item": "firework_rocket",
+          "amount": 16
+        }
+      ]
+    },
+    {
+      "id": "treasure-hunter",
+      "order": 74,
+      "title": "Treasure Hunter",
+      "description": "Acquire a map from a cartographer villager, then enter the revealed structure",
+      "guide": "Visit the structure indicated while the purchased map is in your main hand (hotbar).",
+      "category": "Village",
+      "gamerscore": 40,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "organizational-wizard",
+      "order": 75,
+      "title": "Organizational Wizard",
+      "description": "Name a Shulker Box with an Anvil",
+      "guide": "Name a Shulker Box with an Anvil",
+      "category": "The End",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "shulker_box",
+          "amount": 1
+        },
+        {
+          "item": "anvil",
+          "amount": 1
+        },
+        {
+          "item": "name_tag",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "cheating-death",
+      "order": 76,
+      "title": "Cheating Death",
+      "description": "Use the Totem of Undying to cheat death",
+      "guide": "Have the Totem of Undying in your hand when you die.",
+      "category": "Progression",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "totem_of_undying",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "feeling-ill",
+      "order": 77,
+      "title": "Feeling Ill",
+      "description": "Defeat an Evoker",
+      "guide": "Defeat an Evoker",
+      "category": "Village",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "let-it-go",
+      "order": 78,
+      "title": "Let It Go!",
+      "description": "Using the Frost Walker boots, walk on at least 1 block on frozen water on a deep ocean",
+      "guide": "Using the Frost Walker boots, walk on at least 1 block on frozen water on a deep ocean",
+      "category": "Ocean",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "leather_boots",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "so-i-got-that-going-for-me",
+      "order": 79,
+      "title": "So I Got That Going for Me",
+      "description": "Lead a Caravan containing at least 5 Llamas",
+      "guide": "Lead a Caravan containing at least 5 Llamas",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "atlantis-question",
+      "order": 80,
+      "title": "Atlantis?",
+      "description": "Find an underwater ruin",
+      "guide": "Find an underwater ruin",
+      "category": "Ocean",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "sail-the-7-seas",
+      "order": 81,
+      "title": "Sail the 7 Seas",
+      "description": "Visit all ocean biomes",
+      "guide": "Visit all ocean biomes except the deep warm ocean/legacy frozen ocean (as they are unused)",
+      "category": "Ocean",
+      "gamerscore": 40,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": []
+    },
+    {
+      "id": "castaway",
+      "order": 82,
+      "title": "Castaway",
+      "description": "Eat nothing but dried kelp for three in-game days",
+      "guide": "Eat dried kelp once; in the following three in-game days, eat nothing but dried kelp.",
+      "category": "Ocean",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "dried_kelp",
+          "amount": 64
+        }
+      ]
+    },
+    {
+      "id": "ahoy",
+      "order": 83,
+      "title": "Ahoy!",
+      "description": "Find a shipwreck",
+      "guide": "Find a shipwreck",
+      "category": "Exploration",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "i-am-a-marine-biologist",
+      "order": 84,
+      "title": "I am a Marine Biologist",
+      "description": "Collect a fish in a bucket",
+      "guide": "Use an empty bucket on any fish mob to collect it.",
+      "category": "Ocean",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "water_bucket",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "me-gold",
+      "order": 85,
+      "title": "Me Gold!",
+      "description": "Dig up a buried treasure",
+      "guide": "Open a buried treasure chest",
+      "category": "Exploration",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "chest",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "sleep-with-the-fishes",
+      "order": 86,
+      "title": "Sleep with the Fishes",
+      "description": "Spend a day underwater.",
+      "guide": "Spend 20 minutes underwater without any air.",
+      "category": "Ocean",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "alternative-fuel",
+      "order": 87,
+      "title": "Alternative Fuel",
+      "description": "Power a furnace with a kelp block",
+      "guide": "This achievement is awarded only if the dried kelp block is put into the furnace's fuel slot manually, not via redstone components such as hoppers.",
+      "category": "Ocean",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "dried_kelp_block",
+          "amount": 1
+        },
+        {
+          "item": "furnace",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "do-a-barrel-roll",
+      "order": 88,
+      "title": "Do a Barrel Roll!",
+      "description": "Use Riptide to give yourself a boost",
+      "guide": "Obtain a trident enchanted with Riptide and launch yourself any distance with it.",
+      "category": "Ocean",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "trident",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "one-pickle-two-pickle-sea-pickle-four",
+      "order": 89,
+      "title": "One Pickle, Two Pickle, Sea Pickle, Four",
+      "description": "Place four Sea Pickles in a group",
+      "guide": "Place four Sea Pickles in a group",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "sea_pickle",
+          "amount": 4
+        }
+      ]
+    },
+    {
+      "id": "echolocation",
+      "order": 90,
+      "title": "Echolocation",
+      "description": "Feed a dolphin fish to have it lead you to treasure",
+      "guide": "Feed a dolphin cod or salmon and have it lure you to treasure.",
+      "category": "Ocean",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "cod",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "moskstraumen",
+      "order": 91,
+      "title": "Moskstraumen",
+      "description": "Activate a Conduit",
+      "guide": "Place a conduit in a valid prismarine/sea lantern structure to activate it.",
+      "category": "Ocean",
+      "gamerscore": 50,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": [
+        {
+          "item": "conduit",
+          "amount": 1
+        },
+        {
+          "item": "prismarine",
+          "amount": 16
+        }
+      ]
+    },
+    {
+      "id": "top-of-the-world",
+      "order": 92,
+      "title": "Top of the World",
+      "description": "Place scaffolding to the world limit.",
+      "guide": "Place a scaffolding at the world height limit.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "scaffolding",
+          "amount": 64
+        }
+      ]
+    },
+    {
+      "id": "where-have-you-been-question",
+      "order": 93,
+      "title": "Where Have You Been?",
+      "description": "Receive a gift from a tamed cat in the morning.",
+      "guide": "The gift must be picked up from the ground.",
+      "category": "Farming",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "zoologist",
+      "order": 94,
+      "title": "Zoologist",
+      "description": "Breed two pandas with bamboo.",
+      "guide": "Breed two pandas with bamboo.",
+      "category": "Farming",
+      "gamerscore": 40,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": [
+        {
+          "item": "bamboo",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "fruit-on-the-loom",
+      "order": 95,
+      "title": "Fruit on the Loom",
+      "description": "Make a banner using an Enchanted Apple Stencil",
+      "guide": "Make a banner using the Enchanted apple (thing) stencil",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "enchanted_golden_apple",
+          "amount": 1
+        },
+        {
+          "item": "paper",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "plethora-of-cats",
+      "order": 96,
+      "title": "Plethora of Cats",
+      "description": "Befriend twenty stray cats.",
+      "guide": "Befriend and tame twenty stray cats found in villages. They do not all need to be tamed in a single world.",
+      "category": "Farming",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "kill-the-beast",
+      "order": 97,
+      "title": "Kill the Beast!",
+      "description": "Defeat a Ravager.",
+      "guide": "Defeat a Ravager.",
+      "category": "Village",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "buy-low-sell-high",
+      "order": 98,
+      "title": "Buy Low, Sell High",
+      "description": "Trade for the best possible price.",
+      "guide": "Buy something for 1 emerald, or when the Hero of the Village effect is applied.",
+      "category": "Village",
+      "gamerscore": 50,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": []
+    },
+    {
+      "id": "disenchanted",
+      "order": 99,
+      "title": "Disenchanted",
+      "description": "Use a Grindstone to get experience from an enchanted item.",
+      "guide": "Use a Grindstone to get experience from an enchanted item.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "grindstone",
+          "amount": 1
+        },
+        {
+          "item": "enchanted_book",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "we-re-being-attacked",
+      "order": 100,
+      "title": "We're being attacked!",
+      "description": "Trigger a Pillager Raid.",
+      "guide": "Walk in a village with the Bad Omen effect applied.",
+      "category": "Village",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "sound-the-alarm",
+      "order": 101,
+      "title": "Sound the Alarm!",
+      "description": "Ring the bell with a hostile enemy in the village.",
+      "guide": "Ring the bell with a hostile enemy in the village.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "bell",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "i-ve-got-a-bad-feeling-about-this",
+      "order": 102,
+      "title": "I've got a bad feeling about this",
+      "description": "Kill a Pillager Captain.",
+      "guide": "Gain the bad omen effect, via drinking an ominous bottle, or killing a pillager captain in versions before the Tricky Trials update.",
+      "category": "Village",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "ominous_bottle",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "master-trader",
+      "order": 103,
+      "title": "Master Trader",
+      "description": "Trade for 1,000 emeralds.",
+      "guide": "Obtain 1,000 emeralds from trading with villagers.",
+      "category": "Village",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "emerald",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "time-for-stew",
+      "order": 104,
+      "title": "Time for Stew",
+      "description": "Give someone a suspicious stew.",
+      "guide": "Give someone a suspicious stew.",
+      "category": "Progression",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "suspicious_stew",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "bee-our-guest",
+      "order": 105,
+      "title": "Bee our guest",
+      "description": "Use a Campfire to collect Honey from a Beehive using a Bottle without aggravating the bees.",
+      "guide": "Use a Campfire to collect Honey from a Beehive using a Bottle without aggravating the bees.",
+      "category": "Farming",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "campfire",
+          "amount": 1
+        },
+        {
+          "item": "glass_bottle",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "total-beelocation",
+      "order": 106,
+      "title": "Total Beelocation",
+      "description": "Move and place a Bee Nest, with 3 bees inside, using Silk Touch.",
+      "guide": "Move and place a Bee Nest, with 3 bees inside, using Silk Touch.",
+      "category": "Farming",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "diamond_pickaxe",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "sticky-situation",
+      "order": 107,
+      "title": "Sticky Situation",
+      "description": "Slide down a honey block to slow your fall.",
+      "guide": "Slide down a honey block to slow your fall.",
+      "category": "Progression",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "honey_block",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "bullseye",
+      "order": 108,
+      "title": "Bullseye",
+      "description": "Hit the bullseye of a Target block",
+      "guide": "Hit the bullseye of a Target block",
+      "category": "Progression",
+      "gamerscore": 15,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "target",
+          "amount": 1
+        },
+        {
+          "item": "bow",
+          "amount": 1
+        },
+        {
+          "item": "arrow",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "id": "cover-me-in-debris",
+      "order": 109,
+      "title": "Cover me in debris",
+      "description": "Wear a full set of Netherite armor",
+      "guide": "Have a full set of Netherite armor in your inventory.",
+      "category": "Nether",
+      "gamerscore": 50,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": [
+        {
+          "item": "netherite_helmet",
+          "amount": 1
+        },
+        {
+          "item": "netherite_chestplate",
+          "amount": 1
+        },
+        {
+          "item": "netherite_leggings",
+          "amount": 1
+        },
+        {
+          "item": "netherite_boots",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "oooh-shiny",
+      "order": 110,
+      "title": "Oooh, shiny!",
+      "description": "Distract a Piglin using gold",
+      "guide": "Give a piglin a gold item while it is aggressive toward the player.",
+      "category": "Nether",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "gold_ingot",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "hot-tourist-destination",
+      "order": 111,
+      "title": "Hot tourist destination",
+      "description": "Visit all Nether biomes",
+      "guide": "The achievement can be completed if one visit biomes in different worlds.",
+      "category": "Nether",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "whatever-floats-your-goat",
+      "order": 112,
+      "title": "Whatever Floats Your Goat",
+      "description": "Get in a boat and float with a goat",
+      "guide": "Use a boat and put a goat inside that boat, then ride it",
+      "category": "Farming",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "oak_boat",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "wax-on-wax-off",
+      "order": 113,
+      "title": "Wax on, Wax off",
+      "description": "Apply and remove Wax from all the Copper blocks!!!",
+      "guide": "Wax and de-wax each oxidation stage of all 4 Copper Blocks in the game, which include cut copper blocks, stairs, & slabs.",
+      "category": "Progression",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "honeycomb",
+          "amount": 64
+        },
+        {
+          "item": "stone_axe",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "the-healing-power-of-friendship",
+      "order": 114,
+      "title": "The Healing Power of Friendship!",
+      "description": "Team up with an axolotl and win a fight",
+      "guide": "Team up with an axolotl by killing the hostile aquatic mob while the axolotl is fighting it (not playing dead).",
+      "category": "Combat",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "caves-cliffs",
+      "order": 115,
+      "title": "Caves & Cliffs",
+      "description": "Freefall from the top of the world (build limit) to the bottom of the world and survive.",
+      "guide": "Freefall from the top of the world (build limit) to the bottom of the world and survive.",
+      "category": "Progression",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": [
+        {
+          "item": "water_bucket",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "star-trader",
+      "order": 116,
+      "title": "Star trader",
+      "description": "Trade with a villager at the build height limit.",
+      "guide": "Trade with a villager at y320.",
+      "category": "Village",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": []
+    },
+    {
+      "id": "sound-of-music",
+      "order": 117,
+      "title": "Sound of Music",
+      "description": "Make the Meadows come alive with the sound of music from a jukebox.",
+      "guide": "Use a music disc on a jukebox in the Meadow biome.",
+      "category": "Exploration",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "jukebox",
+          "amount": 1
+        },
+        {
+          "item": "music_disc_13",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "feels-like-home",
+      "order": 118,
+      "title": "Feels Like Home",
+      "description": "Take a Strider for a loooong ride on a lava lake in the Overworld.",
+      "guide": "In the Overworld, use a strider to ride on a lava lake for a distance of 50 meters from the point where the ride starts.",
+      "category": "Nether",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "warped_fungus_on_a_stick",
+          "amount": 1
+        },
+        {
+          "item": "saddle",
+          "amount": 1
+        },
+        {
+          "item": "lava_bucket",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "id": "it-spreads",
+      "order": 119,
+      "title": "It spreads",
+      "description": "Kill a mob next to a catalyst",
+      "guide": "Kill a mob next to a catalyst",
+      "category": "Farming",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "sculk_catalyst",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "birthday-song",
+      "order": 120,
+      "title": "Birthday song",
+      "description": "Have an Allay drop a cake at a noteblock",
+      "guide": "Tame an allay by giving it a cake while having dropped cake items and play a noteblock nearby.",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "cake",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "with-our-powers-combined",
+      "order": 121,
+      "title": "With our powers combined!",
+      "description": "Have all 3 froglights in your inventory",
+      "guide": "Acquire at least one of each pearlescent, verdant, and ochre froglights in your inventory at the same time.",
+      "category": "Progression",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": [
+        {
+          "item": "pearlescent_froglight",
+          "amount": 1
+        },
+        {
+          "item": "verdant_froglight",
+          "amount": 1
+        },
+        {
+          "item": "ochre_froglight",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "sneak-100",
+      "order": 122,
+      "title": "Sneak 100",
+      "description": "Sneaking next to a Sculk Sensor without triggering it",
+      "guide": "Sneak next to a Sculk Sensor or Warden without triggering or aggravating it.",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "sculk_sensor",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "planting-the-past",
+      "order": 123,
+      "title": "Planting the past",
+      "description": "Plant any Sniffer seed",
+      "guide": "Plant any Sniffer seed",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    },
+    {
+      "id": "careful-restoration",
+      "order": 124,
+      "title": "Careful restoration",
+      "description": "Make a Decorated Pot out of 4 Pottery Sherds",
+      "guide": "Make a Decorated Pot out of 4 Pottery Sherds",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": [
+        {
+          "item": "decorated_pot",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "smithing-with-style",
+      "order": 125,
+      "title": "Smithing with style",
+      "description": "Apply these smithing templates at least once: Spire, Snout, Rib, Ward, Silence, Vex, Tide, Wayfinder",
+      "guide": "Apply these smithing templates at least once: Spire, Snout, Rib, Ward, Silence, Vex, Tide, Wayfinder",
+      "category": "Exploration",
+      "gamerscore": 30,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Gold",
+      "items": []
+    },
+    {
+      "id": "crafters-crafting-crafters",
+      "order": 126,
+      "title": "Crafters Crafting Crafters",
+      "description": "Be near a Crafter when it crafts a Crafter",
+      "guide": "Be near a Crafter when it crafts a Crafter",
+      "category": "Engineering",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch"
+      ],
+      "trophy": null,
+      "items": [
+        {
+          "item": "crafter",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "who-needs-rockets-question",
+      "order": 127,
+      "title": "Who Needs Rockets?",
+      "description": "Use a Wind Charge to launch yourself upward 8 blocks",
+      "guide": "Use a Wind Charge to launch yourself upward 8 blocks",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch"
+      ],
+      "trophy": null,
+      "items": []
+    },
+    {
+      "id": "over-overkill",
+      "order": 128,
+      "title": "Over-Overkill",
+      "description": "Deal 50 hearts of damage in a single hit using the Mace",
+      "guide": "Deal 50 hearts of damage in a single hit using the Mace",
+      "category": "Combat",
+      "gamerscore": 20,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch"
+      ],
+      "trophy": null,
+      "items": [
+        {
+          "item": "mace",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "revaulting",
+      "order": 129,
+      "title": "Revaulting",
+      "description": "Unlock an Ominous Vault with an Ominous Trial Key",
+      "guide": "Unlock an Ominous Vault with an Ominous Trial Key",
+      "category": "Progression",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch"
+      ],
+      "trophy": null,
+      "items": []
+    },
+    {
+      "id": "stay-hydrated",
+      "order": 130,
+      "title": "Stay Hydrated!",
+      "description": "Place a Dried Ghast block into water",
+      "guide": "Place a Dried Ghast block into water",
+      "category": "Nether",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Silver",
+      "items": [
+        {
+          "item": "dried_ghast",
+          "amount": 1
+        },
+        {
+          "item": "water_bucket",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "mob-kabob",
+      "order": 131,
+      "title": "Mob Kabob",
+      "description": "Hit five mobs with the same Charge with the Spear",
+      "guide": "Hit five mobs with the same Charge with the Spear",
+      "category": "Combat",
+      "gamerscore": 10,
+      "platforms": [
+        "Xbox",
+        "Windows",
+        "Android",
+        "iOS",
+        "Nintendo Switch",
+        "PlayStation"
+      ],
+      "trophy": "Bronze",
+      "items": []
+    }
+  ]
+}

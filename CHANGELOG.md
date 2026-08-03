@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.0 beta.1
+
+- Added a searchable Bedrock achievement guide with system availability and completion instructions
+- Added local per-player achievement checklists and suggested item preparation
+- Added clearly labeled practice-supply delivery with achievement-eligibility warnings
+- Added automatic portrait-mode fitting for item, kit, and XP button contents
+
 ## 2.2.0 beta.1
 
 - Made dashboard usernames case-insensitive
