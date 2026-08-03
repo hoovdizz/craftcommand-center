@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CraftCommand" />
+  <title>Status | CraftCommand Center</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="/styles.css?v=2.2.0" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img class="appLogo" src="/icon.png" alt="CraftCommand Center logo" /><div><h1>Server Status</h1><p>Health, connection, player access, uptime, and exports.</p></div></div>
+    <nav class="topActions">
+      <a class="navButton" href="/">Dashboard</a>
+      <a class="navButton active" href="/status.html">Status</a>
+      <a class="navButton" href="/items.html">Item Catalog</a>
+      <a class="navButton" href="/activity.html">Activity</a>
+      <a class="navButton" href="/accounts.html" data-admin-nav>Accounts</a>
+      <a class="navButton" href="/help.html">Help</a>
+      <button class="navButton hidden" type="button" data-install-app>Install App</button>
+      <span id="userBadge" class="badge">Signed in</span>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card wide">
+      <div class="sectionHeading"><div><h2>At a Glance</h2><p class="hint">Plain-language checks for Docker, appdata, authentication, backup storage, the public endpoint, and the Minecraft console.</p></div><button id="runDiagnostics" class="warn">Run Diagnostics</button></div>
+      <div id="healthSummary" class="healthSummary">Checking readiness…</div>
+      <div id="diagnosticChecks" class="diagnosticGrid"></div>
+    </section>
+
+    <section class="card wide">
+      <div class="sectionHeading"><div><h2>Minecraft Attachment</h2><p class="hint">Automatically discovers the current <code>*.minecraft</code> GNU screen session after reboots.</p></div><button id="refreshAttachment" class="warn" data-min-role="operator">Refresh Attachment</button></div>
+      <div id="attachmentStatus" class="statusBox">Loading attachment status…</div>
+    </section>
+
+    <section class="card">
+      <div class="sectionHeading"><div><h2>Bedrock Server</h2><p class="hint">Docker runtime and recent player information.</p></div><button id="refreshOverview" class="warn">Refresh</button></div>
+      <div id="serverStats" class="statGrid"></div>
+    </section>
+
+    <section class="card">
+      <h2>Internet Reachability</h2>
+      <div id="externalStatus" class="statusBox">Checking the configured public Bedrock endpoint…</div>
+      <p class="hint">By default this uses an internet-hosted Bedrock probe. The optional local mode tests only from Unraid and can be affected by router NAT-loopback support.</p>
+    </section>
+
+    <section class="card wide">
+      <h2>Players Online</h2>
+      <p id="onlineSummary" class="hint">Loading…</p>
+      <div id="onlinePlayers" class="accessList"></div>
+    </section>
+
+    <section class="card">
+      <h2>Whitelisted Players</h2>
+      <p id="whitelistSummary" class="hint">Loading allowlist/whitelist files…</p>
+      <div id="whitelistPlayers" class="accessList"></div>
+    </section>
+
+    <section class="card">
+      <h2>Blacklisted / Banned Players</h2>
+      <p id="blacklistSummary" class="hint">Loading recognized ban and blacklist files…</p>
+      <div id="blacklistPlayers" class="accessList"></div>
+    </section>
+
+    <section class="card wide">
+      <h2>Permission Entries</h2>
+      <p class="hint">Entries found in Bedrock <code>permissions.json</code>, matched back to names where the allowlist provides an XUID.</p>
+      <div id="permissionPlayers" class="accessList"></div>
+    </section>
+
+    <section id="backupCard" class="card wide hidden" data-min-role="admin">
+      <div class="sectionHeading"><div><h2>Backup / Export Server</h2><p class="hint">Admin-only compressed exports of the Binhex server data. By default this exports <code>/config</code> into persistent Unraid backup storage.</p></div><button id="createBackup" class="good">Create Server Export</button></div>
+      <div id="backupSettings" class="statusBox"></div>
+      <div id="backupList" class="backupList"><p class="hint">Loading exports…</p></div>
+    </section>
+
+    <section class="card wide"><h2>Page Status</h2><pre id="statusResult">Ready.</pre></section>
+  </main>
+  <script src="/pwa.js?v=2.2.0"></script>
+  <script src="/status.js?v=2.2.0"></script>
+</body>
+</html>

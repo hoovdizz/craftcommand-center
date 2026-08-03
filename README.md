@@ -6,17 +6,22 @@ CraftCommand Center is a lightweight, mobile-friendly companion dashboard for **
 
 General game panels such as Pterodactyl, PufferPanel, Crafty Controller, AMP, and Bedrock Server Manager can provision or fully manage servers. CraftCommand Center is intentionally narrower: it adds safe family/admin shortcuts to a Binhex Bedrock server that is already working.
 
-## 2.1 beta features
+## 2.2 beta features
 
 - Phone, tablet, and desktop interface
 - Username/password authentication using salted scrypt hashes and `HttpOnly` session cookies
 - Persistent **viewer**, **operator**, and **admin** accounts
 - At-a-Glance diagnostics for Docker, appdata, the Binhex container, and the active screen session
 - Persistent activity history showing who sent what, to which player, and whether it succeeded
+- Operators and viewers can only read their own activity; admins can review the full audit trail
+- Case-insensitive dashboard usernames
 - Automatic rediscovery of screen names such as `140.minecraft` after server/container restarts
+- Dedicated **Status** tab with Docker uptime, last player connection, online players, whitelist, blacklist, permissions, and public Bedrock UDP reachability
+- Admin-only compressed server backup/export with persistent Unraid storage and browser download
+- Installable mobile PWA with Android install prompting and iPhone/iPad Add to Home Screen guidance
 - Player discovery from the live `list` command, Docker logs, allowlist/whitelist files, permissions files, and a persistent manual list
 - Quick item and XP buttons
-- Real Minecraft Wiki inventory sprites with Invicon, ItemSprite, and BlockSprite fallbacks
+- Text-only item buttons by default, with optional Minecraft Wiki inventory sprites when remote artwork loads
 - Icon-only, text-only, or icon-plus-text display modes
 - Starter, recovery, mining, and enchanting kits
 - Kit previews, confirmation dialogs, and a persistent custom-kit builder
@@ -28,9 +33,9 @@ General game panels such as Pterodactyl, PufferPanel, Crafty Controller, AMP, an
 
 | Role | Access |
 |---|---|
-| Viewer | Status, diagnostics, players, kits, catalog, and activity history |
-| Operator | Viewer access plus item, XP, kit, player-refresh, and attachment-refresh actions |
-| Admin | Operator access plus account management, manual players, custom kits, and activity clearing |
+| Viewer | Status, diagnostics, players, kits, catalog, and only their own activity history |
+| Operator | Viewer access plus item, XP, kit, player-refresh, and attachment-refresh actions; activity remains limited to their own account |
+| Admin | Operator access plus account management, manual players, custom kits, all activity, and server backup/export |
 
 The primary admin username/password is managed in the Unraid template. Additional accounts are created from the **Accounts** page and stored in `/app/data/users.json`.
 
@@ -109,6 +114,14 @@ activity.jsonl
 
 Only `Everyone` is hard-coded in the default target config. Player names come from discovery or the manual player list.
 
+The default `external` reachability mode asks the public `mcsrvstat.us` Bedrock API to probe the configured public hostname and port. Select `local` to avoid the third-party lookup, or `both` to compare the external result with Unraid/NAT loopback.
+
+Admin-created server exports are stored separately at:
+
+```text
+/mnt/user/backups/craftcommand-center → /app/backups
+```
+
 ## Migrating from MC QuickButtons
 
 ```bash
@@ -136,6 +149,14 @@ cp -n /mnt/user/appdata/mc-quickbuttons/data/custom-kits.json \
 | `CCC_UNRAID_DOCKER_URL` | `http://[IP]/Docker` | Dashboard quick link |
 | `CCC_AUDIT_ENABLED` | `true` | Persistent activity logging |
 | `CCC_AUDIT_MAX_ENTRIES` | `2000` | Approximate activity retention |
+| `CCC_EXTERNAL_CHECK_ENABLED` | `false` | Enable the public Bedrock UDP reachability check |
+| `CCC_EXTERNAL_HOST` | blank | Public DNS name or IP used by outside players |
+| `CCC_EXTERNAL_PORT` | `19132` | Public Bedrock UDP port |
+| `CCC_EXTERNAL_CHECK_MODE` | `external` | Internet-hosted external probe, local NAT-loopback probe, or both |
+| `CCC_BACKUP_ENABLED` | `true` | Enable admin-only backup/export |
+| `CCC_BACKUP_SOURCE_PATH` | `/config` | Path inside the Binhex container to export |
+| `CCC_BACKUP_DIR` | `/app/backups` | Persistent export destination inside CraftCommand Center |
+| `CCC_BACKUP_RETENTION` | `10` | Newest exports retained |
 
 ## Development
 

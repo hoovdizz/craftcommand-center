@@ -23,7 +23,7 @@ function itemInfo(itemId) {
 function target() { return $('#target').value; }
 function setDisplayMode(mode) {
   const allowed = ['both','icon','text'];
-  const finalMode = allowed.includes(mode) ? mode : 'both';
+  const finalMode = allowed.includes(mode) ? mode : 'text';
   document.body.dataset.display = finalMode;
   localStorage.setItem('cccDisplayMode', finalMode);
   if ($('#displayMode')) $('#displayMode').value = finalMode;
@@ -72,7 +72,6 @@ async function api(path, body) {
   try {
     const data = await request(path, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body || {}) });
     show(data);
-    loadStatus().catch(()=>{});
     return data;
   } catch (err) {
     show(err.data || { ok:false, error:err.message });
@@ -291,12 +290,14 @@ async function initializeApp() {
   currentUser = cfg.currentUser || currentUser;
   applyRoleAccess();
   $('#title').textContent=cfg.appTitle||'CraftCommand Center'; $('#subtitle').textContent=cfg.appSubtitle||'Companion dashboard for binhex-minecraftbedrockserver.';
-  $('#transportBadge').textContent=cfg.security?.transportEncrypted?'🔒 HTTPS':'⚠️ HTTP'; $('#transportBadge').title=cfg.security?.note||'';
-  setDisplayMode(localStorage.getItem('cccDisplayMode') || cfg.display?.defaultMode || 'both');
+  if ($('#transportBadge')) { $('#transportBadge').textContent=cfg.security?.transportEncrypted?'HTTPS':'HTTP'; $('#transportBadge').title=cfg.security?.note||''; }
+  setDisplayMode(localStorage.getItem('cccDisplayMode') || cfg.display?.defaultMode || 'text');
   $('#displayMode').addEventListener('change',e=>setDisplayMode(e.target.value));
   const links=$('#links'); links.innerHTML=''; (cfg.links||[]).forEach(l=>{const a=document.createElement('a');a.className='linkButton';a.href=l.url;a.target='_blank';a.rel='noopener noreferrer';a.innerHTML=`<span class="btnIcon">${escapeHtml(l.icon||'🔗')}</span><span class="btnText">${escapeHtml(l.label)}</span>`;links.appendChild(a);});
   populateCatalogInputs(); renderQuickItems(); renderXpButtons(); updateCustomHelp();
-  await Promise.all([loadPlayers(),loadStatus(),loadKits(),loadDiagnostics(false)]);
+  await Promise.all([loadPlayers(),loadKits()]);
+  document.querySelectorAll('[data-admin-nav]').forEach(el => el.classList.toggle('hidden', !can('admin')));
+  window.CCCPwa?.offerInstall();
   const urlItem=new URLSearchParams(location.search).get('item'); if(urlItem){$('#customItem').value=urlItem;updateCustomHelp();$('#customItem').scrollIntoView({behavior:'smooth'});}
 }
 
@@ -306,9 +307,9 @@ $('#loginForm').addEventListener('submit', async e => {
   catch(err){ $('#loginMessage').textContent=err.message; }
 });
 $('#logout').addEventListener('click', async()=>{await request('/api/auth/logout',{method:'POST'}).catch(()=>{});location.reload();});
-$('#runDiagnostics').addEventListener('click', async e=>{const b=e.currentTarget,old=b.textContent;b.disabled=true;b.textContent='Checking…';try{await loadDiagnostics(true);}finally{b.disabled=false;b.textContent=old;}});
-$('#refreshAttachment').addEventListener('click',()=>api('/api/refresh-attachment',{}));
-$('#loadStatus').addEventListener('click',()=>loadStatus().then(show));
+$('#runDiagnostics')?.addEventListener('click', async e=>{const b=e.currentTarget,old=b.textContent;b.disabled=true;b.textContent='Checking…';try{await loadDiagnostics(true);}finally{b.disabled=false;b.textContent=old;}});
+$('#refreshAttachment')?.addEventListener('click',()=>api('/api/refresh-attachment',{}));
+$('#loadStatus')?.addEventListener('click',()=>loadStatus().then(show));
 $('#refreshPlayers').addEventListener('click',async e=>{const b=e.currentTarget,old=b.textContent;b.disabled=true;b.textContent='Pulling…';try{const data=await api('/api/players/refresh',{});renderPlayers(data);}finally{b.disabled=false;b.textContent=old;}});
 const addPlayer=async()=>{const input=$('#manualPlayer');const name=input.value.trim();if(!name)return show('Type a player name first.');const data=await api('/api/players/add',{name});renderPlayers(data);input.value='';};
 $('#addPlayer').addEventListener('click',addPlayer); $('#manualPlayer').addEventListener('keydown',e=>{if(e.key==='Enter')addPlayer();});
@@ -319,4 +320,4 @@ $('#saveKit').addEventListener('click',saveBuilderKit); $('#clearKit').addEventL
 $('#sendKit').addEventListener('click',async()=>{if(!selectedKit)return;$('#kitDialog').close();await api('/api/kit',{target:target(),kitId:selectedKit.id});});
 $('#deleteKit').addEventListener('click',async()=>{if(!selectedKit?.custom)return;if(!confirm(`Delete custom kit “${selectedKit.label}”?`))return;const data=await api('/api/kits/custom/delete',{kitId:selectedKit.id});kits=data.kits||[];renderKits();$('#kitDialog').close();});
 
-(async()=>{setDisplayMode(localStorage.getItem('cccDisplayMode')||'both');try{const auth=await request('/api/auth/status');if(auth.authenticated)await initializeApp();else showLogin();}catch(err){showLogin(err.message);}})();
+(async()=>{setDisplayMode(localStorage.getItem('cccDisplayMode')||'text');try{const auth=await request('/api/auth/status');if(auth.authenticated)await initializeApp();else showLogin();}catch(err){showLogin(err.message);}})();

@@ -4,11 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#101827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CraftCommand" />
   <title>CraftCommand Center</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="stylesheet" href="/styles.css?v=2.1.1" />
+  <link rel="stylesheet" href="/styles.css?v=2.2.0" />
 </head>
-<body data-display="both">
+<body data-display="text">
   <section id="loginView" class="loginShell">
     <form id="loginForm" class="loginCard">
       <img class="loginLogo" src="/icon.png" alt="CraftCommand Center logo" />
@@ -33,11 +38,13 @@
       </div>
       <nav class="topActions">
         <a class="navButton active" href="/">Dashboard</a>
+      <a class="navButton" href="/status.html">Status</a>
         <a class="navButton" href="/items.html">Item Catalog</a>
         <a class="navButton" href="/activity.html">Activity</a>
-        <a class="navButton" href="/accounts.html">Accounts</a>
+        <a class="navButton" href="/accounts.html" data-admin-nav>Accounts</a>
         <a class="navButton" href="/help.html">Help</a>
-        <span id="userBadge" class="badge">Signed in</span>
+        <button class="navButton hidden" type="button" data-install-app>Install App</button>
+      <span id="userBadge" class="badge">Signed in</span>
         <label class="compactLabel">Button view
           <select id="displayMode">
             <option value="both">Icon + text</option>
@@ -50,25 +57,14 @@
     </header>
 
     <main>
-      <section class="card wide" id="healthCard">
-        <div class="sectionHeading">
-          <div>
-            <h2>At a Glance</h2>
-            <p class="hint">A plain-language readiness check for Docker, the Binhex container, persistent data, authentication, and the Minecraft console attachment.</p>
-          </div>
-          <button id="runDiagnostics" class="warn">🩺 Run Diagnostics</button>
-        </div>
-        <div id="healthSummary" class="healthSummary">Checking readiness…</div>
-        <div id="diagnosticChecks" class="diagnosticGrid"></div>
-      </section>
 
       <section class="card">
         <h2>Home Server Links</h2>
         <div id="links" class="buttonGrid"></div>
       </section>
 
-      <section class="card">
-        <h2>Target</h2>
+      <section class="card wide targetCard">
+        <h2>Player Target</h2>
         <label for="target">Give to</label>
         <select id="target"></select>
         <div class="buttonRow smallRow">
@@ -81,21 +77,6 @@
           <button id="addPlayer" class="good">➕ Add Player</button>
         </div>
         <p id="playerStatus" class="hint">Loading known players…</p>
-      </section>
-
-      <section class="card wide">
-        <div class="sectionHeading">
-          <div>
-            <h2>Minecraft Attachment</h2>
-            <p class="hint">Automatically discovers the current <code>*.minecraft</code> screen after reboots.</p>
-          </div>
-          <span id="transportBadge" class="badge"></span>
-        </div>
-        <div id="attachmentStatus" class="statusBox">Loading attachment status…</div>
-        <div class="buttonRow">
-          <button id="refreshAttachment" class="warn" data-min-role="operator">🔌 Refresh Docker/Screen Attachment</button>
-          <button id="loadStatus">🩺 Check Status</button>
-        </div>
       </section>
 
       <section class="card wide">
@@ -185,7 +166,8 @@
     </form>
   </dialog>
 
-  <script src="/item-icons.js?v=2.1.1"></script>
-  <script src="/app.js?v=2.1.1"></script>
+  <script src="/item-icons.js?v=2.2.0"></script>
+  <script src="/pwa.js?v=2.2.0"></script>
+  <script src="/app.js?v=2.2.0"></script>
 </body>
 </html>

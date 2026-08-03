@@ -4,9 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#101827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CraftCommand" />
   <title>Accounts | CraftCommand Center</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="stylesheet" href="/styles.css?v=2.1.1" />
+  <link rel="stylesheet" href="/styles.css?v=2.2.0" />
 </head>
 <body>
   <header class="topbar">
@@ -16,10 +21,12 @@
     </div>
     <nav class="topActions">
       <a class="navButton" href="/">Dashboard</a>
+      <a class="navButton" href="/status.html">Status</a>
       <a class="navButton" href="/items.html">Item Catalog</a>
       <a class="navButton" href="/activity.html">Activity</a>
-      <a class="navButton active" href="/accounts.html">Accounts</a>
+      <a class="navButton active" href="/accounts.html" data-admin-nav>Accounts</a>
       <a class="navButton" href="/help.html">Help</a>
+      <button class="navButton hidden" type="button" data-install-app>Install App</button>
       <span id="userBadge" class="badge">Signed in</span>
     </nav>
   </header>
@@ -27,8 +34,8 @@
     <section class="card wide">
       <h2>Access levels</h2>
       <div class="roleCards">
-        <article><strong>Viewer</strong><p>Can view status, known players, kits, the item catalog, and activity. Cannot send commands.</p></article>
-        <article><strong>Operator</strong><p>Can send item, XP, and kit commands and refresh player/attachment data.</p></article>
+        <article><strong>Viewer</strong><p>Can view status, known players, kits, the item catalog, and only their own activity. Cannot send commands.</p></article>
+        <article><strong>Operator</strong><p>Can send item, XP, and kit commands, refresh player/attachment data, and view only their own activity.</p></article>
         <article><strong>Admin</strong><p>Can also manage accounts, manually save players, create/delete kits, and clear activity.</p></article>
       </div>
     </section>
@@ -48,6 +55,7 @@
       <p id="accountResult" class="notice">Ready.</p>
     </section>
   </main>
-  <script src="/accounts.js?v=2.1.1"></script>
+  <script src="/pwa.js?v=2.2.0"></script>
+  <script src="/accounts.js?v=2.2.0"></script>
 </body>
 </html>

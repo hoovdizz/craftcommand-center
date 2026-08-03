@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.2.0 beta.1
+
+- Made dashboard usernames case-insensitive
+- Limited viewer/operator activity history to actions performed by their own account
+- Moved diagnostics and Minecraft attachment controls to a dedicated Status tab
+- Added public Bedrock UDP reachability settings and status reporting
+- Added admin-only persistent server backup/export and browser downloads
+- Added Docker uptime, last player connection, online players, whitelist, blacklist, and permissions status
+- Made text-only the default item-button mode while retaining the icon toggle
+- Added installable PWA support for phone home-screen shortcuts
+- Restored the original Docker/pickaxe application icon
+- Expanded the player target selector to the full dashboard width
+
 ## 2.1.1 beta
 
 - Replaced generated emoji item icons with Minecraft Wiki inventory sprites

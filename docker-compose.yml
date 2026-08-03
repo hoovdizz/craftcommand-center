@@ -15,9 +15,22 @@ services:
       CCC_COMMAND_METHOD: "attach"
       CCC_MINECRAFT_WEBUI_URL: "http://[IP]:8222"
       CCC_UNRAID_DOCKER_URL: "http://[IP]/Docker"
+      # Public Bedrock address used for the UDP internet-reachability check.
+      CCC_EXTERNAL_CHECK_ENABLED: "false"
+      CCC_EXTERNAL_HOST: ""
+      CCC_EXTERNAL_PORT: "19132"
+      CCC_EXTERNAL_CHECK_MODE: "external"
+      CCC_EXTERNAL_TIMEOUT_MS: "5000"
+      # Admin-only server export settings. /config is the Binhex data path.
+      CCC_BACKUP_ENABLED: "true"
+      CCC_BACKUP_SOURCE_PATH: "/config"
+      CCC_BACKUP_DIR: "/app/backups"
+      CCC_BACKUP_RETENTION: "10"
+      CCC_BACKUP_SAVE_HOLD: "true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt/user/appdata/craftcommand-center/data:/app/data:rw
+      - /mnt/user/backups/craftcommand-center:/app/backups:rw
     labels:
       net.unraid.docker.managed: "dockerman"
       net.unraid.docker.webui: "http://[IP]:[PORT:8223]/"

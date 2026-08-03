@@ -4,19 +4,26 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#101827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CraftCommand" />
   <title>Help | CraftCommand Center</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="stylesheet" href="/styles.css?v=2.1.1" />
+  <link rel="stylesheet" href="/styles.css?v=2.2.0" />
 </head>
 <body>
   <header class="topbar">
     <div class="brand"><img class="appLogo" src="/icon.png" alt="CraftCommand Center logo" /><div><h1>Help & Diagnostics</h1><p>First-run checklist and plain-language troubleshooting.</p></div></div>
     <nav class="topActions">
       <a class="navButton" href="/">Dashboard</a>
+      <a class="navButton" href="/status.html">Status</a>
       <a class="navButton" href="/items.html">Item Catalog</a>
       <a class="navButton" href="/activity.html">Activity</a>
-      <a class="navButton" href="/accounts.html">Accounts</a>
+      <a class="navButton" href="/accounts.html" data-admin-nav>Accounts</a>
       <a class="navButton active" href="/help.html">Help</a>
+      <button class="navButton hidden" type="button" data-install-app>Install App</button>
       <span id="userBadge" class="badge">Signed in</span>
     </nav>
   </header>
@@ -34,19 +41,22 @@
         <li><code>/mnt/user/appdata/craftcommand-center/data</code> is mapped to <code>/app/data</code>.</li>
         <li><strong>Screen Session</strong> is set to <code>auto</code>, <strong>Docker User</strong> is <code>nobody</code>, and <strong>Command Method</strong> is <code>attach</code>.</li>
         <li>Change the default password and use HTTPS before allowing access outside your trusted home network.</li>
+        <li>For public reachability, set the external hostname/IP and UDP port in the Unraid Edit screen.</li>
+        <li>Map <code>/mnt/user/backups/craftcommand-center</code> to <code>/app/backups</code> for admin server exports.</li>
       </ol>
     </section>
     <section class="card">
       <h2>Account Roles</h2>
       <div class="roleCards">
-        <article><strong>Viewer</strong><p>Can browse items, status, players, kits, diagnostics, and activity. Cannot send commands.</p></article>
+        <article><strong>Viewer</strong><p>Can browse items, status, players, kits, diagnostics, and only their own activity. Cannot send commands.</p></article>
         <article><strong>Operator</strong><p>Can give items, XP, send kits, refresh players, and repair the screen attachment.</p></article>
-        <article><strong>Admin</strong><p>Can also manage dashboard accounts, add manual players, create/delete custom kits, and clear activity history.</p></article>
+        <article><strong>Admin</strong><p>Can also manage dashboard accounts, add manual players, create/delete custom kits, review all activity, and create/download server exports.</p></article>
       </div>
     </section>
     <section class="card wide">
       <h2>Common Problems</h2>
       <details><summary>Commands return OK, but nothing happens</summary><p>Run diagnostics, then refresh the Docker/screen attachment. Confirm the live session looks like <code>140.minecraft</code> and the Docker user is <code>nobody</code>.</p></details>
+      <details><summary>The public endpoint shows offline</summary><p>Confirm the public DNS/IP and UDP port in Unraid. The default external mode uses an internet-hosted Bedrock probe. Local mode runs from Unraid and can fail on routers without NAT loopback even when outside players can connect.</p></details>
       <details><summary>A player is missing from the target list</summary><p>Use <strong>Pull Known Players</strong>. If Bedrock does not expose the name in logs or server files, an admin can use <strong>Add Player manually</strong>.</p></details>
       <details><summary>The Unraid Docker page does not show Edit</summary><p>Create the container from the included DockerMan XML template rather than a raw <code>docker run</code> command.</p></details>
       <details><summary>The browser shows old buttons after an update</summary><p>Hard-refresh the page or clear site cache. Static files use versioned query strings, but some mobile browsers hold older pages longer than expected.</p></details>
@@ -58,6 +68,7 @@
       <a class="linkButton" href="https://github.com/hoovdizz/craftcommand-center/issues" target="_blank" rel="noopener noreferrer">🐛 Open a GitHub issue</a>
     </section>
   </main>
-  <script src="/help.js?v=2.1.1"></script>
+  <script src="/pwa.js?v=2.2.0"></script>
+  <script src="/help.js?v=2.2.0"></script>
 </body>
 </html>

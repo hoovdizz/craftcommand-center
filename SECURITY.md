@@ -17,3 +17,11 @@ Security fixes are applied to the latest published beta/release image.
 ## Reporting
 
 Report security concerns privately to the repository owner rather than posting passwords, tokens, public addresses, or exploit details in a public issue.
+
+## External reachability privacy
+
+When `CCC_EXTERNAL_CHECK_MODE=external`, the configured public Minecraft hostname/IP and port are sent to the public `mcsrvstat.us` Bedrock status API. Use `local` mode to avoid that third-party lookup, understanding that local mode cannot prove reachability from outside the home network.
+
+## Server exports
+
+Backup/export actions are admin-only and write compressed archives to `/app/backups`. Keep the mapped Unraid directory private because exports can contain worlds, allowlists, permissions, server configuration, and other sensitive server data.

@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const crypto = require('crypto');
+const dgram = require('dgram');
+const https = require('https');
 const PACKAGE = require('./package.json');
 
 const APP_VERSION = PACKAGE.version || '2.1.0';
@@ -72,6 +74,29 @@ function applyEnvOverrides(cfg) {
   out.audit.enabled = envBool('CCC_AUDIT_ENABLED', out.audit.enabled !== false);
   const auditMax = firstEnv('CCC_AUDIT_MAX_ENTRIES');
   if (auditMax && Number.isFinite(Number(auditMax))) out.audit.maxEntries = Number(auditMax);
+
+  out.externalServer = { ...(out.externalServer || {}) };
+  const externalHost = firstEnv('CCC_EXTERNAL_HOST');
+  const externalPort = firstEnv('CCC_EXTERNAL_PORT');
+  const externalTimeout = firstEnv('CCC_EXTERNAL_TIMEOUT_MS');
+  const externalMode = firstEnv('CCC_EXTERNAL_CHECK_MODE');
+  if (externalHost) out.externalServer.host = externalHost;
+  if (externalPort && Number.isFinite(Number(externalPort))) out.externalServer.port = Number(externalPort);
+  if (externalTimeout && Number.isFinite(Number(externalTimeout))) out.externalServer.timeoutMs = Number(externalTimeout);
+  if (externalMode) out.externalServer.mode = externalMode;
+  out.externalServer.enabled = envBool('CCC_EXTERNAL_CHECK_ENABLED', out.externalServer.enabled === true || Boolean(out.externalServer.host));
+
+  out.backup = { ...(out.backup || {}) };
+  const backupSource = firstEnv('CCC_BACKUP_SOURCE_PATH');
+  const backupDir = firstEnv('CCC_BACKUP_DIR');
+  const backupRetention = firstEnv('CCC_BACKUP_RETENTION');
+  const backupTimeout = firstEnv('CCC_BACKUP_TIMEOUT_MS');
+  if (backupSource) out.backup.sourcePath = backupSource;
+  if (backupDir) out.backup.directory = backupDir;
+  if (backupRetention && Number.isFinite(Number(backupRetention))) out.backup.retention = Number(backupRetention);
+  if (backupTimeout && Number.isFinite(Number(backupTimeout))) out.backup.timeoutMs = Number(backupTimeout);
+  out.backup.enabled = envBool('CCC_BACKUP_ENABLED', out.backup.enabled !== false);
+  out.backup.saveHold = envBool('CCC_BACKUP_SAVE_HOLD', out.backup.saveHold !== false);
 
   return out;
 }
@@ -185,7 +210,7 @@ function deletePersistentAuthUser(cfg, usernameValue, currentUsername) {
 
 function findAuthUser(cfg, username) {
   const wanted = String(username || '').trim();
-  return normalizedAuthUsers(cfg).find(user => safeEqualText(user.username, wanted)) || null;
+  return normalizedAuthUsers(cfg).find(user => safeEqualText(user.username.toLowerCase(), wanted.toLowerCase())) || null;
 }
 
 function roleAtLeast(session, minimum) {
@@ -255,7 +280,7 @@ function setSecurityHeaders(res) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'no-referrer');
   res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data: https://minecraft.wiki https://minecraft.fandom.com https://static.wikia.nocookie.net; style-src 'self'; script-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; frame-ancestors 'none'");
   res.setHeader('Cache-Control', 'no-store');
 }
 
@@ -445,7 +470,7 @@ function appendActivity(cfg, entry) {
 
 function readActivity(cfg, limit = 100) {
   const filePath = activityLogPath(cfg);
-  const safeLimit = Math.max(1, Math.min(500, Number(limit || 100)));
+  const safeLimit = Math.max(1, Math.min(10000, Number(limit || 100)));
   if (!fs.existsSync(filePath)) return [];
   try {
     return fs.readFileSync(filePath, 'utf8').split(/\r?\n/).filter(Boolean).slice(-safeLimit).reverse().map(line => {
@@ -458,6 +483,18 @@ function clearActivity(cfg) {
   const filePath = activityLogPath(cfg);
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, '', 'utf8');
+}
+
+function readActivityForSession(cfg, session, limit = 100) {
+  const safeLimit = Math.max(1, Math.min(500, Number(limit || 100)));
+  if (normalizeRole(session?.role) === 'admin') {
+    return { entries: readActivity(cfg, safeLimit), scope: 'all' };
+  }
+  const wanted = String(session?.username || '').trim().toLowerCase();
+  const entries = readActivity(cfg, 10000)
+    .filter(entry => String(entry.username || '').trim().toLowerCase() === wanted)
+    .slice(0, safeLimit);
+  return { entries, scope: 'self' };
 }
 
 function dataDirectoryWritable() {
@@ -490,6 +527,19 @@ async function runDiagnostics(cfg, req) {
   const attachment = await refreshAttachment(cfg, 'diagnostics');
   add('screen', 'Minecraft console attachment', attachment.ok, attachment.ok ? `${attachment.activeScreenSession} as ${attachment.dockerUser}` : attachment.error || 'Screen session not found');
 
+  const external = await checkExternalReachability(cfg);
+  if (external.configured) add('external', 'Public Bedrock endpoint', external.reachable, external.reachable ? `${external.endpoint} replied in ${external.latencyMs} ms` : `${external.endpoint}: ${external.error || 'No response'}`, 'warning');
+  else add('external', 'Public Bedrock endpoint', true, external.error || 'Not configured (optional)', 'warning');
+
+  try {
+    const backup = backupSettings(cfg);
+    fs.mkdirSync(backup.directory, { recursive: true });
+    fs.accessSync(backup.directory, fs.constants.W_OK);
+    add('backup', 'Backup/export storage', true, backup.enabled ? `${backup.directory} is writable` : 'Backup/export is disabled', 'warning');
+  } catch (err) {
+    add('backup', 'Backup/export storage', false, err.message, 'warning');
+  }
+
   const users = normalizedAuthUsers(cfg);
   add('auth', 'Dashboard account', users.length > 0, `${users.length} enabled account(s)`);
   const weakDefault = String(process.env.CCC_PASSWORD || '') === 'changemenow' || String(process.env.MCQB_PASSWORD || '') === 'changemenow';
@@ -498,6 +548,432 @@ async function runDiagnostics(cfg, req) {
   const errors = checks.filter(c => !c.ok && c.severity !== 'warning').length;
   const warnings = checks.filter(c => !c.ok && c.severity === 'warning').length;
   return { ok: errors === 0, ready: errors === 0, errors, warnings, checkedAt: new Date().toISOString(), checks, attachment: publicAttachmentState(cfg), appVersion: APP_VERSION };
+}
+
+
+function externalServerSettings(cfg) {
+  const raw = cfg.externalServer || {};
+  const host = String(raw.host || '').trim().replace(/^\[|\]$/g, '');
+  const port = Math.max(1, Math.min(65535, Number(raw.port || 19132)));
+  const timeoutMs = Math.max(1000, Math.min(30000, Number(raw.timeoutMs || 5000)));
+  const mode = ['external', 'local', 'both'].includes(String(raw.mode || '').toLowerCase()) ? String(raw.mode).toLowerCase() : 'external';
+  return { enabled: raw.enabled === true && Boolean(host), host, port, timeoutMs, mode };
+}
+
+function validateExternalHost(host) {
+  const value = String(host || '').trim();
+  if (!value || value.length > 253 || !/^[A-Za-z0-9_.:-]+$/.test(value)) throw new Error('External host must be a hostname or IP address');
+  return value;
+}
+
+function queryBedrockUdp(hostValue, portValue, timeoutMsValue) {
+  return new Promise((resolve) => {
+    const host = validateExternalHost(hostValue);
+    const port = Math.max(1, Math.min(65535, Number(portValue || 19132)));
+    const timeoutMs = Math.max(1000, Math.min(30000, Number(timeoutMsValue || 5000)));
+    const started = Date.now();
+    const family = host.includes(':') ? 'udp6' : 'udp4';
+    const socket = dgram.createSocket(family);
+    let settled = false;
+    const finish = result => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      try { socket.close(); } catch {}
+      resolve({ endpoint: `${host}:${port}`, checkedAt: new Date().toISOString(), ...result });
+    };
+    const timer = setTimeout(() => finish({ configured: true, reachable: false, error: `No Bedrock UDP response within ${timeoutMs} ms`, latencyMs: null }), timeoutMs);
+    socket.on('error', err => finish({ configured: true, reachable: false, error: err.message, latencyMs: null }));
+    socket.on('message', message => {
+      if (!message || message.length < 35 || message[0] !== 0x1c) return;
+      try {
+        const length = message.readUInt16BE(33);
+        const motdText = message.subarray(35, Math.min(message.length, 35 + length)).toString('utf8');
+        const fields = motdText.split(';');
+        finish({
+          configured: true,
+          reachable: true,
+          latencyMs: Date.now() - started,
+          motd: fields[1] || '',
+          protocol: fields[2] || '',
+          version: fields[3] || '',
+          onlinePlayers: Number(fields[4] || 0),
+          maxPlayers: Number(fields[5] || 0),
+          subMotd: fields[7] || '',
+          gameMode: fields[8] || '',
+          rawMotd: motdText,
+          error: null
+        });
+      } catch (err) {
+        finish({ configured: true, reachable: false, error: `Invalid Bedrock UDP response: ${err.message}`, latencyMs: Date.now() - started });
+      }
+    });
+    const magic = Buffer.from('00ffff00fefefefefdfdfdfd12345678', 'hex');
+    const packet = Buffer.alloc(33);
+    packet[0] = 0x01;
+    packet.writeBigInt64BE(BigInt(Date.now()), 1);
+    magic.copy(packet, 9);
+    crypto.randomBytes(8).copy(packet, 25);
+    socket.send(packet, port, host, err => {
+      if (err) finish({ configured: true, reachable: false, error: err.message, latencyMs: null });
+    });
+  });
+}
+
+
+function queryExternalBedrockStatus(hostValue, portValue, timeoutMsValue) {
+  return new Promise((resolve) => {
+    const host = validateExternalHost(hostValue);
+    const port = Math.max(1, Math.min(65535, Number(portValue || 19132)));
+    const timeoutMs = Math.max(1000, Math.min(30000, Number(timeoutMsValue || 8000)));
+    const address = encodeURIComponent(`${host}:${port}`);
+    const request = https.get({
+      hostname: 'api.mcsrvstat.us',
+      path: `/bedrock/3/${address}`,
+      headers: { 'User-Agent': `CraftCommand-Center/${APP_VERSION} (https://github.com/hoovdizz/craftcommand-center)` },
+      timeout: timeoutMs
+    }, response => {
+      let body = '';
+      response.on('data', chunk => { if (body.length < 1000000) body += chunk.toString(); });
+      response.on('end', () => {
+        try {
+          if (response.statusCode !== 200) throw new Error(`External probe returned HTTP ${response.statusCode}`);
+          const data = JSON.parse(body);
+          const motd = Array.isArray(data?.motd?.clean) ? data.motd.clean.join(' ') : String(data?.motd?.clean || data?.motd?.raw || '');
+          resolve({
+            configured: true,
+            reachable: data.online === true,
+            externalConfirmed: true,
+            provider: 'mcsrvstat.us',
+            providerCached: Boolean(data?.debug?.cachehit),
+            endpoint: `${host}:${port}`,
+            checkedAt: new Date().toISOString(),
+            motd,
+            version: String(data?.version || data?.protocol?.name || ''),
+            onlinePlayers: Number(data?.players?.online || 0),
+            maxPlayers: Number(data?.players?.max || 0),
+            gameMode: String(data?.gamemode || ''),
+            error: data.online === true ? null : 'The external probe could not reach the Bedrock server'
+          });
+        } catch (err) {
+          resolve({ configured: true, reachable: false, externalConfirmed: false, provider: 'mcsrvstat.us', endpoint: `${host}:${port}`, checkedAt: new Date().toISOString(), error: err.message });
+        }
+      });
+    });
+    request.on('timeout', () => request.destroy(new Error(`External probe timed out after ${timeoutMs} ms`)));
+    request.on('error', err => resolve({ configured: true, reachable: false, externalConfirmed: false, provider: 'mcsrvstat.us', endpoint: `${host}:${port}`, checkedAt: new Date().toISOString(), error: err.message }));
+  });
+}
+
+async function checkExternalReachability(cfg) {
+  const settings = externalServerSettings(cfg);
+  if (!settings.enabled) {
+    return { configured: false, reachable: false, externalConfirmed: false, mode: settings.mode, endpoint: settings.host ? `${settings.host}:${settings.port}` : '', checkedAt: new Date().toISOString(), error: settings.host ? 'External check is disabled' : 'External hostname/IP is not configured' };
+  }
+  try {
+    if (settings.mode === 'local') {
+      const local = await queryBedrockUdp(settings.host, settings.port, settings.timeoutMs);
+      return { ...local, mode: 'local', externalConfirmed: false, provider: 'Unraid local UDP probe', note: 'This is a local/NAT-loopback test, not confirmation from outside your network.' };
+    }
+    const external = await queryExternalBedrockStatus(settings.host, settings.port, settings.timeoutMs);
+    if (settings.mode === 'external') {
+      return { ...external, mode: 'external', note: 'The status is checked by an internet-hosted Bedrock probe and may be cached briefly by the provider.' };
+    }
+    const local = await queryBedrockUdp(settings.host, settings.port, settings.timeoutMs);
+    return { ...external, mode: 'both', localProbe: local, note: 'External reachability uses mcsrvstat.us; localProbe separately reports the Unraid/NAT-loopback result.' };
+  } catch (err) {
+    return { configured: true, reachable: false, externalConfirmed: false, mode: settings.mode, endpoint: `${settings.host}:${settings.port}`, checkedAt: new Date().toISOString(), error: err.message };
+  }
+}
+
+function stripDockerTimestamp(line) {
+  const match = String(line || '').match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)\s+(.*)$/);
+  return match ? { at: match[1], body: match[2] } : { at: null, body: String(line || '') };
+}
+
+function parseLastPlayerConnection(logText) {
+  let last = null;
+  for (const rawLine of stripAnsi(logText || '').split(/\r?\n/)) {
+    const { at, body } = stripDockerTimestamp(rawLine);
+    const connected = body.match(/Player connected:\s*([^,\r\n]+)/i) || body.match(/\b([A-Za-z0-9_ .-]{2,32})\s+joined the game\b/i);
+    if (connected) last = { player: normalizePlayerName(connected[1]), at, line: body.trim() };
+  }
+  return last;
+}
+
+function parseOnlinePlayerList(text) {
+  const lines = stripAnsi(text || '').split(/\r?\n/);
+  let found = { online: 0, max: 0, players: [], raw: '' };
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const match = line.match(/There are\s+(\d+)\/(\d+)\s+players online:\s*(.*)$/i);
+    if (!match) continue;
+    let names = String(match[3] || '').trim();
+    if (!names && index + 1 < lines.length) {
+      const next = stripDockerTimestamp(lines[index + 1]).body.trim();
+      if (next && !/^\[.*\b(?:INFO|WARN|ERROR)\]/i.test(next)) names = next;
+    }
+    const players = names.split(/,\s*/).map(normalizePlayerName).filter(isValidPlayerName);
+    found = { online: Number(match[1]), max: Number(match[2]), players, raw: line.trim() };
+  }
+  return found;
+}
+
+async function queryOnlinePlayers(cfg) {
+  const rawCfg = { ...cfg, showRawOutput: true, commandTimeoutMs: Math.max(10000, Number(cfg.commandTimeoutMs || 15000)) };
+  const result = await runMinecraftCommand('list', rawCfg);
+  const parsed = parseOnlinePlayerList(`${result.stdout || ''}\n${result.stderr || ''}`);
+  return { ok: result.ok, ...parsed, error: result.ok ? null : (result.stderr || result.error || 'Could not query online players') };
+}
+
+function markedFileSections(text) {
+  const sections = [];
+  const re = /__CCC_FILE__:(.*?)\r?\n([\s\S]*?)\r?\n__CCC_END__/g;
+  let match;
+  while ((match = re.exec(String(text || ''))) !== null) sections.push({ file: match[1].trim(), content: match[2].trim() });
+  return sections;
+}
+
+function accessRecordsFromJson(value, source, out = []) {
+  if (Array.isArray(value)) {
+    for (const entry of value) accessRecordsFromJson(entry, source, out);
+    return out;
+  }
+  if (!value || typeof value !== 'object') return out;
+  const name = String(value.name || value.playerName || value.username || value.gamertag || '').trim();
+  const xuid = String(value.xuid || value.XUID || value.uuid || '').trim();
+  const permission = String(value.permission || value.level || '').trim();
+  const reason = String(value.reason || '').trim();
+  if (name || xuid || permission) out.push({ name: name || (xuid ? `XUID ${xuid}` : 'Unknown'), xuid: xuid || null, permission: permission || null, reason: reason || null, source });
+  for (const nested of Object.values(value)) {
+    if (nested && typeof nested === 'object') accessRecordsFromJson(nested, source, out);
+  }
+  return out;
+}
+
+function uniqueAccessRecords(records) {
+  const map = new Map();
+  for (const record of records) {
+    const key = String(record.xuid || record.name || '').toLowerCase();
+    if (!key) continue;
+    if (!map.has(key)) map.set(key, record);
+  }
+  return Array.from(map.values()).sort((a, b) => String(a.name).localeCompare(String(b.name)));
+}
+
+async function readServerAccessLists(cfg) {
+  const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+  const shell = String.raw`set +e
+for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
+  if [ -d "$p" ]; then
+    find "$p" -maxdepth 6 \( -iname 'allowlist.json' -o -iname 'whitelist.json' -o -iname 'permissions.json' -o -iname 'banned-players.json' -o -iname 'banned_players.json' -o -iname 'banlist.json' -o -iname 'blacklist.json' -o -iname 'banned.json' -o -iname 'server.properties' \) -type f -print 2>/dev/null
+  fi
+done | sort -u | while IFS= read -r f; do
+  echo "__CCC_FILE__:$f"
+  cat "$f" 2>/dev/null || true
+  echo "__CCC_END__"
+done`;
+  const result = await runDocker(['exec', '-u', 'root', container, 'bash', '-lc', shell], 15000);
+  if (!result.ok && !result.stdout) return { ok: false, whitelist: [], blacklist: [], permissions: [], files: [], allowListEnabled: null, error: stripAnsi(result.stderr || result.stdout || 'Access-list scan failed').trim() };
+  const sections = markedFileSections(result.stdout || '');
+  let whitelist = [];
+  let blacklist = [];
+  let permissions = [];
+  let allowListEnabled = null;
+  for (const section of sections) {
+    const base = path.basename(section.file).toLowerCase();
+    if (base === 'server.properties') {
+      const match = section.content.match(/^(?:allow-list|white-list)\s*=\s*(true|false)\s*$/mi);
+      if (match) allowListEnabled = match[1].toLowerCase() === 'true';
+      continue;
+    }
+    try {
+      const parsed = JSON.parse(section.content || 'null');
+      const records = accessRecordsFromJson(parsed, section.file);
+      if (base.includes('allowlist') || base.includes('whitelist')) whitelist.push(...records);
+      else if (base.includes('permission')) permissions.push(...records);
+      else if (base.includes('ban') || base.includes('blacklist')) blacklist.push(...records);
+    } catch {}
+  }
+  whitelist = uniqueAccessRecords(whitelist);
+  const namesByXuid = new Map(whitelist.filter(x => x.xuid).map(x => [x.xuid, x.name]));
+  permissions = uniqueAccessRecords(permissions.map(entry => ({ ...entry, name: entry.xuid && namesByXuid.has(entry.xuid) ? namesByXuid.get(entry.xuid) : entry.name })));
+  blacklist = uniqueAccessRecords(blacklist);
+  return { ok: true, whitelist, blacklist, permissions, files: sections.map(x => x.file), allowListEnabled, error: result.ok ? null : stripAnsi(result.stderr || '').trim() };
+}
+
+let serverOverviewCache = null;
+let serverOverviewInFlight = null;
+async function getServerOverview(cfg, force = false) {
+  const now = Date.now();
+  if (!force && serverOverviewCache && now - serverOverviewCache.cachedAt < 20000) return serverOverviewCache.value;
+  if (serverOverviewInFlight) return serverOverviewInFlight;
+  serverOverviewInFlight = (async () => {
+    const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+    const [inspectResult, logsResult, access, online, external] = await Promise.all([
+      runDocker(['inspect', container], 10000),
+      runDocker(['logs', '--timestamps', '--tail', '20000', container], 15000),
+      readServerAccessLists(cfg),
+      queryOnlinePlayers(cfg),
+      checkExternalReachability(cfg)
+    ]);
+    let docker = { running: false, status: 'unknown', startedAt: null, uptimeSeconds: 0, image: null, restartCount: 0, error: null };
+    if (inspectResult.ok) {
+      try {
+        const inspected = JSON.parse(inspectResult.stdout)[0];
+        const startedAt = inspected?.State?.StartedAt || null;
+        docker = {
+          running: inspected?.State?.Running === true,
+          status: inspected?.State?.Status || 'unknown',
+          startedAt,
+          uptimeSeconds: inspected?.State?.Running && startedAt ? Math.max(0, Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000)) : 0,
+          image: inspected?.Config?.Image || null,
+          restartCount: Number(inspected?.RestartCount || 0),
+          health: inspected?.State?.Health?.Status || null,
+          error: inspected?.State?.Error || null
+        };
+      } catch (err) { docker.error = err.message; }
+    } else docker.error = stripAnsi(inspectResult.stderr || inspectResult.stdout || 'Docker inspect failed').trim();
+    const logs = `${logsResult.stdout || ''}\n${logsResult.stderr || ''}`;
+    const value = {
+      ok: docker.running,
+      checkedAt: new Date().toISOString(),
+      appVersion: APP_VERSION,
+      docker,
+      online,
+      lastPlayerConnection: parseLastPlayerConnection(logs),
+      access,
+      external,
+      attachment: publicAttachmentState(cfg)
+    };
+    serverOverviewCache = { cachedAt: Date.now(), value };
+    return value;
+  })();
+  try { return await serverOverviewInFlight; }
+  finally { serverOverviewInFlight = null; }
+}
+
+function safeContainerPath(value, label = 'container path') {
+  const raw = String(value || '').trim();
+  if (!raw.startsWith('/') || raw.includes('..') || !/^\/[A-Za-z0-9_./-]+$/.test(raw)) throw new Error(`Invalid ${label}`);
+  return raw.replace(/\/$/, '') || '/';
+}
+
+function backupSettings(cfg) {
+  const raw = cfg.backup || {};
+  const directory = path.resolve(String(raw.directory || '/app/backups'));
+  if (!directory.startsWith('/app/')) throw new Error('Backup directory must be mounted inside /app');
+  return {
+    enabled: raw.enabled !== false,
+    directory,
+    sourcePath: safeContainerPath(raw.sourcePath || '/config', 'backup source path'),
+    retention: Math.max(1, Math.min(100, Number(raw.retention || 10))),
+    timeoutMs: Math.max(60000, Math.min(4 * 60 * 60 * 1000, Number(raw.timeoutMs || 60 * 60 * 1000))),
+    saveHold: raw.saveHold !== false
+  };
+}
+
+function listServerBackups(cfg) {
+  const settings = backupSettings(cfg);
+  fs.mkdirSync(settings.directory, { recursive: true });
+  return fs.readdirSync(settings.directory)
+    .filter(name => /^craftcommand-bedrock-[A-Za-z0-9_.-]+\.tar\.gz$/.test(name))
+    .map(name => {
+      const full = path.join(settings.directory, name);
+      const stat = fs.statSync(full);
+      return { name, size: stat.size, createdAt: stat.mtime.toISOString() };
+    })
+    .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+}
+
+function pruneServerBackups(cfg) {
+  const settings = backupSettings(cfg);
+  const backups = listServerBackups(cfg);
+  for (const backup of backups.slice(settings.retention)) {
+    try { fs.unlinkSync(path.join(settings.directory, backup.name)); } catch {}
+  }
+}
+
+function streamContainerArchive(container, sourcePath, outputPath, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const child = spawn('docker', ['exec', '-u', 'root', container, 'tar', '-C', sourcePath, '-czf', '-', '.']);
+    const output = fs.createWriteStream(outputPath, { mode: 0o600 });
+    let stderr = '';
+    let closed = false;
+    let finished = false;
+    let exitCode = null;
+    const timer = setTimeout(() => {
+      child.kill('SIGKILL');
+      reject(new Error('Backup timed out'));
+    }, timeoutMs);
+    const maybeFinish = () => {
+      if (!closed || !finished) return;
+      clearTimeout(timer);
+      if (exitCode === 0) resolve();
+      else reject(new Error(stripAnsi(stderr || `Backup command exited with code ${exitCode}`).trim()));
+    };
+    child.stderr.on('data', data => { if (stderr.length < 200000) stderr += data.toString(); });
+    child.stdout.pipe(output);
+    child.on('error', err => { clearTimeout(timer); reject(err); });
+    child.on('close', code => { closed = true; exitCode = code; maybeFinish(); });
+    output.on('finish', () => { finished = true; maybeFinish(); });
+    output.on('error', err => { clearTimeout(timer); child.kill('SIGKILL'); reject(err); });
+  });
+}
+
+async function createServerBackup(cfg) {
+  const settings = backupSettings(cfg);
+  if (!settings.enabled) throw new Error('Server backup/export is disabled');
+  fs.mkdirSync(settings.directory, { recursive: true });
+  const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const name = `craftcommand-bedrock-${stamp}.tar.gz`;
+  const finalPath = path.join(settings.directory, name);
+  const tempPath = `${finalPath}.partial`;
+  let held = false;
+  let warning = null;
+  try {
+    if (settings.saveHold) {
+      const hold = await runMinecraftCommand('save hold', cfg);
+      held = hold.ok;
+      if (!held) warning = 'Could not confirm save hold; backup continued as a live filesystem export.';
+      else await sleep(750);
+    }
+    await streamContainerArchive(container, settings.sourcePath, tempPath, settings.timeoutMs);
+    fs.renameSync(tempPath, finalPath);
+    pruneServerBackups(cfg);
+    const stat = fs.statSync(finalPath);
+    return { name, size: stat.size, createdAt: stat.mtime.toISOString(), sourcePath: settings.sourcePath, warning };
+  } finally {
+    if (fs.existsSync(tempPath)) { try { fs.unlinkSync(tempPath); } catch {} }
+    if (held) await runMinecraftCommand('save resume', cfg).catch(() => {});
+  }
+}
+
+function deleteServerBackup(cfg, fileName) {
+  const settings = backupSettings(cfg);
+  const name = path.basename(String(fileName || ''));
+  if (name !== String(fileName || '') || !/^craftcommand-bedrock-[A-Za-z0-9_.-]+\.tar\.gz$/.test(name)) throw new Error('Invalid backup file name');
+  const full = path.join(settings.directory, name);
+  if (!fs.existsSync(full)) throw new Error('Backup not found');
+  fs.unlinkSync(full);
+  return name;
+}
+
+function streamBackupDownload(res, cfg, fileName) {
+  const settings = backupSettings(cfg);
+  const name = path.basename(String(fileName || ''));
+  if (name !== String(fileName || '') || !/^craftcommand-bedrock-[A-Za-z0-9_.-]+\.tar\.gz$/.test(name)) throw new Error('Invalid backup file name');
+  const full = path.join(settings.directory, name);
+  if (!fs.existsSync(full)) throw new Error('Backup not found');
+  const stat = fs.statSync(full);
+  setSecurityHeaders(res);
+  res.writeHead(200, {
+    'Content-Type': 'application/gzip',
+    'Content-Disposition': `attachment; filename="${name}"`,
+    'Content-Length': stat.size
+  });
+  fs.createReadStream(full).pipe(res);
 }
 
 function manualPlayersPath(cfg) {
@@ -1144,6 +1620,8 @@ function publicConfig(cfg, req, session = null) {
   if (Array.isArray(copy.links)) {
     copy.links = copy.links.map(link => ({ ...link, url: resolveTemplateUrl(link.url, req) }));
   }
+  if (copy.backup) copy.backup = { enabled: copy.backup.enabled !== false };
+  if (copy.externalServer) copy.externalServer = { enabled: copy.externalServer.enabled === true, host: copy.externalServer.host || '', port: Number(copy.externalServer.port || 19132), mode: copy.externalServer.mode || 'external' };
   return copy;
 }
 
@@ -1231,7 +1709,26 @@ async function handleApi(req, res, url, cfg) {
 
     if (req.method === 'GET' && url.pathname === '/api/activity') {
       const limit = Number(url.searchParams.get('limit') || 100);
-      json(res, 200, { ok: true, entries: readActivity(cfg, limit), currentUser: { username: session.username, role: session.role } });
+      const scoped = readActivityForSession(cfg, session, limit);
+      json(res, 200, { ok: true, entries: scoped.entries, scope: scoped.scope, currentUser: { username: session.username, role: session.role } });
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/status/overview') {
+      const refresh = url.searchParams.get('refresh') === '1';
+      json(res, 200, await getServerOverview(cfg, refresh));
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/backups') {
+      requireRole(session, 'admin');
+      json(res, 200, { ok: true, backups: listServerBackups(cfg), settings: { enabled: backupSettings(cfg).enabled, retention: backupSettings(cfg).retention, sourcePath: backupSettings(cfg).sourcePath } });
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/backups/download') {
+      requireRole(session, 'admin');
+      streamBackupDownload(res, cfg, url.searchParams.get('file') || '');
       return;
     }
 
@@ -1267,6 +1764,22 @@ async function handleApi(req, res, url, cfg) {
       const deleted = deletePersistentAuthUser(cfg, body.username, session.username);
       appendActivity(cfg, { username: session.username, role: session.role, action: 'delete-account', target: deleted, summary: `Deleted account ${deleted}`, ok: true, ip: clientIp(req) });
       json(res, 200, { ok: true, deleted, users: publicAuthUsers(loadConfig()) });
+      return;
+    }
+
+    if (url.pathname === '/api/backups/create') {
+      requireRole(session, 'admin');
+      const backup = await createServerBackup(cfg);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'server-backup', target: cfg.minecraftContainerName, summary: `Created server export ${backup.name}`, ok: true, commands: 1, ip: clientIp(req) });
+      json(res, 200, { ok: true, backup, backups: listServerBackups(cfg) });
+      return;
+    }
+
+    if (url.pathname === '/api/backups/delete') {
+      requireRole(session, 'admin');
+      const deleted = deleteServerBackup(cfg, body.file || body.name);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'delete-backup', target: deleted, summary: `Deleted server export ${deleted}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, deleted, backups: listServerBackups(cfg) });
       return;
     }
 
@@ -1367,7 +1880,7 @@ function serveStatic(req, res, url) {
     return;
   }
   const ext = path.extname(full).toLowerCase();
-  const type = ext === '.html' ? 'text/html; charset=utf-8' : ext === '.css' ? 'text/css; charset=utf-8' : ext === '.js' ? 'application/javascript; charset=utf-8' : ext === '.json' ? 'application/json; charset=utf-8' : ext === '.png' ? 'image/png' : ext === '.svg' ? 'image/svg+xml' : ext === '.ico' ? 'image/x-icon' : 'application/octet-stream';
+  const type = ext === '.html' ? 'text/html; charset=utf-8' : ext === '.css' ? 'text/css; charset=utf-8' : ext === '.js' ? 'application/javascript; charset=utf-8' : ext === '.json' ? 'application/json; charset=utf-8' : ext === '.webmanifest' ? 'application/manifest+json; charset=utf-8' : ext === '.png' ? 'image/png' : ext === '.svg' ? 'image/svg+xml' : ext === '.ico' ? 'image/x-icon' : 'application/octet-stream';
   text(res, 200, fs.readFileSync(full), type);
 }
 

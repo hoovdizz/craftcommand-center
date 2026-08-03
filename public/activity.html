@@ -4,29 +4,36 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#101827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CraftCommand" />
   <title>Activity | CraftCommand Center</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="stylesheet" href="/styles.css?v=2.1.1" />
+  <link rel="stylesheet" href="/styles.css?v=2.2.0" />
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
       <img class="appLogo" src="/icon.png" alt="CraftCommand Center logo" />
-      <div><h1>Activity History</h1><p>See who sent commands, what target was used, and whether it succeeded.</p></div>
+      <div><h1 id="activityPageTitle">Activity History</h1><p id="activityPageSubtitle">Admins see all activity. Operators and viewers see only their own activity.</p></div>
     </div>
     <nav class="topActions">
       <a class="navButton" href="/">Dashboard</a>
+      <a class="navButton" href="/status.html">Status</a>
       <a class="navButton" href="/items.html">Item Catalog</a>
       <a class="navButton active" href="/activity.html">Activity</a>
-      <a class="navButton" href="/accounts.html">Accounts</a>
+      <a class="navButton" href="/accounts.html" data-admin-nav>Accounts</a>
       <a class="navButton" href="/help.html">Help</a>
+      <button class="navButton hidden" type="button" data-install-app>Install App</button>
       <span id="userBadge" class="badge">Signed in</span>
     </nav>
   </header>
   <main class="catalogMain">
     <section class="card wide">
       <div class="sectionHeading">
-        <div><h2>Command and Admin Audit Trail</h2><p class="hint">Stored persistently in <code>/app/data/activity.jsonl</code>. Passwords are never logged.</p></div>
+        <div><h2 id="activitySectionTitle">Activity Audit Trail</h2><p id="activityScope" class="hint">Loading your permitted activity scope…</p></div>
         <div class="buttonRow">
           <button id="refreshActivity" class="warn">🔄 Refresh</button>
           <button id="exportActivity">⬇️ Export JSON</button>
@@ -45,6 +52,7 @@
     </section>
     <section class="card wide"><h2>Page Status</h2><pre id="activityResult">Ready.</pre></section>
   </main>
-  <script src="/activity.js?v=2.1.1"></script>
+  <script src="/pwa.js?v=2.2.0"></script>
+  <script src="/activity.js?v=2.2.0"></script>
 </body>
 </html>

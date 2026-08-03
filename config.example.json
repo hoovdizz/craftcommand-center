@@ -24,16 +24,16 @@
     {
       "label": "Minecraft WebUI Console",
       "url": "http://[IP]:8222",
-      "icon": "🖥️"
+      "icon": "\ud83d\udda5\ufe0f"
     },
     {
       "label": "Unraid Docker",
       "url": "http://[IP]/Docker",
-      "icon": "🐳"
+      "icon": "\ud83d\udc33"
     }
   ],
   "display": {
-    "defaultMode": "both",
+    "defaultMode": "text",
     "allowModeToggle": true
   },
   "itemCatalog": {
@@ -419,5 +419,20 @@
     "sourceUrl": "https://minecraft.wiki/w/Category:Item_icons",
     "legacyFallbackUrl": "https://minecraft.fandom.com/wiki/Category:Inventory_icons",
     "bundled": false
+  },
+  "externalServer": {
+    "enabled": false,
+    "host": "",
+    "port": 19132,
+    "timeoutMs": 5000,
+    "mode": "external"
+  },
+  "backup": {
+    "enabled": true,
+    "directory": "/app/backups",
+    "sourcePath": "/config",
+    "retention": 10,
+    "timeoutMs": 3600000,
+    "saveHold": true
   }
 }
