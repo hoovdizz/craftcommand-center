@@ -193,11 +193,28 @@ function kitTooltip(kit) {
 }
 function renderQuickItems() {
   const box = $('#quickItems'); box.innerHTML = '';
-  (cfg.quickItems || []).forEach(item => {
+  (cfg.quickItems || []).forEach((item, index) => {
     const info = itemInfo(item.item);
     const button = makeVisualButton({ label:item.label || info.name, itemId:item.item, subtext:item.label ? item.item : `× ${item.amount}`, className:'good itemButton', click:()=>api('/api/give',{target:target(),item:item.item,amount:item.amount}) });
     button.disabled = !can('operator');
-    box.appendChild(button);
+    const wrap = document.createElement('div');
+    wrap.className = 'quickItemWrap';
+    wrap.appendChild(button);
+    if (can('admin') && !$('#quickItemManager')?.classList.contains('hidden')) {
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'danger quickItemRemove';
+      remove.textContent = '×';
+      remove.setAttribute('aria-label', `Remove ${item.label || info.name}`);
+      remove.addEventListener('click', async () => {
+        if (!confirm(`Remove quick button “${item.label || info.name}”?`)) return;
+        const data = await api('/api/quick-items/delete', { index });
+        cfg.quickItems = data.quickItems || [];
+        renderQuickItems();
+      });
+      wrap.appendChild(remove);
+    }
+    box.appendChild(wrap);
   });
 }
 function renderXpButtons() {
@@ -315,6 +332,26 @@ const addPlayer=async()=>{const input=$('#manualPlayer');const name=input.value.
 $('#addPlayer').addEventListener('click',addPlayer); $('#manualPlayer').addEventListener('keydown',e=>{if(e.key==='Enter')addPlayer();});
 $('#sendCustom').addEventListener('click',()=>api('/api/give',{target:target(),item:$('#customItem').value,amount:Number($('#customAmount').value)})); $('#customItem').addEventListener('input',updateCustomHelp);
 $('#openKitBuilder').addEventListener('click',()=>{$('#kitBuilderCard').classList.remove('hidden');$('#kitBuilderCard').scrollIntoView({behavior:'smooth'});}); $('#closeKitBuilder').addEventListener('click',()=>$('#kitBuilderCard').classList.add('hidden'));
+$('#manageQuickItems')?.addEventListener('click', () => {
+  $('#quickItemManager').classList.toggle('hidden');
+  $('#manageQuickItems').textContent = $('#quickItemManager').classList.contains('hidden') ? 'Manage buttons' : 'Done managing';
+  renderQuickItems();
+});
+$('#addQuickItem')?.addEventListener('click', async () => {
+  const item = $('#quickItemId').value.trim().replace(/^minecraft:/, '');
+  if (!item) return show('Choose or type an item ID first.');
+  const data = await api('/api/quick-items/add', { item, amount: Number($('#quickItemAmount').value), label: $('#quickItemLabel').value.trim() });
+  cfg.quickItems = data.quickItems || [];
+  $('#quickItemId').value = '';
+  $('#quickItemLabel').value = '';
+  renderQuickItems();
+});
+$('#resetQuickItems')?.addEventListener('click', async () => {
+  if (!confirm('Replace every quick button with the factory default list?')) return;
+  const data = await api('/api/quick-items/reset', {});
+  cfg.quickItems = data.quickItems || [];
+  renderQuickItems();
+});
 $('#addKitItem').addEventListener('click',()=>{const item=$('#kitItemSearch').value.trim().replace(/^minecraft:/,'');const amount=Math.max(1,Math.min(2304,Number($('#kitItemAmount').value)||1));if(!item)return show('Choose or type an item ID.');const existing=builderItems.find(i=>i.item===item);if(existing)existing.amount+=amount;else builderItems.push({item,amount});$('#kitItemSearch').value='';renderBuilderItems();});
 $('#saveKit').addEventListener('click',saveBuilderKit); $('#clearKit').addEventListener('click',clearBuilder);
 $('#sendKit').addEventListener('click',async()=>{if(!selectedKit)return;$('#kitDialog').close();await api('/api/kit',{target:target(),kitId:selectedKit.id});});

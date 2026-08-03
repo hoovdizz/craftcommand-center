@@ -1,7 +1,7 @@
-const CACHE_NAME = 'craftcommand-center-v2.2.0-beta.1';
+const CACHE_NAME = 'craftcommand-center-v2.2.0-beta.2';
 const STATIC_ASSETS = [
   '/', '/index.html', '/status.html', '/items.html', '/activity.html', '/accounts.html', '/help.html',
-  '/styles.css', '/app.js', '/status.js', '/catalog.js', '/activity.js', '/accounts.js', '/help.js',
+  '/styles.css', '/theme.js', '/app.js', '/status.js', '/catalog.js', '/activity.js', '/accounts.js', '/help.js',
   '/item-icons.js', '/pwa.js', '/manifest.webmanifest', '/icon.png', '/favicon.png',
   '/apple-touch-icon.png', '/app-icon-192.png', '/app-icon-512.png'
 ];
