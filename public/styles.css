@@ -144,7 +144,11 @@ input:focus, select:focus { outline: 2px solid var(--focus); border-color: var(-
 .buttonRow { display: flex; flex-wrap: wrap; gap: .65rem; }
 .smallRow { margin-top: .7rem; }
 .linkButton { display: inline-flex; align-items: center; justify-content: center; gap: .42rem; }
-.itemButton, .kitButton { min-height: 76px; display: flex; align-items: center; justify-content: center; gap: .6rem; position: relative; overflow: visible; }
+.itemButton, .kitButton { --content-scale: 1; min-height: 76px; display: flex; align-items: center; justify-content: center; position: relative; }
+.itemButton { overflow: hidden; }
+.kitButton { overflow: visible; }
+.buttonContent { min-width: 0; max-width: 100%; max-height: 100%; display: flex; align-items: center; justify-content: center; gap: calc(.6rem * var(--content-scale)); font-size: calc(1rem * var(--content-scale)); line-height: 1.15; }
+.buttonContent .btnText { min-width: 0; overflow-wrap: anywhere; }
 .quickItemWrap { position: relative; min-width: 0; }
 .quickItemWrap .itemButton { width: 100%; height: 100%; }
 .quickItemRemove { position: absolute; z-index: 2; top: -.45rem; right: -.35rem; width: 2rem; height: 2rem; padding: 0; border-radius: 50%; line-height: 1; }
@@ -154,9 +158,9 @@ input:focus, select:focus { outline: 2px solid var(--focus); border-color: var(-
 .quickItemManager { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 .quickItemManager h3 { margin: 0 0 .7rem; }
 .quickItemForm { display: grid; grid-template-columns: 1.4fr 110px 1.2fr 130px; gap: .7rem; align-items: end; }
-.itemButton .btnIcon, .kitButton .btnIcon, .catalogCard .btnIcon { font-size: 1.45rem; line-height: 1; display: inline-grid; place-items: center; flex: 0 0 auto; }
+.itemButton .btnIcon, .kitButton .btnIcon, .catalogCard .btnIcon { font-size: calc(1.45rem * var(--content-scale, 1)); line-height: 1; display: inline-grid; place-items: center; flex: 0 0 auto; }
 .itemButton .btnText, .kitButton .btnText { line-height: 1.2; }
-.itemButton small, .kitButton small { display: block; margin-top: .2rem; color: #d5e1f3; font-weight: 600; font-size: .75rem; }
+.itemButton small, .kitButton small { display: block; margin-top: .2rem; color: #d5e1f3; font-weight: 600; font-size: calc(.75rem * var(--content-scale)); }
 body[data-display="icon"] .btnText { display: none; }
 body[data-display="icon"] .xpButton .btnText { display: block; }
 body[data-display="icon"] .serverLink .btnText { display: block; }
@@ -290,7 +294,7 @@ details p { margin: .55rem 0 0; }
 
 /* 2.1.1 Minecraft Wiki inventory art */
 .minecraftItemIcon { width: 44px; height: 44px; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 3px 2px rgba(0,0,0,.42)); }
-.itemButton .minecraftItemIcon, .kitButton .minecraftItemIcon { width: 46px; height: 46px; }
+.itemButton .minecraftItemIcon, .kitButton .minecraftItemIcon { width: calc(46px * var(--content-scale)); height: calc(46px * var(--content-scale)); }
 .catalogCard .minecraftItemIcon { width: 52px; height: 52px; }
 .builderItem .minecraftItemIcon { width: 36px; height: 36px; }
 .kitDialogHeading { display: flex; align-items: center; gap: .8rem; padding-right: 2.5rem; }
@@ -301,7 +305,7 @@ details p { margin: .55rem 0 0; }
 .kitContentIcon .minecraftItemIcon { width: 38px; height: 38px; }
 .kitContentIcon.textIcon { font-size: 1.5rem; }
 .minecraftItemIcon.iconFallback { image-rendering: auto; opacity: .78; }
-body[data-display="icon"] .minecraftItemIcon { width: 52px; height: 52px; }
+body[data-display="icon"] .minecraftItemIcon { width: calc(52px * var(--content-scale, 1)); height: calc(52px * var(--content-scale, 1)); }
 @media (max-width: 430px) { .minecraftItemIcon { width: 40px; height: 40px; } .catalogCard .minecraftItemIcon { width: 46px; height: 46px; } }
 
 /* 2.2 status, full-width target, backup, and install experience */

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'craftcommand-center-v2.2.0-beta.4';
+const CACHE_NAME = 'craftcommand-center-v2.2.0-beta.5';
 const STATIC_ASSETS = [
   '/', '/index.html', '/status.html', '/items.html', '/activity.html', '/accounts.html', '/help.html',
   '/styles.css', '/theme.js', '/app.js', '/status.js', '/catalog.js', '/activity.js', '/accounts.js', '/help.js',
