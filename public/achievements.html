@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CraftCommand" />
+  <title>Achievements | CraftCommand Center</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <script src="/theme.js?v=2.2.0"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.2.0" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img class="appLogo" src="/icon.png" alt="CraftCommand Center logo" /><div><h1>Achievement Guide</h1><p>Bedrock achievements, platform availability, and preparation checklists.</p></div></div>
+    <nav class="topActions">
+      <a class="navButton" href="/">Dashboard</a>
+      <a class="navButton" href="/status.html">Status</a>
+      <a class="navButton" href="/items.html">Item Catalog</a>
+      <a class="navButton active" href="/achievements.html">Achievements</a>
+      <a class="navButton" href="/activity.html">Activity</a>
+      <a class="navButton" href="/accounts.html" data-admin-nav>Accounts</a>
+      <a class="navButton" href="/help.html">Help</a>
+      <span id="userBadge" class="badge">Signed in</span>
+    </nav>
+  </header>
+  <main class="achievementMain">
+    <section class="card wide achievementWarning">
+      <h2>Earn achievements in an eligible Survival world</h2>
+      <p>Minecraft requires Survival mode, an online platform account, and a world that has never enabled cheats or Creative mode. Items sent by this dashboard use server commands and are for practice only—they can prevent legitimate achievement credit.</p>
+      <p class="hint">PlayStation records supported goals as PSN trophies. Other current Bedrock platforms use Microsoft-account achievements. Progress marked here is a private browser checklist and does not read or change Xbox or PSN records.</p>
+    </section>
+    <section class="card wide achievementControls">
+      <div class="achievementFilters">
+        <label>Search<input id="achievementSearch" type="search" placeholder="dragon, trading, ocean…" /></label>
+        <label>Category<select id="achievementCategory"><option value="">All categories</option></select></label>
+        <label>System
+          <select id="achievementPlatform">
+            <option value="">All Bedrock systems</option>
+            <option>Xbox</option><option>Windows</option><option>Android</option><option>iOS</option>
+            <option>Nintendo Switch</option><option>PlayStation</option>
+          </select>
+        </label>
+        <label>Checklist<select id="achievementState"><option value="">All</option><option value="open">Not completed</option><option value="done">Completed</option></select></label>
+        <label>Player / practice target<select id="achievementTarget"></select></label>
+      </div>
+      <div class="achievementSummary"><strong id="achievementCount">Loading achievements…</strong><span id="achievementProgress"></span></div>
+    </section>
+    <section id="achievementGrid" class="achievementGrid wide"></section>
+    <section class="card wide">
+      <h2>Sources and platform notes</h2>
+      <p class="hint">Eligibility rules: <a href="https://help.minecraft.net/hc/en-us/articles/4409244237325-Unlock-Minecraft-Bedrock-Edition-Achievements" target="_blank" rel="noopener noreferrer">Minecraft Help</a>. Achievement names, requirements, trophy availability, and preparation data: <a href="https://minecraft.fandom.com/wiki/Achievement" target="_blank" rel="noopener noreferrer">Minecraft Wiki achievement reference</a>.</p>
+    </section>
+  </main>
+  <script src="/item-icons.js?v=2.2.0"></script>
+  <script src="/pwa.js?v=2.2.0"></script>
+  <script src="/achievements.js?v=2.2.0"></script>
+</body>
+</html>

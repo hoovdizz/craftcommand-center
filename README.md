@@ -26,6 +26,7 @@ General game panels such as Pterodactyl, PufferPanel, Crafty Controller, AMP, an
 - Starter, recovery, mining, and enchanting kits
 - Kit previews, confirmation dialogs, and a persistent custom-kit builder
 - Searchable Bedrock item catalog with 1,914 IDs, categories, descriptions, and give buttons
+- Bedrock achievement guide with system filters, per-player checklists, completion help, and suggested practice supplies
 - Unraid DockerMan template for normal right-click **Edit**, port settings, credentials, icon, WebUI, and updates from GHCR
 - GitHub Actions validation and multi-architecture GHCR publishing
 
