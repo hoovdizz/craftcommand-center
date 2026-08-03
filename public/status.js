@@ -26,6 +26,20 @@ async function request(path, options = {}) {
   return data;
 }
 function setResult(message) { $('#statusResult').textContent = typeof message === 'string' ? message : JSON.stringify(message, null, 2); }
+function renderServerLinks(config) {
+  const box = $('#serverLinks');
+  box.innerHTML = '';
+  for (const link of config.links || []) {
+    const anchor = document.createElement('a');
+    anchor.className = 'linkButton serverLink';
+    anchor.href = link.url;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    anchor.innerHTML = `<span class="btnIcon">${escapeHtml(link.icon || '🔗')}</span><span class="btnText">${escapeHtml(link.label)}</span>`;
+    box.appendChild(anchor);
+  }
+  if (!box.children.length) box.innerHTML = '<p class="hint">No home server links are configured.</p>';
+}
 function applyRole() {
   $('#userBadge').textContent = `${currentUser.username} • ${currentUser.role}`;
   document.querySelectorAll('[data-min-role]').forEach(element => element.classList.toggle('hidden', !can(element.dataset.minRole || 'viewer')));
@@ -106,8 +120,9 @@ async function init() {
   if (!auth.authenticated) { location.href = '/'; return; }
   currentUser = { username: auth.username || '', role: auth.role || 'viewer' };
   applyRole();
-  await Promise.all([loadDiagnostics(), loadOverview(false), loadBackups()]);
-  window.CCCPwa?.offerInstall();
+  const [config] = await Promise.all([request('/api/config'), loadDiagnostics(), loadOverview(false), loadBackups()]);
+  document.body.dataset.display = localStorage.getItem('cccDisplayMode') || config.display?.defaultMode || 'text';
+  renderServerLinks(config);
 }
 $('#runDiagnostics').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await loadDiagnostics(); setResult('Diagnostics refreshed.'); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });
 $('#refreshOverview').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await loadOverview(true); setResult('Server status refreshed.'); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });

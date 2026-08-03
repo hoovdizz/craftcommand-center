@@ -413,6 +413,16 @@ function resetQuickItems() {
   return writeQuickItems(factoryQuickItems());
 }
 
+function reorderQuickItems(cfg, order) {
+  const items = readQuickItems(cfg);
+  if (!Array.isArray(order) || order.length !== items.length) throw new Error('Quick button order is incomplete');
+  const indexes = order.map(Number);
+  if (indexes.some(index => !Number.isInteger(index) || index < 0 || index >= items.length) || new Set(indexes).size !== items.length) {
+    throw new Error('Quick button order is invalid');
+  }
+  return writeQuickItems(indexes.map(index => items[index]));
+}
+
 
 
 function stripAnsi(value) {
@@ -1911,6 +1921,14 @@ async function handleApi(req, res, url, cfg) {
       requireRole(session, 'admin');
       const quickItems = resetQuickItems();
       appendActivity(cfg, { username: session.username, role: session.role, action: 'reset-quick-items', summary: 'Restored factory quick buttons', ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, quickItems });
+      return;
+    }
+
+    if (url.pathname === '/api/quick-items/reorder') {
+      requireRole(session, 'admin');
+      const quickItems = reorderQuickItems(cfg, body.order);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'reorder-quick-items', summary: 'Reordered quick buttons', ok: true, ip: clientIp(req) });
       json(res, 200, { ok: true, quickItems });
       return;
     }
