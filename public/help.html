@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#101827" />
   <title>Help | CraftCommand Center</title>
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="stylesheet" href="/styles.css?v=2.1.0" />
+  <link rel="stylesheet" href="/styles.css?v=2.1.1" />
 </head>
 <body>
   <header class="topbar">
@@ -50,6 +50,7 @@
       <details><summary>A player is missing from the target list</summary><p>Use <strong>Pull Known Players</strong>. If Bedrock does not expose the name in logs or server files, an admin can use <strong>Add Player manually</strong>.</p></details>
       <details><summary>The Unraid Docker page does not show Edit</summary><p>Create the container from the included DockerMan XML template rather than a raw <code>docker run</code> command.</p></details>
       <details><summary>The browser shows old buttons after an update</summary><p>Hard-refresh the page or clear site cache. Static files use versioned query strings, but some mobile browsers hold older pages longer than expected.</p></details>
+      <details><summary>An item icon shows letters instead of Minecraft art</summary><p>CraftCommand Center loads current Minecraft Wiki inventory sprites and falls back through Invicon, ItemSprite, and BlockSprite names. Check that the phone or browser can reach <code>minecraft.wiki</code>; uncommon technical items may not have a matching wiki image.</p></details>
     </section>
     <section class="card wide">
       <h2>Beta Feedback</h2>
@@ -57,6 +58,6 @@
       <a class="linkButton" href="https://github.com/hoovdizz/craftcommand-center/issues" target="_blank" rel="noopener noreferrer">🐛 Open a GitHub issue</a>
     </section>
   </main>
-  <script src="/help.js?v=2.1.0"></script>
+  <script src="/help.js?v=2.1.1"></script>
 </body>
 </html>

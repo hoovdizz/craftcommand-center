@@ -18,9 +18,8 @@ function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 }
 function itemInfo(itemId) {
-  return catalogMap.get(String(itemId || '').replace(/^minecraft:/,'')) || { id:itemId, name:String(itemId || '').replace(/^minecraft:/,'').split('_').map(x=>x.charAt(0).toUpperCase()+x.slice(1)).join(' '), icon:'◼️', description:'Custom or unlisted Bedrock item.' };
+  return catalogMap.get(String(itemId || '').replace(/^minecraft:/,'')) || { id:itemId, name:String(itemId || '').replace(/^minecraft:/,'').split('_').map(x=>x.charAt(0).toUpperCase()+x.slice(1)).join(' '), description:'Custom or unlisted Bedrock item.' };
 }
-function iconFor(itemId) { return itemInfo(itemId).icon || '◼️'; }
 function target() { return $('#target').value; }
 function setDisplayMode(mode) {
   const allowed = ['both','icon','text'];
@@ -151,12 +150,21 @@ function renderPlayers(data) {
 async function loadPlayers() { const data = await request('/api/players'); renderPlayers(data); return data; }
 async function loadStatus() { const data = await request('/api/status'); renderAttachment(data.attachment); return data; }
 
-function makeVisualButton({ label, icon='◼️', subtext='', className='', click, tooltip='' }) {
+function makeVisualButton({ label, icon='◼️', itemId='', subtext='', className='', click, tooltip='' }) {
   const b = document.createElement('button');
   b.type = 'button';
   b.className = className;
   if (tooltip) b.dataset.tooltip = tooltip;
-  b.innerHTML = `<span class="btnIcon" aria-hidden="true">${escapeHtml(icon)}</span><span class="btnText">${escapeHtml(label)}${subtext ? `<small>${escapeHtml(subtext)}</small>` : ''}</span>`;
+  const iconWrap = document.createElement('span');
+  iconWrap.className = 'btnIcon';
+  iconWrap.setAttribute('aria-hidden', 'true');
+  if (itemId && window.CCCItemIcons) iconWrap.appendChild(window.CCCItemIcons.create(itemInfo(itemId)));
+  else iconWrap.textContent = icon;
+  const textWrap = document.createElement('span');
+  textWrap.className = 'btnText';
+  textWrap.textContent = label;
+  if (subtext) { const small=document.createElement('small'); small.textContent=subtext; textWrap.appendChild(small); }
+  b.append(iconWrap, textWrap);
   b.setAttribute('aria-label', label);
   b.addEventListener('click', async event => {
     if (b.dataset.busy === 'true') return;
@@ -180,7 +188,7 @@ function makeVisualButton({ label, icon='◼️', subtext='', className='', clic
 }
 function kitTooltip(kit) {
   const lines = [kit.description || kit.label, ''];
-  for (const i of kit.items || []) lines.push(`${iconFor(i.item)} ${itemInfo(i.item).name} × ${i.amount}`);
+  for (const i of kit.items || []) lines.push(`• ${itemInfo(i.item).name} × ${i.amount}`);
   if (kit.xp) lines.push(`✨ ${kit.xp.amount}${kit.xp.levels ? ' levels' : ' XP'}`);
   return lines.join('\n');
 }
@@ -188,7 +196,7 @@ function renderQuickItems() {
   const box = $('#quickItems'); box.innerHTML = '';
   (cfg.quickItems || []).forEach(item => {
     const info = itemInfo(item.item);
-    const button = makeVisualButton({ label:item.label || info.name, icon:item.icon || info.icon, subtext:item.label ? item.item : `× ${item.amount}`, className:'good itemButton', click:()=>api('/api/give',{target:target(),item:item.item,amount:item.amount}) });
+    const button = makeVisualButton({ label:item.label || info.name, itemId:item.item, subtext:item.label ? item.item : `× ${item.amount}`, className:'good itemButton', click:()=>api('/api/give',{target:target(),item:item.item,amount:item.amount}) });
     button.disabled = !can('operator');
     box.appendChild(button);
   });
@@ -207,7 +215,7 @@ function renderXpButtons() {
 function renderKits() {
   const box = $('#kits'); box.innerHTML = '';
   kits.forEach(kit => {
-    const button = makeVisualButton({ label:kit.label, icon:kit.icon || '🎒', subtext:`${kit.items?.length || 0} items${kit.custom ? ' • custom' : ''}`, className:'kitButton', tooltip:kitTooltip(kit), click:()=>openKitDialog(kit) });
+    const button = makeVisualButton({ label:kit.label, itemId:kit.iconItem || kit.items?.[0]?.item || 'chest', subtext:`${kit.items?.length || 0} items${kit.custom ? ' • custom' : ''}`, className:'kitButton', tooltip:kitTooltip(kit), click:()=>openKitDialog(kit) });
     button.disabled = !can('operator');
     box.appendChild(button);
   });
@@ -215,7 +223,28 @@ function renderKits() {
 function openKitDialog(kit) {
   selectedKit = kit;
   const body = $('#kitDialogBody');
-  body.innerHTML = `<h2>${escapeHtml(kit.icon || '🎒')} ${escapeHtml(kit.label)}</h2><p>${escapeHtml(kit.description || '')}</p><ul class="kitContents">${(kit.items || []).map(i=>{const info=itemInfo(i.item);return `<li><span>${escapeHtml(info.icon)}</span><div><strong>${escapeHtml(info.name)} × ${i.amount}</strong><br><code>${escapeHtml(i.item)}</code></div></li>`}).join('')}${kit.xp ? `<li><span>✨</span><div><strong>${kit.xp.amount}${kit.xp.levels ? ' levels' : ' XP'}</strong></div></li>` : ''}</ul><p class="hint">Target: <strong>${escapeHtml($('#target').selectedOptions[0]?.textContent || target())}</strong></p>`;
+  body.innerHTML = '';
+  const heading = document.createElement('div');
+  heading.className = 'kitDialogHeading';
+  const headingIcon = document.createElement('span');
+  headingIcon.className = 'kitDialogIcon';
+  if (window.CCCItemIcons) headingIcon.appendChild(window.CCCItemIcons.create(itemInfo(kit.iconItem || kit.items?.[0]?.item || 'chest'), { eager:true }));
+  const headingText = document.createElement('div');
+  const h2 = document.createElement('h2'); h2.textContent = kit.label;
+  const description = document.createElement('p'); description.textContent = kit.description || '';
+  headingText.append(h2, description); heading.append(headingIcon, headingText); body.appendChild(heading);
+  const list = document.createElement('ul'); list.className = 'kitContents';
+  (kit.items || []).forEach(entry => {
+    const info=itemInfo(entry.item); const li=document.createElement('li');
+    const icon=document.createElement('span'); icon.className='kitContentIcon';
+    if (window.CCCItemIcons) icon.appendChild(window.CCCItemIcons.create(info));
+    const text=document.createElement('div'); const strong=document.createElement('strong'); strong.textContent=`${info.name} × ${entry.amount}`;
+    const br=document.createElement('br'); const code=document.createElement('code'); code.textContent=entry.item;
+    text.append(strong,br,code); li.append(icon,text); list.appendChild(li);
+  });
+  if (kit.xp) { const li=document.createElement('li'); li.innerHTML=`<span class="kitContentIcon textIcon">✨</span><div><strong>${kit.xp.amount}${kit.xp.levels ? ' levels' : ' XP'}</strong></div>`; list.appendChild(li); }
+  body.appendChild(list);
+  const targetHint=document.createElement('p'); targetHint.className='hint'; targetHint.innerHTML=`Target: <strong>${escapeHtml($('#target').selectedOptions[0]?.textContent || target())}</strong>`; body.appendChild(targetHint);
   $('#deleteKit').classList.toggle('hidden', !kit.custom || !can('admin'));
   $('#sendKit').disabled = !can('operator');
   $('#kitDialog').showModal();
@@ -225,13 +254,13 @@ async function loadKits() { const data = await request('/api/kits'); kits = data
 function populateCatalogInputs() {
   const list = $('#itemOptions');
   const frag = document.createDocumentFragment();
-  catalog.items.forEach(item => { const opt=document.createElement('option'); opt.value=item.id; opt.label=`${item.icon} ${item.name} — ${item.description}`; frag.appendChild(opt); });
+  catalog.items.forEach(item => { const opt=document.createElement('option'); opt.value=item.id; opt.label=`${item.name} — ${item.description}`; frag.appendChild(opt); });
   list.replaceChildren(frag);
 }
 function updateCustomHelp() {
   const value = $('#customItem').value.replace(/^minecraft:/,'');
   const info = catalogMap.get(value);
-  $('#customItemHelp').textContent = info ? `${info.icon} ${info.name}: ${info.description} (${info.category})` : 'Custom or add-on item ID. Confirm that the server recognizes it.';
+  $('#customItemHelp').textContent = info ? `${info.name}: ${info.description} (${info.category})` : 'Custom or add-on item ID. Confirm that the server recognizes it.';
 }
 function renderBuilderItems() {
   const box = $('#builderItems');
@@ -239,7 +268,8 @@ function renderBuilderItems() {
   box.innerHTML = '';
   builderItems.forEach((entry,index) => {
     const info=itemInfo(entry.item); const row=document.createElement('div'); row.className='builderItem';
-    row.innerHTML=`<span class="icon">${escapeHtml(info.icon)}</span><div><strong>${escapeHtml(info.name)}</strong><code>${escapeHtml(entry.item)}</code></div><input aria-label="Amount" type="number" min="1" max="2304" value="${entry.amount}"><button class="danger" aria-label="Remove">×</button>`;
+    row.innerHTML=`<span class="icon"></span><div><strong>${escapeHtml(info.name)}</strong><code>${escapeHtml(entry.item)}</code></div><input aria-label="Amount" type="number" min="1" max="2304" value="${entry.amount}"><button class="danger" aria-label="Remove">×</button>`;
+    if (window.CCCItemIcons) window.CCCItemIcons.mount(row.querySelector('.icon'), info);
     row.querySelector('input').addEventListener('change',e=>{entry.amount=Math.max(1,Math.min(2304,Number(e.target.value)||1));});
     row.querySelector('button').addEventListener('click',()=>{builderItems.splice(index,1);renderBuilderItems();});
     box.appendChild(row);

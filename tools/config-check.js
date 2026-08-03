@@ -4,7 +4,7 @@ const root = path.join(__dirname, '..');
 const required = [
   'config.example.json', 'public/item-catalog.json', 'public/index.html',
   'public/items.html', 'public/activity.html', 'public/accounts.html',
-  'public/help.html', 'templates/my-craftcommand-center.xml', 'Dockerfile'
+  'public/help.html', 'public/item-icons.js', 'templates/my-craftcommand-center.xml', 'Dockerfile'
 ];
 for (const file of required) {
   const full = path.join(root, file);

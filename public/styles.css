@@ -65,7 +65,7 @@ input:focus, select:focus { outline: 2px solid rgba(54,211,153,.35); border-colo
 .smallRow { margin-top: .7rem; }
 .linkButton { display: inline-flex; align-items: center; justify-content: center; gap: .42rem; }
 .itemButton, .kitButton { min-height: 76px; display: flex; align-items: center; justify-content: center; gap: .6rem; position: relative; overflow: visible; }
-.itemButton .btnIcon, .kitButton .btnIcon, .catalogCard .btnIcon { font-size: 1.45rem; line-height: 1; }
+.itemButton .btnIcon, .kitButton .btnIcon, .catalogCard .btnIcon { font-size: 1.45rem; line-height: 1; display: inline-grid; place-items: center; flex: 0 0 auto; }
 .itemButton .btnText, .kitButton .btnText { line-height: 1.2; }
 .itemButton small, .kitButton small { display: block; margin-top: .2rem; color: #d5e1f3; font-weight: 600; font-size: .75rem; }
 body[data-display="icon"] .btnText { display: none; }
@@ -89,7 +89,7 @@ pre { white-space: pre-wrap; word-break: break-word; background: #08111e; border
 .builderAddRow { display: grid; grid-template-columns: 2fr 120px 150px; gap: .7rem; align-items: end; margin-top: .9rem; }
 .builderItems { margin-top: .9rem; display: grid; gap: .5rem; }
 .builderItem { display: grid; grid-template-columns: 44px 1fr 90px 44px; gap: .55rem; align-items: center; background: #0b1321; border: 1px solid var(--border); border-radius: 12px; padding: .55rem; }
-.builderItem .icon { font-size: 1.35rem; text-align: center; }
+.builderItem .icon { text-align: center; display: grid; place-items: center; }
 .builderItem strong { display: block; }
 .builderItem code { font-size: .78rem; }
 .builderItem button { padding: .5rem; }
@@ -194,3 +194,20 @@ details p { margin: .55rem 0 0; }
   .accountEntry button { width:100%; }
   .accountForm { grid-template-columns:1fr; }
 }
+
+
+/* 2.1.1 Minecraft Wiki inventory art */
+.minecraftItemIcon { width: 44px; height: 44px; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 3px 2px rgba(0,0,0,.42)); }
+.itemButton .minecraftItemIcon, .kitButton .minecraftItemIcon { width: 46px; height: 46px; }
+.catalogCard .minecraftItemIcon { width: 52px; height: 52px; }
+.builderItem .minecraftItemIcon { width: 36px; height: 36px; }
+.kitDialogHeading { display: flex; align-items: center; gap: .8rem; padding-right: 2.5rem; }
+.kitDialogHeading h2, .kitDialogHeading p { margin: 0; }
+.kitDialogHeading p { margin-top: .25rem; }
+.kitDialogIcon, .kitContentIcon { display: inline-grid; place-items: center; flex: 0 0 48px; }
+.kitDialogIcon .minecraftItemIcon { width: 56px; height: 56px; }
+.kitContentIcon .minecraftItemIcon { width: 38px; height: 38px; }
+.kitContentIcon.textIcon { font-size: 1.5rem; }
+.minecraftItemIcon.iconFallback { image-rendering: auto; opacity: .78; }
+body[data-display="icon"] .minecraftItemIcon { width: 52px; height: 52px; }
+@media (max-width: 430px) { .minecraftItemIcon { width: 40px; height: 40px; } .catalogCard .minecraftItemIcon { width: 46px; height: 46px; } }

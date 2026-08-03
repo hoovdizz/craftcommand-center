@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.1 beta
+
+- Replaced generated emoji item icons with Minecraft Wiki inventory sprites
+- Added Invicon, ItemSprite, BlockSprite, and legacy-wiki fallbacks
+- Added lazy loading, pixel-perfect scaling, and local missing-icon placeholders
+- Updated dashboard buttons, kit dialogs, custom-kit rows, and the full item catalog
+- Reduced the initial catalog render batch to improve mobile loading
+
+
 ## 2.1.0 beta
 
 - Added viewer, operator, and admin roles

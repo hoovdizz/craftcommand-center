@@ -413,5 +413,11 @@
     "enabled": true,
     "file": "/app/data/activity.jsonl",
     "maxEntries": 2000
+  },
+  "itemIcons": {
+    "provider": "Minecraft Wiki inventory sprites",
+    "sourceUrl": "https://minecraft.wiki/w/Category:Item_icons",
+    "legacyFallbackUrl": "https://minecraft.fandom.com/wiki/Category:Inventory_icons",
+    "bundled": false
   }
 }

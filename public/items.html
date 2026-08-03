@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#101827" />
   <title>Item Catalog | CraftCommand Center</title>
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="stylesheet" href="/styles.css?v=2.1.0" />
+  <link rel="stylesheet" href="/styles.css?v=2.1.1" />
 </head>
 <body data-display="both">
   <header class="topbar">
@@ -39,7 +39,7 @@
         <label>Amount<input id="catalogAmount" type="number" min="1" max="2304" value="1" /></label>
       </div>
       <p id="catalogCount" class="hint"></p>
-      <p class="hint">The ID shown in <code>code style</code> is what you type after <code>/give &lt;player&gt;</code>. Technical or Education items may require matching server features.</p>
+      <p class="hint">The ID shown in <code>code style</code> is what you type after <code>/give &lt;player&gt;</code>. Technical or Education items may require matching server features. Inventory art is loaded from the Minecraft Wiki and needs internet access in the viewing browser.</p>
     </section>
     <section class="card wide">
       <div id="catalogGrid" class="catalogGrid"></div>
@@ -47,6 +47,7 @@
     </section>
     <section class="card wide"><h2>Last Result</h2><pre id="catalogResult">Ready.</pre></section>
   </main>
-  <script src="/catalog.js?v=2.1.0"></script>
+  <script src="/item-icons.js?v=2.1.1"></script>
+  <script src="/catalog.js?v=2.1.1"></script>
 </body>
 </html>
