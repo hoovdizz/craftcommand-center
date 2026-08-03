@@ -163,7 +163,10 @@ function makeVisualButton({ label, icon='◼️', itemId='', subtext='', classNa
   textWrap.className = 'btnText';
   textWrap.textContent = label;
   if (subtext) { const small=document.createElement('small'); small.textContent=subtext; textWrap.appendChild(small); }
-  b.append(iconWrap, textWrap);
+  const content = document.createElement('span');
+  content.className = 'buttonContent';
+  content.append(iconWrap, textWrap);
+  b.appendChild(content);
   b.setAttribute('aria-label', label);
   b.addEventListener('click', async event => {
     if (b.dataset.busy === 'true') return;
@@ -183,7 +186,27 @@ function makeVisualButton({ label, icon='◼️', itemId='', subtext='', classNa
       }
     }
   });
+  requestAnimationFrame(() => fitVisualButton(b));
+  content.querySelector('img')?.addEventListener('load', () => fitVisualButton(b), { once: true });
   return b;
+}
+
+function fitVisualButton(button) {
+  const content = button?.querySelector('.buttonContent');
+  if (!content || !button.clientWidth || !button.clientHeight) return;
+  let scale = 1;
+  button.style.setProperty('--content-scale', scale);
+  const style = getComputedStyle(button);
+  const availableWidth = button.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+  const availableHeight = button.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+  while (scale > .64 && (content.scrollWidth > availableWidth + 1 || content.scrollHeight > availableHeight + 1)) {
+    scale = Math.max(.64, scale - .06);
+    button.style.setProperty('--content-scale', scale.toFixed(2));
+  }
+}
+
+function fitVisualButtons(root = document) {
+  requestAnimationFrame(() => root.querySelectorAll('.itemButton, .kitButton').forEach(fitVisualButton));
 }
 function kitTooltip(kit) {
   const lines = [kit.description || kit.label, ''];
@@ -226,6 +249,7 @@ function renderQuickItems() {
     box.appendChild(wrap);
   });
   if (can('admin') && !$('#quickItemManager')?.classList.contains('hidden')) setupQuickItemDrag(box);
+  fitVisualButtons(box);
 }
 
 function setupQuickItemDrag(box) {
@@ -303,6 +327,7 @@ function renderXpButtons() {
     button.disabled = !can('operator');
     box.appendChild(button);
   });
+  fitVisualButtons(box);
 }
 
 function renderKits() {
@@ -312,6 +337,7 @@ function renderKits() {
     button.disabled = !can('operator');
     box.appendChild(button);
   });
+  fitVisualButtons(box);
 }
 function openKitDialog(kit) {
   selectedKit = kit;
@@ -431,5 +457,7 @@ $('#addKitItem').addEventListener('click',()=>{const item=$('#kitItemSearch').va
 $('#saveKit').addEventListener('click',saveBuilderKit); $('#clearKit').addEventListener('click',clearBuilder);
 $('#sendKit').addEventListener('click',async()=>{if(!selectedKit)return;$('#kitDialog').close();await api('/api/kit',{target:target(),kitId:selectedKit.id});});
 $('#deleteKit').addEventListener('click',async()=>{if(!selectedKit?.custom)return;if(!confirm(`Delete custom kit “${selectedKit.label}”?`))return;const data=await api('/api/kits/custom/delete',{kitId:selectedKit.id});kits=data.kits||[];renderKits();$('#kitDialog').close();});
+window.addEventListener('resize', () => fitVisualButtons());
+window.addEventListener('orientationchange', () => setTimeout(() => fitVisualButtons(), 120));
 
 (async()=>{setDisplayMode(localStorage.getItem('cccDisplayMode')||'text');try{const auth=await request('/api/auth/status');if(auth.authenticated)await initializeApp();else showLogin();}catch(err){showLogin(err.message);}})();
