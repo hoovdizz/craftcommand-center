@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101827" />
+  <title>Help | CraftCommand Center</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="/styles.css?v=2.1.0" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img class="appLogo" src="/icon.png" alt="CraftCommand Center logo" /><div><h1>Help & Diagnostics</h1><p>First-run checklist and plain-language troubleshooting.</p></div></div>
+    <nav class="topActions">
+      <a class="navButton" href="/">Dashboard</a>
+      <a class="navButton" href="/items.html">Item Catalog</a>
+      <a class="navButton" href="/activity.html">Activity</a>
+      <a class="navButton" href="/accounts.html">Accounts</a>
+      <a class="navButton active" href="/help.html">Help</a>
+      <span id="userBadge" class="badge">Signed in</span>
+    </nav>
+  </header>
+  <main>
+    <section class="card wide">
+      <div class="sectionHeading"><div><h2>Connection Readiness</h2><p class="hint">Use this before changing settings. It checks the common causes of a blank page or commands that do nothing.</p></div><button id="runHelpDiagnostics" class="warn">🩺 Run Diagnostics</button></div>
+      <div id="helpSummary" class="healthSummary">Checking…</div>
+      <div id="helpChecks" class="diagnosticGrid"></div>
+    </section>
+    <section class="card">
+      <h2>First-Run Checklist</h2>
+      <ol class="helpList">
+        <li>The Binhex container is named <code>binhex-minecraftbedrockserver</code>, or the template variable matches its real name.</li>
+        <li><code>/var/run/docker.sock</code> is mounted read/write into CraftCommand Center.</li>
+        <li><code>/mnt/user/appdata/craftcommand-center/data</code> is mapped to <code>/app/data</code>.</li>
+        <li><strong>Screen Session</strong> is set to <code>auto</code>, <strong>Docker User</strong> is <code>nobody</code>, and <strong>Command Method</strong> is <code>attach</code>.</li>
+        <li>Change the default password and use HTTPS before allowing access outside your trusted home network.</li>
+      </ol>
+    </section>
+    <section class="card">
+      <h2>Account Roles</h2>
+      <div class="roleCards">
+        <article><strong>Viewer</strong><p>Can browse items, status, players, kits, diagnostics, and activity. Cannot send commands.</p></article>
+        <article><strong>Operator</strong><p>Can give items, XP, send kits, refresh players, and repair the screen attachment.</p></article>
+        <article><strong>Admin</strong><p>Can also manage dashboard accounts, add manual players, create/delete custom kits, and clear activity history.</p></article>
+      </div>
+    </section>
+    <section class="card wide">
+      <h2>Common Problems</h2>
+      <details><summary>Commands return OK, but nothing happens</summary><p>Run diagnostics, then refresh the Docker/screen attachment. Confirm the live session looks like <code>140.minecraft</code> and the Docker user is <code>nobody</code>.</p></details>
+      <details><summary>A player is missing from the target list</summary><p>Use <strong>Pull Known Players</strong>. If Bedrock does not expose the name in logs or server files, an admin can use <strong>Add Player manually</strong>.</p></details>
+      <details><summary>The Unraid Docker page does not show Edit</summary><p>Create the container from the included DockerMan XML template rather than a raw <code>docker run</code> command.</p></details>
+      <details><summary>The browser shows old buttons after an update</summary><p>Hard-refresh the page or clear site cache. Static files use versioned query strings, but some mobile browsers hold older pages longer than expected.</p></details>
+    </section>
+    <section class="card wide">
+      <h2>Beta Feedback</h2>
+      <p>When reporting a problem, include the CraftCommand Center version, Unraid version, Binhex container name, diagnostics results, browser/device, and the exact button pressed. Do not include passwords or private server addresses.</p>
+      <a class="linkButton" href="https://github.com/hoovdizz/craftcommand-center/issues" target="_blank" rel="noopener noreferrer">🐛 Open a GitHub issue</a>
+    </section>
+  </main>
+  <script src="/help.js?v=2.1.0"></script>
+</body>
+</html>

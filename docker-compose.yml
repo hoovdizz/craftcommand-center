@@ -1,0 +1,25 @@
+services:
+  craftcommand-center:
+    container_name: craftcommand-center
+    image: ghcr.io/hoovdizz/craftcommand-center:latest
+    restart: unless-stopped
+    ports:
+      - "8223:8223"
+    environment:
+      CCC_APP_TITLE: "CraftCommand Center"
+      CCC_USERNAME: "admin"
+      CCC_PASSWORD: "change-me-now"
+      CCC_MINECRAFT_CONTAINER: "binhex-minecraftbedrockserver"
+      CCC_DOCKER_USER: "nobody"
+      CCC_SCREEN_SESSION: "auto"
+      CCC_COMMAND_METHOD: "attach"
+      CCC_MINECRAFT_WEBUI_URL: "http://[IP]:8222"
+      CCC_UNRAID_DOCKER_URL: "http://[IP]/Docker"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /mnt/user/appdata/craftcommand-center/data:/app/data:rw
+    labels:
+      net.unraid.docker.managed: "dockerman"
+      net.unraid.docker.webui: "http://[IP]:[PORT:8223]/"
+      net.unraid.docker.icon: "https://raw.githubusercontent.com/hoovdizz/craftcommand-center/main/public/icon.png"
+      net.unraid.docker.shell: "sh"

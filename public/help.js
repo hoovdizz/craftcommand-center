@@ -1,0 +1,8 @@
+const $=s=>document.querySelector(s);
+function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+async function request(path,options={}){const r=await fetch(path,{cache:'no-store',credentials:'same-origin',...options});let d;try{d=await r.json();}catch{d={ok:false,error:`HTTP ${r.status}`};}if(r.status===401){location.href='/';throw new Error('Sign in required');}if(!r.ok)throw new Error(d.error||'Request failed');return d;}
+function formatTime(v){try{return new Date(v).toLocaleString();}catch{return v||'';}}
+function render(d){const summary=$('#helpSummary');summary.className=`healthSummary ${d.ready?'ready':'attention'}`;summary.innerHTML=`<strong>${d.ready?'✅ Ready':'⚠️ Needs attention'}</strong><span>Version ${escapeHtml(d.appVersion||'')} • ${d.errors||0} error(s) • ${d.warnings||0} warning(s) • ${escapeHtml(formatTime(d.checkedAt))}</span>`;$('#helpChecks').innerHTML=(d.checks||[]).map(c=>`<div class="diagnosticItem ${c.ok?'pass':c.severity==='warning'?'warn':'fail'}"><span class="diagnosticIcon">${c.ok?'✓':c.severity==='warning'?'!':'×'}</span><div><strong>${escapeHtml(c.label)}</strong><p>${escapeHtml(c.detail)}</p></div></div>`).join('');}
+async function run(){const d=await request('/api/diagnostics');render(d);}
+async function init(){const auth=await request('/api/auth/status');if(!auth.authenticated){location.href='/';return;}$('#userBadge').textContent=`${auth.username||'user'} • ${auth.role||'viewer'}`;await run();}
+$('#runHelpDiagnostics').addEventListener('click',run);init().catch(e=>{$('#helpSummary').textContent=e.message;});

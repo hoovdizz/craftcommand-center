@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>CraftCommand-Center</Name>
+  <Repository>ghcr.io/hoovdizz/craftcommand-center:latest</Repository>
+  <Registry>https://github.com/hoovdizz/craftcommand-center/pkgs/container/craftcommand-center</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/hoovdizz/craftcommand-center/issues</Support>
+  <Project>https://github.com/hoovdizz/craftcommand-center</Project>
+  <Overview>CraftCommand Center is a mobile-friendly companion dashboard for binhex-minecraftbedrockserver on Unraid. It discovers the active GNU screen session after restarts, discovers and saves player names, sends safe give/XP/kit commands, includes a version-tagged Bedrock item catalog, supports custom kits, role-based accounts, diagnostics, and persistent activity history.</Overview>
+  <Category>GameServers:</Category>
+  <WebUI>http://[IP]:[PORT:8223]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/hoovdizz/craftcommand-center/main/templates/my-craftcommand-center.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/hoovdizz/craftcommand-center/main/public/icon.png</Icon>
+  <ExtraParams>--label net.unraid.docker.managed=dockerman --label net.unraid.docker.webui=http://[IP]:[PORT:8223]/ --label net.unraid.docker.icon=https://raw.githubusercontent.com/hoovdizz/craftcommand-center/main/public/icon.png --label net.unraid.docker.shell=sh</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled></DateInstalled>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>binhex-minecraftbedrockserver running on the same Unraid host. The Docker socket is required for companion control.</Requires>
+
+  <Config Name="WebUI Port" Target="8223" Default="8223" Mode="tcp" Description="CraftCommand Center WebUI host port." Type="Port" Display="always" Required="true" Mask="false">8223</Config>
+  <Config Name="Docker Socket" Target="/var/run/docker.sock" Default="/var/run/docker.sock" Mode="rw" Description="Required to discover and send commands to the Binhex Minecraft container." Type="Path" Display="always" Required="true" Mask="false">/var/run/docker.sock</Config>
+  <Config Name="Persistent Data" Target="/app/data" Default="/mnt/user/appdata/craftcommand-center/data" Mode="rw" Description="Stores manually added players, custom kits, extra dashboard accounts, and activity history." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/craftcommand-center/data</Config>
+
+  <Config Name="Dashboard Title" Target="CCC_APP_TITLE" Default="CraftCommand Center" Mode="" Description="Title shown in the WebUI." Type="Variable" Display="always" Required="false" Mask="false">CraftCommand Center</Config>
+  <Config Name="Admin Username" Target="CCC_USERNAME" Default="admin" Mode="" Description="Username for dashboard authentication." Type="Variable" Display="always" Required="true" Mask="false">admin</Config>
+  <Config Name="Admin Password" Target="CCC_PASSWORD" Default="change-me-now" Mode="" Description="Password for dashboard authentication. Change this before exposing the dashboard beyond your trusted LAN. HTTPS is still needed for encrypted transport." Type="Variable" Display="always" Required="true" Mask="true">change-me-now</Config>
+  <Config Name="Admin Password Hash" Target="CCC_PASSWORD_HASH" Default="" Mode="" Description="Optional scrypt hash generated with tools/hash-password.js. When set, it overrides Admin Password." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
+  <Config Name="Minecraft Container Name" Target="CCC_MINECRAFT_CONTAINER" Default="binhex-minecraftbedrockserver" Mode="" Description="Exact Docker container name of the Binhex Minecraft Bedrock server." Type="Variable" Display="always" Required="true" Mask="false">binhex-minecraftbedrockserver</Config>
+  <Config Name="Docker User" Target="CCC_DOCKER_USER" Default="nobody" Mode="" Description="Linux user that owns the Binhex screen session." Type="Variable" Display="advanced" Required="true" Mask="false">nobody</Config>
+  <Config Name="Screen Session" Target="CCC_SCREEN_SESSION" Default="auto" Mode="" Description="Use auto to rediscover names such as 140.minecraft after restarts." Type="Variable" Display="advanced" Required="true" Mask="false">auto</Config>
+  <Config Name="Command Method" Target="CCC_COMMAND_METHOD" Default="attach" Mode="" Description="attach is the compatible method for Binhex screen sessions that reject screen -X stuff." Type="Variable" Display="advanced" Required="true" Mask="false">attach</Config>
+  <Config Name="Minecraft WebUI Console URL" Target="CCC_MINECRAFT_WEBUI_URL" Default="http://[IP]:8222" Mode="" Description="Persistent quick link shown inside CraftCommand Center. [IP] resolves to the host used to open the app." Type="Variable" Display="always" Required="false" Mask="false">http://[IP]:8222</Config>
+  <Config Name="Unraid Docker URL" Target="CCC_UNRAID_DOCKER_URL" Default="http://[IP]/Docker" Mode="" Description="Persistent quick link shown inside CraftCommand Center." Type="Variable" Display="always" Required="false" Mask="false">http://[IP]/Docker</Config>
+  <Config Name="Session Hours" Target="CCC_SESSION_HOURS" Default="12" Mode="" Description="How long a successful dashboard login remains active." Type="Variable" Display="advanced" Required="false" Mask="false">12</Config>
+  <Config Name="Activity History" Target="CCC_AUDIT_ENABLED" Default="true" Mode="" Description="Record command and admin activity in persistent appdata." Type="Variable" Display="advanced" Required="false" Mask="false">true</Config>
+  <Config Name="Activity Retention" Target="CCC_AUDIT_MAX_ENTRIES" Default="2000" Mode="" Description="Approximate maximum activity entries retained after log rotation." Type="Variable" Display="advanced" Required="false" Mask="false">2000</Config>
+</Container>

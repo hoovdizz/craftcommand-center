@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101827" />
+  <title>Activity | CraftCommand Center</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="/styles.css?v=2.1.0" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img class="appLogo" src="/icon.png" alt="CraftCommand Center logo" />
+      <div><h1>Activity History</h1><p>See who sent commands, what target was used, and whether it succeeded.</p></div>
+    </div>
+    <nav class="topActions">
+      <a class="navButton" href="/">Dashboard</a>
+      <a class="navButton" href="/items.html">Item Catalog</a>
+      <a class="navButton active" href="/activity.html">Activity</a>
+      <a class="navButton" href="/accounts.html">Accounts</a>
+      <a class="navButton" href="/help.html">Help</a>
+      <span id="userBadge" class="badge">Signed in</span>
+    </nav>
+  </header>
+  <main class="catalogMain">
+    <section class="card wide">
+      <div class="sectionHeading">
+        <div><h2>Command and Admin Audit Trail</h2><p class="hint">Stored persistently in <code>/app/data/activity.jsonl</code>. Passwords are never logged.</p></div>
+        <div class="buttonRow">
+          <button id="refreshActivity" class="warn">🔄 Refresh</button>
+          <button id="exportActivity">⬇️ Export JSON</button>
+          <button id="clearActivity" class="danger hidden">🗑️ Clear History</button>
+        </div>
+      </div>
+      <div class="activityFilters">
+        <label>Search<input id="activitySearch" type="search" placeholder="player, item, kit, username…" /></label>
+        <label>Status<select id="activityStatus"><option value="">All</option><option value="ok">Success</option><option value="failed">Failed</option></select></label>
+        <label>Rows<select id="activityLimit"><option>50</option><option selected>100</option><option>250</option><option>500</option></select></label>
+      </div>
+      <p id="activityCount" class="hint">Loading activity…</p>
+    </section>
+    <section class="card wide">
+      <div id="activityList" class="activityList"></div>
+    </section>
+    <section class="card wide"><h2>Page Status</h2><pre id="activityResult">Ready.</pre></section>
+  </main>
+  <script src="/activity.js?v=2.1.0"></script>
+</body>
+</html>

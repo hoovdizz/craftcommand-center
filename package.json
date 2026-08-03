@@ -1,0 +1,15 @@
+{
+  "name": "craftcommand-center",
+  "version": "2.1.0",
+  "description": "Mobile-friendly binhex-minecraftbedrockserver companion dashboard for Unraid",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check public/app.js && node --check public/catalog.js && node --check public/activity.js && node --check public/help.js && node --check public/accounts.js && node tools/config-check.js",
+    "hash-password": "node tools/hash-password.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

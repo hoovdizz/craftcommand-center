@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101827" />
+  <title>CraftCommand Center</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="/styles.css?v=2.1.0" />
+</head>
+<body data-display="both">
+  <section id="loginView" class="loginShell">
+    <form id="loginForm" class="loginCard">
+      <img class="loginLogo" src="/icon.png" alt="CraftCommand Center logo" />
+      <h1>CraftCommand Center</h1>
+      <p>A companion dashboard for <code>binhex-minecraftbedrockserver</code>.</p>
+      <label>Username<input id="loginUsername" autocomplete="username" required /></label>
+      <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required /></label>
+      <button class="good" type="submit">Sign in</button>
+      <p id="loginMessage" class="notice"></p>
+      <p class="securityNote">Username/password protects the dashboard. Use HTTPS through a reverse proxy to encrypt traffic between your phone and Unraid.</p>
+    </form>
+  </section>
+
+  <div id="appView" class="hidden">
+    <header class="topbar">
+      <div class="brand">
+        <img class="appLogo" src="/icon.png" alt="CraftCommand Center logo" />
+        <div>
+          <h1 id="title">CraftCommand Center</h1>
+          <p id="subtitle">Companion dashboard for binhex-minecraftbedrockserver.</p>
+        </div>
+      </div>
+      <nav class="topActions">
+        <a class="navButton active" href="/">Dashboard</a>
+        <a class="navButton" href="/items.html">Item Catalog</a>
+        <a class="navButton" href="/activity.html">Activity</a>
+        <a class="navButton" href="/accounts.html">Accounts</a>
+        <a class="navButton" href="/help.html">Help</a>
+        <span id="userBadge" class="badge">Signed in</span>
+        <label class="compactLabel">Button view
+          <select id="displayMode">
+            <option value="both">Icon + text</option>
+            <option value="icon">Icons only</option>
+            <option value="text">Text only</option>
+          </select>
+        </label>
+        <button id="logout" class="danger smallButton">Log out</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card wide" id="healthCard">
+        <div class="sectionHeading">
+          <div>
+            <h2>At a Glance</h2>
+            <p class="hint">A plain-language readiness check for Docker, the Binhex container, persistent data, authentication, and the Minecraft console attachment.</p>
+          </div>
+          <button id="runDiagnostics" class="warn">🩺 Run Diagnostics</button>
+        </div>
+        <div id="healthSummary" class="healthSummary">Checking readiness…</div>
+        <div id="diagnosticChecks" class="diagnosticGrid"></div>
+      </section>
+
+      <section class="card">
+        <h2>Home Server Links</h2>
+        <div id="links" class="buttonGrid"></div>
+      </section>
+
+      <section class="card">
+        <h2>Target</h2>
+        <label for="target">Give to</label>
+        <select id="target"></select>
+        <div class="buttonRow smallRow">
+          <button id="refreshPlayers" class="warn">🔄 Pull Known Players</button>
+        </div>
+        <div class="manualPlayerGrid" data-min-role="admin">
+          <label>Add player manually
+            <input id="manualPlayer" placeholder="ViaSue" autocomplete="off" />
+          </label>
+          <button id="addPlayer" class="good">➕ Add Player</button>
+        </div>
+        <p id="playerStatus" class="hint">Loading known players…</p>
+      </section>
+
+      <section class="card wide">
+        <div class="sectionHeading">
+          <div>
+            <h2>Minecraft Attachment</h2>
+            <p class="hint">Automatically discovers the current <code>*.minecraft</code> screen after reboots.</p>
+          </div>
+          <span id="transportBadge" class="badge"></span>
+        </div>
+        <div id="attachmentStatus" class="statusBox">Loading attachment status…</div>
+        <div class="buttonRow">
+          <button id="refreshAttachment" class="warn" data-min-role="operator">🔌 Refresh Docker/Screen Attachment</button>
+          <button id="loadStatus">🩺 Check Status</button>
+        </div>
+      </section>
+
+      <section class="card wide">
+        <div class="sectionHeading">
+          <div><h2>Quick Items</h2><p class="hint">Pick a target, then tap an item.</p></div>
+          <a class="linkButton compact" href="/items.html">📚 Browse all items</a>
+        </div>
+        <div id="quickItems" class="buttonGrid itemButtons"></div>
+      </section>
+
+      <section class="card wide">
+        <div class="sectionHeading">
+          <div>
+            <h2>Starter / Recovery Kits</h2>
+            <p class="hint">Hover or focus to preview contents. Tap a kit to review before sending.</p>
+          </div>
+          <button id="openKitBuilder" class="good" data-min-role="admin">🧰 Build Custom Kit</button>
+        </div>
+        <div id="kits" class="buttonGrid kitGrid"></div>
+      </section>
+
+      <section id="kitBuilderCard" class="card wide hidden" data-min-role="admin">
+        <div class="sectionHeading">
+          <div><h2>Custom Kit Builder</h2><p class="hint">Saved kits persist in <code>/app/data/custom-kits.json</code>.</p></div>
+          <button id="closeKitBuilder">Close</button>
+        </div>
+        <div class="builderTop">
+          <label>Kit name<input id="kitName" maxlength="60" placeholder="Nether Trip Kit" /></label>
+          <label>Kit icon<input id="kitIcon" maxlength="8" value="🎒" /></label>
+          <label class="span2">Description<input id="kitDescription" maxlength="240" placeholder="Gear for a safe Nether trip" /></label>
+        </div>
+        <div class="builderAddRow">
+          <label class="span2">Find item
+            <input id="kitItemSearch" list="itemOptions" placeholder="Search or type an item ID" autocomplete="off" />
+          </label>
+          <label>Amount<input id="kitItemAmount" type="number" min="1" max="2304" value="1" /></label>
+          <button id="addKitItem" class="good">➕ Add Item</button>
+        </div>
+        <datalist id="itemOptions"></datalist>
+        <div id="builderItems" class="builderItems"><p class="hint">No items added yet.</p></div>
+        <div class="builderBottom">
+          <label>XP levels (optional)<input id="kitXp" type="number" min="0" max="10000" value="0" /></label>
+          <button id="saveKit" class="good">💾 Save Custom Kit</button>
+          <button id="clearKit">🧹 Clear Builder</button>
+        </div>
+      </section>
+
+      <section class="card wide" data-min-role="operator">
+        <h2>Custom Give</h2>
+        <div class="formGrid">
+          <label>Item ID <input id="customItem" list="itemOptions" value="golden_apple" autocomplete="off" /></label>
+          <label>Amount <input id="customAmount" type="number" min="1" max="2304" value="3" /></label>
+          <button id="sendCustom" class="good">🎁 Give Item</button>
+        </div>
+        <p id="customItemHelp" class="hint">Type an item ID or use the complete item catalog.</p>
+      </section>
+
+      <section class="card wide" data-min-role="operator">
+        <h2>XP Buttons</h2>
+        <div id="xpButtons" class="buttonGrid"></div>
+      </section>
+
+      <section class="card wide raw hidden" id="rawCard">
+        <h2>Admin Raw Command</h2>
+        <div class="formGrid twoCol">
+          <label>Command <input id="rawCommand" placeholder="say Hello builders!" /></label>
+          <button id="sendRaw">Send Raw</button>
+        </div>
+      </section>
+
+      <section class="card wide">
+        <h2>Last Result</h2>
+        <pre id="result">Ready.</pre>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="kitDialog" class="modal">
+    <form method="dialog" class="modalCard">
+      <button class="modalClose" value="cancel" aria-label="Close">×</button>
+      <div id="kitDialogBody"></div>
+      <div class="modalActions">
+        <button value="cancel">Cancel</button>
+        <button id="deleteKit" type="button" class="danger hidden">Delete Custom Kit</button>
+        <button id="sendKit" type="button" class="good">Send Kit</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/app.js?v=2.1.0"></script>
+</body>
+</html>

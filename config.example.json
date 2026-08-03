@@ -1,0 +1,417 @@
+{
+  "appTitle": "CraftCommand Center",
+  "appSubtitle": "A mobile-friendly companion dashboard for binhex-minecraftbedrockserver on Unraid.",
+  "auth": {
+    "username": "admin",
+    "passwordHash": "scrypt$855959b37a41ef86b76f00d062674ea5$7a6516be98b534ae101d523b447d4ad150c64e5303b3b4e505a9123364de6e22e39542c02a8ae6fd3b8473b34768a1f320af1cd8b21f174b50609eeb35ccb098",
+    "sessionHours": 12,
+    "role": "admin",
+    "users": []
+  },
+  "minecraftContainerName": "binhex-minecraftbedrockserver",
+  "screenSession": "auto",
+  "dockerUser": "nobody",
+  "commandMethod": "attach",
+  "commandPrefix": "",
+  "allowRawCommand": false,
+  "players": [
+    {
+      "label": "Everyone",
+      "target": "@a"
+    }
+  ],
+  "links": [
+    {
+      "label": "Minecraft WebUI Console",
+      "url": "http://[IP]:8222",
+      "icon": "\ud83d\udda5\ufe0f"
+    },
+    {
+      "label": "Unraid Docker",
+      "url": "http://[IP]/Docker",
+      "icon": "\ud83d\udc33"
+    }
+  ],
+  "display": {
+    "defaultMode": "both",
+    "allowModeToggle": true
+  },
+  "itemCatalog": {
+    "release": "26.34/35",
+    "snapshotDate": "2026-08-03",
+    "file": "/item-catalog.json"
+  },
+  "quickItems": [
+    {
+      "label": "Stone Bricks x64",
+      "item": "stone_bricks",
+      "amount": 64
+    },
+    {
+      "label": "Coal x64",
+      "item": "coal",
+      "amount": 64
+    },
+    {
+      "label": "Diamond Sword x1",
+      "item": "diamond_sword",
+      "amount": 1
+    },
+    {
+      "label": "Netherite Pickaxe x1",
+      "item": "netherite_pickaxe",
+      "amount": 1
+    },
+    {
+      "label": "Netherite Axe x1",
+      "item": "netherite_axe",
+      "amount": 1
+    },
+    {
+      "label": "Netherite Hoe x1",
+      "item": "netherite_hoe",
+      "amount": 1
+    },
+    {
+      "label": "Netherite Shovel x1",
+      "item": "netherite_shovel",
+      "amount": 1
+    },
+    {
+      "label": "Netherite Leggings x1",
+      "item": "netherite_leggings",
+      "amount": 1
+    },
+    {
+      "label": "Netherite Boots x1",
+      "item": "netherite_boots",
+      "amount": 1
+    },
+    {
+      "label": "Netherite Chestplate x1",
+      "item": "netherite_chestplate",
+      "amount": 1
+    },
+    {
+      "label": "Netherite Helmet x1",
+      "item": "netherite_helmet",
+      "amount": 1
+    },
+    {
+      "label": "Dark Oak Door x1",
+      "item": "dark_oak_door",
+      "amount": 1
+    },
+    {
+      "label": "Chests x10",
+      "item": "chest",
+      "amount": 10
+    },
+    {
+      "label": "Hoppers x10",
+      "item": "hopper",
+      "amount": 10
+    },
+    {
+      "label": "Polished Blackstone Bricks x64",
+      "item": "polished_blackstone_bricks",
+      "amount": 64
+    },
+    {
+      "label": "Torches x64",
+      "item": "torch",
+      "amount": 64
+    },
+    {
+      "label": "Rails / Tracks x64",
+      "item": "rail",
+      "amount": 64
+    },
+    {
+      "label": "Powered Rails x64",
+      "item": "golden_rail",
+      "amount": 64
+    },
+    {
+      "label": "Redstone Torches x64",
+      "item": "redstone_torch",
+      "amount": 64
+    },
+    {
+      "label": "Redstone Dust x64",
+      "item": "redstone",
+      "amount": 64
+    }
+  ],
+  "kits": [
+    {
+      "id": "new-player",
+      "label": "New Player Starter Kit",
+      "description": "Safe starter gear for a new player joining the server.",
+      "items": [
+        {
+          "item": "stone_sword",
+          "amount": 1
+        },
+        {
+          "item": "stone_pickaxe",
+          "amount": 1
+        },
+        {
+          "item": "stone_axe",
+          "amount": 1
+        },
+        {
+          "item": "stone_shovel",
+          "amount": 1
+        },
+        {
+          "item": "bread",
+          "amount": 32
+        },
+        {
+          "item": "torch",
+          "amount": 64
+        },
+        {
+          "item": "oak_log",
+          "amount": 32
+        },
+        {
+          "item": "coal",
+          "amount": 32
+        },
+        {
+          "item": "chest",
+          "amount": 2
+        }
+      ],
+      "xp": {
+        "amount": 2,
+        "levels": true
+      }
+    },
+    {
+      "id": "death-basic",
+      "label": "Death Recovery Kit",
+      "description": "Quick replacement gear after someone dies and needs to recover their stuff.",
+      "items": [
+        {
+          "item": "iron_sword",
+          "amount": 1
+        },
+        {
+          "item": "iron_pickaxe",
+          "amount": 1
+        },
+        {
+          "item": "iron_axe",
+          "amount": 1
+        },
+        {
+          "item": "iron_shovel",
+          "amount": 1
+        },
+        {
+          "item": "shield",
+          "amount": 1
+        },
+        {
+          "item": "bread",
+          "amount": 32
+        },
+        {
+          "item": "torch",
+          "amount": 64
+        },
+        {
+          "item": "chest",
+          "amount": 1
+        }
+      ],
+      "xp": {
+        "amount": 2,
+        "levels": true
+      }
+    },
+    {
+      "id": "death-netherite",
+      "label": "Big Recovery Kit",
+      "description": "Heavy-duty recovery kit with netherite gear and golden apples.",
+      "items": [
+        {
+          "item": "netherite_sword",
+          "amount": 1
+        },
+        {
+          "item": "netherite_pickaxe",
+          "amount": 1
+        },
+        {
+          "item": "netherite_axe",
+          "amount": 1
+        },
+        {
+          "item": "netherite_shovel",
+          "amount": 1
+        },
+        {
+          "item": "netherite_helmet",
+          "amount": 1
+        },
+        {
+          "item": "netherite_chestplate",
+          "amount": 1
+        },
+        {
+          "item": "netherite_leggings",
+          "amount": 1
+        },
+        {
+          "item": "netherite_boots",
+          "amount": 1
+        },
+        {
+          "item": "shield",
+          "amount": 1
+        },
+        {
+          "item": "golden_apple",
+          "amount": 3
+        },
+        {
+          "item": "cooked_beef",
+          "amount": 32
+        },
+        {
+          "item": "torch",
+          "amount": 64
+        }
+      ],
+      "xp": {
+        "amount": 5,
+        "levels": true
+      }
+    },
+    {
+      "id": "mining-kit",
+      "label": "Mining Kit",
+      "description": "Torches, food, tools, rails, and storage for a mining trip.",
+      "items": [
+        {
+          "item": "iron_pickaxe",
+          "amount": 2
+        },
+        {
+          "item": "iron_shovel",
+          "amount": 1
+        },
+        {
+          "item": "torch",
+          "amount": 128
+        },
+        {
+          "item": "coal",
+          "amount": 64
+        },
+        {
+          "item": "bread",
+          "amount": 32
+        },
+        {
+          "item": "chest",
+          "amount": 4
+        },
+        {
+          "item": "rail",
+          "amount": 64
+        },
+        {
+          "item": "golden_rail",
+          "amount": 32
+        },
+        {
+          "item": "redstone_torch",
+          "amount": 16
+        }
+      ]
+    },
+    {
+      "id": "enchanting-kit",
+      "label": "Enchanting Kit",
+      "description": "Enchanting table setup supplies: table, bookshelves, lapis, books, anvil, grindstone, and XP.",
+      "items": [
+        {
+          "item": "enchanting_table",
+          "amount": 1
+        },
+        {
+          "item": "bookshelf",
+          "amount": 15
+        },
+        {
+          "item": "lapis_lazuli",
+          "amount": 64
+        },
+        {
+          "item": "book",
+          "amount": 64
+        },
+        {
+          "item": "anvil",
+          "amount": 1
+        },
+        {
+          "item": "grindstone",
+          "amount": 1
+        },
+        {
+          "item": "experience_bottle",
+          "amount": 32
+        }
+      ],
+      "xp": {
+        "amount": 30,
+        "levels": true
+      }
+    }
+  ],
+  "xpButtons": [
+    {
+      "label": "+2 Levels",
+      "amount": 2,
+      "levels": true
+    },
+    {
+      "label": "+5 Levels",
+      "amount": 5,
+      "levels": true
+    },
+    {
+      "label": "+100 XP",
+      "amount": 100,
+      "levels": false
+    }
+  ],
+  "confirmKits": true,
+  "customKitsFile": "/app/data/custom-kits.json",
+  "manualPlayersFile": "/app/data/manual-players.json",
+  "playerDiscovery": {
+    "autoRefreshOnBoot": true,
+    "autoRefreshOnPageLoad": false,
+    "useDockerLogs": true,
+    "dockerLogTail": 50000,
+    "useServerFiles": true,
+    "useOnlineList": true,
+    "onlineListTimeoutMs": 15000
+  },
+  "autoRefreshAttachmentOnBoot": true,
+  "refreshAttachmentBeforeCommand": true,
+  "showRawOutput": false,
+  "commandTimeoutMs": 15000,
+  "audit": {
+    "enabled": true,
+    "file": "/app/data/activity.jsonl",
+    "maxEntries": 2000
+  }
+}

@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest a safer or easier workflow
+title: "[Feature]: "
+labels: ["enhancement", "beta-feedback"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is difficult today?
+      description: Describe the job you are trying to complete, not only the proposed button.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Suggested improvement
+    validations:
+      required: true
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Who needs it?
+      options: [Server admin, Parent/family operator, Read-only viewer, Beta installer]
+    validations:
+      required: true

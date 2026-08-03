@@ -1,0 +1,50 @@
+name: Beta bug report
+description: Report a problem with CraftCommand Center
+title: "[Bug]: "
+labels: ["bug", "beta"]
+body:
+  - type: markdown
+    attributes:
+      value: "Please remove passwords, public IP addresses, and other secrets before posting logs."
+  - type: input
+    id: version
+    attributes:
+      label: CraftCommand Center version
+      description: Shown on Help or At a Glance.
+      placeholder: 2.1.0
+    validations:
+      required: true
+  - type: input
+    id: unraid
+    attributes:
+      label: Unraid version
+      placeholder: 7.x
+    validations:
+      required: true
+  - type: input
+    id: binhex
+    attributes:
+      label: Binhex container name and image tag
+      placeholder: binhex-minecraftbedrockserver
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Include the button/action used and the result you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics and logs
+      description: Copy the Help diagnostics and relevant container logs. Remove secrets.
+      render: shell
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options: [Desktop browser, Android phone/tablet, iPhone/iPad, Other]
+    validations:
+      required: true

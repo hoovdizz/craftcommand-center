@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101827" />
+  <title>Accounts | CraftCommand Center</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="/styles.css?v=2.1.0" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img class="appLogo" src="/icon.png" alt="CraftCommand Center logo" />
+      <div><h1>Dashboard Accounts</h1><p>Create safer viewer and operator access without sharing the main admin password.</p></div>
+    </div>
+    <nav class="topActions">
+      <a class="navButton" href="/">Dashboard</a>
+      <a class="navButton" href="/items.html">Item Catalog</a>
+      <a class="navButton" href="/activity.html">Activity</a>
+      <a class="navButton active" href="/accounts.html">Accounts</a>
+      <a class="navButton" href="/help.html">Help</a>
+      <span id="userBadge" class="badge">Signed in</span>
+    </nav>
+  </header>
+  <main class="catalogMain">
+    <section class="card wide">
+      <h2>Access levels</h2>
+      <div class="roleCards">
+        <article><strong>Viewer</strong><p>Can view status, known players, kits, the item catalog, and activity. Cannot send commands.</p></article>
+        <article><strong>Operator</strong><p>Can send item, XP, and kit commands and refresh player/attachment data.</p></article>
+        <article><strong>Admin</strong><p>Can also manage accounts, manually save players, create/delete kits, and clear activity.</p></article>
+      </div>
+    </section>
+    <section class="card wide">
+      <div class="sectionHeading"><div><h2>Accounts</h2><p class="hint">The primary admin is controlled by the Unraid template. Additional accounts are saved in <code>/app/data/users.json</code>.</p></div><button id="refreshUsers" class="warn">🔄 Refresh</button></div>
+      <div id="accountList" class="accountList"></div>
+    </section>
+    <section class="card wide">
+      <h2>Add or replace an account</h2>
+      <form id="accountForm" class="accountForm">
+        <label>Username<input id="accountUsername" minlength="3" maxlength="32" pattern="[A-Za-z0-9_.-]+" autocomplete="off" required /></label>
+        <label>Role<select id="accountRole"><option value="viewer">Viewer</option><option value="operator" selected>Operator</option><option value="admin">Admin</option></select></label>
+        <label>New password<input id="accountPassword" type="password" minlength="10" autocomplete="new-password" required /></label>
+        <label>Confirm password<input id="accountPasswordConfirm" type="password" minlength="10" autocomplete="new-password" required /></label>
+        <button class="good" type="submit">➕ Save Account</button>
+      </form>
+      <p id="accountResult" class="notice">Ready.</p>
+    </section>
+  </main>
+  <script src="/accounts.js?v=2.1.0"></script>
+</body>
+</html>
