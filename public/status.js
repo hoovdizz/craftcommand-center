@@ -28,6 +28,7 @@ async function request(path, options = {}) {
 function setResult(message) { $('#statusResult').textContent = typeof message === 'string' ? message : JSON.stringify(message, null, 2); }
 function renderServerLinks(config) {
   const box = $('#serverLinks');
+  if (!box || !can('admin')) return;
   box.innerHTML = '';
   for (const link of config.links || []) {
     const anchor = document.createElement('a');
@@ -70,6 +71,7 @@ function renderOverview(data) {
   const docker = data.docker || {};
   const last = data.lastPlayerConnection;
   $('#serverStats').innerHTML = [
+    ['World', data.world?.name || 'Not detected'],
     ['Container', docker.running ? 'Running' : docker.status || 'Not running'],
     ['Uptime', docker.running ? formatDuration(docker.uptimeSeconds) : 'Not running'],
     ['Started', formatTime(docker.startedAt)],
@@ -122,7 +124,7 @@ async function init() {
   applyRole();
   const [config] = await Promise.all([request('/api/config'), loadDiagnostics(), loadOverview(false), loadBackups()]);
   document.body.dataset.display = localStorage.getItem('cccDisplayMode') || config.display?.defaultMode || 'text';
-  renderServerLinks(config);
+  if (can('admin')) renderServerLinks(config);
 }
 $('#runDiagnostics').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await loadDiagnostics(); setResult('Diagnostics refreshed.'); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });
 $('#refreshOverview').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await loadOverview(true); setResult('Server status refreshed.'); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });

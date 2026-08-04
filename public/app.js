@@ -5,6 +5,7 @@ let kits = [];
 let selectedKit = null;
 let builderItems = [];
 let currentUser = { username: '', role: 'viewer' };
+let editingTeleportIndex = null;
 
 const ROLE_LEVEL = { viewer: 0, operator: 1, admin: 2 };
 function can(minimum) { return (ROLE_LEVEL[currentUser.role] ?? 0) >= (ROLE_LEVEL[minimum] ?? 0); }
@@ -47,6 +48,10 @@ function show(data) {
   }
   if (data?.ok && typeof data.kit === 'string') {
     result.textContent = `✅ Sent kit: ${data.kit}\nCommands sent: ${data.sent ?? data.commands?.length ?? 0}\n\n${(data.commands || []).map(c => '• ' + c).join('\n')}`;
+    return;
+  }
+  if (data?.ok && data.command && data.warning) {
+    result.textContent = `Sent command\n${data.command}\n\nScreen: ${data.activeScreenSession || 'auto'}\nMethod: ${data.method || 'attach'}\nWarning: ${data.warning}`;
     return;
   }
   if (data?.ok && data.command) {
@@ -148,6 +153,19 @@ function renderPlayers(data) {
 }
 async function loadPlayers() { const data = await request('/api/players'); renderPlayers(data); return data; }
 async function loadStatus() { const data = await request('/api/status'); renderAttachment(data.attachment); return data; }
+function renderWorldConnection(world) {
+  const element = $('#worldConnection');
+  if (!element) return;
+  const name = String(world?.name || '').trim();
+  element.textContent = name ? `Connected to: ${name}` : 'Connected world: not detected';
+  element.classList.toggle('unavailable', !name);
+  element.title = name ? `Bedrock level-name: ${name}` : (world?.error || 'The Bedrock world name could not be detected.');
+}
+async function loadWorldConnection() {
+  const data = await request('/api/world');
+  renderWorldConnection(data.world);
+  return data;
+}
 
 function makeVisualButton({ label, icon='◼️', itemId='', subtext='', className='', click, tooltip='' }) {
   const b = document.createElement('button');
@@ -240,6 +258,35 @@ function teleportDimensionLabel(value) {
   return ({ current: 'Current dimension', overworld: 'Overworld', nether: 'Nether', the_end: 'The End' })[value] || value;
 }
 
+function resetTeleportEditor() {
+  editingTeleportIndex = null;
+  if (!$('#teleportEditorHeading')) return;
+  $('#teleportEditorHeading').textContent = 'Add a teleport location';
+  $('#addTeleportLocation').textContent = 'Add location';
+  $('#cancelTeleportEdit').classList.add('hidden');
+  $('#teleportTitle').value = '';
+  $('#teleportDimension').value = 'current';
+  $('#teleportX').value = '0';
+  $('#teleportY').value = '64';
+  $('#teleportZ').value = '0';
+}
+
+function editTeleportLocation(index) {
+  const location = (cfg.teleportLocations || [])[index];
+  if (!location) return show('That teleport location is no longer available.');
+  editingTeleportIndex = index;
+  $('#teleportEditorHeading').textContent = `Edit ${location.title}`;
+  $('#addTeleportLocation').textContent = 'Save changes';
+  $('#cancelTeleportEdit').classList.remove('hidden');
+  $('#teleportTitle').value = location.title;
+  $('#teleportDimension').value = location.dimension;
+  $('#teleportX').value = String(location.x);
+  $('#teleportY').value = String(location.y);
+  $('#teleportZ').value = String(location.z);
+  $('#teleportLocationManager').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  $('#teleportTitle').focus();
+}
+
 function renderTeleportLocations() {
   const box = $('#teleportLocations');
   if (!box) return;
@@ -270,6 +317,13 @@ function renderTeleportLocations() {
       handle.setAttribute('aria-label', `Drag ${location.title} to reorder`);
       handle.draggable = true;
       wrap.appendChild(handle);
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'teleportLocationEdit';
+      edit.textContent = 'Edit';
+      edit.setAttribute('aria-label', `Edit ${location.title}`);
+      edit.addEventListener('click', () => editTeleportLocation(index));
+      wrap.appendChild(edit);
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.className = 'danger quickItemRemove';
@@ -279,6 +333,7 @@ function renderTeleportLocations() {
         if (!confirm(`Remove teleport location “${location.title}”?`)) return;
         const data = await api('/api/teleport-locations/delete', { index });
         cfg.teleportLocations = data.teleportLocations || [];
+        resetTeleportEditor();
         renderTeleportLocations();
       });
       wrap.appendChild(remove);
@@ -349,6 +404,7 @@ function setupManagedButtonDrag(box, endpoint, collectionKey, renderCollection, 
     const order = [...box.querySelectorAll('.managedButtonWrap')].map(element => Number(element.dataset.managedIndex));
     const data = await api(endpoint, { order });
     cfg[collectionKey] = data[collectionKey] || [];
+    if (collectionKey === 'teleportLocations') resetTeleportEditor();
     renderCollection();
   };
 
@@ -483,7 +539,9 @@ async function saveBuilderKit() {
 
 async function initializeApp() {
   showApp();
-  [cfg, catalog] = await Promise.all([request('/api/config'), fetch('/item-catalog.json',{cache:'no-store'}).then(r=>r.json())]);
+  const loaded = await Promise.all([request('/api/config'), fetch('/item-catalog.json',{cache:'no-store'}).then(r=>r.json()), request('/api/world')]);
+  [cfg, catalog] = loaded;
+  renderWorldConnection(loaded[2].world);
   catalogMap = new Map(catalog.items.map(i=>[i.id,i]));
   currentUser = cfg.currentUser || currentUser;
   applyRoleAccess();
@@ -514,6 +572,7 @@ $('#sendCustom').addEventListener('click',()=>api('/api/give',{target:target(),i
 $('#manageTeleportLocations')?.addEventListener('click', () => {
   $('#teleportLocationManager').classList.toggle('hidden');
   $('#manageTeleportLocations').textContent = $('#teleportLocationManager').classList.contains('hidden') ? 'Manage locations' : 'Done managing';
+  if ($('#teleportLocationManager').classList.contains('hidden')) resetTeleportEditor();
   renderTeleportLocations();
 });
 $('#addTeleportLocation')?.addEventListener('click', async () => {
@@ -527,15 +586,18 @@ $('#addTeleportLocation')?.addEventListener('click', async () => {
     y: Number($('#teleportY').value),
     z: Number($('#teleportZ').value)
   };
-  const data = await api('/api/teleport-locations/add', location);
+  const editing = editingTeleportIndex !== null;
+  const data = await api(editing ? '/api/teleport-locations/update' : '/api/teleport-locations/add', editing ? { ...location, index: editingTeleportIndex } : location);
   cfg.teleportLocations = data.teleportLocations || [];
-  $('#teleportTitle').value = '';
+  resetTeleportEditor();
   renderTeleportLocations();
 });
+$('#cancelTeleportEdit')?.addEventListener('click', resetTeleportEditor);
 $('#resetTeleportLocations')?.addEventListener('click', async () => {
   if (!confirm('Remove every saved teleport location?')) return;
   const data = await api('/api/teleport-locations/reset', {});
   cfg.teleportLocations = data.teleportLocations || [];
+  resetTeleportEditor();
   renderTeleportLocations();
 });
 $('#openKitBuilder').addEventListener('click',()=>{$('#kitBuilderCard').classList.remove('hidden');$('#kitBuilderCard').scrollIntoView({behavior:'smooth'});}); $('#closeKitBuilder').addEventListener('click',()=>$('#kitBuilderCard').classList.add('hidden'));

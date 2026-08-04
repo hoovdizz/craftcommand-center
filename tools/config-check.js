@@ -73,7 +73,26 @@ for (const [title, expected] of Object.entries(recipeRegressions)) {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`Incorrect audited recipe supplies: ${title}`);
 }
 const serverSource = fs.readFileSync(path.join(root, 'server.js'), 'utf8');
-for (const requiredCommand of ['time set ${time}', 'tp ${target} ${clean.x} ${clean.y} ${clean.z} true', 'execute in ${clean.dimension} run ${command}']) {
+for (const requiredCommand of [
+  'time set ${time}',
+  'tp ${target} ${clean.x} ${clean.y} ${clean.z} true',
+  'execute in ${clean.dimension} run ${command}',
+  'tickingarea add circle ${clean.x} ${clean.y} ${clean.z} 1 ${areaName} true',
+  'tickingarea remove ${areaName}'
+]) {
   if (!serverSource.includes(requiredCommand)) throw new Error(`Missing validated world-control command: ${requiredCommand}`);
 }
+if (!serverSource.includes("session?.role === 'admin' && Array.isArray(copy.links)")) throw new Error('Home Server Links must be restricted to admins in the API');
+if (!serverSource.includes("/^level-name\\s*=\\s*(.*?)\\s*$/mi")) throw new Error('Bedrock level-name discovery is missing');
+const dashboardHtml = fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8');
+const dashboardSource = fs.readFileSync(path.join(root, 'public', 'app.js'), 'utf8');
+const statusHtml = fs.readFileSync(path.join(root, 'public', 'status.html'), 'utf8');
+if (!dashboardHtml.includes('id="worldConnection"') || !dashboardSource.includes("request('/api/world')")) throw new Error('Dashboard world connection label is incomplete');
+if (!serverSource.includes("url.pathname === '/api/teleport-locations/update'") || !dashboardSource.includes("'/api/teleport-locations/update'")) {
+  throw new Error('Teleport location in-place editing is incomplete');
+}
+for (const editorId of ['teleportEditorHeading', 'cancelTeleportEdit']) {
+  if (!dashboardHtml.includes(`id="${editorId}"`)) throw new Error(`Missing teleport editor control: ${editorId}`);
+}
+if (!statusHtml.includes('data-min-role="admin">\n      <h2>Home Server Links</h2>')) throw new Error('Home Server Links status card must be admin-only');
 console.log(`Config check OK: ${catalog.items.length} items, ${achievements.achievements.length} achievements, Bedrock ${catalog.metadata.minecraftRelease}`);

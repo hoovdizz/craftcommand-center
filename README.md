@@ -10,7 +10,7 @@ General game panels such as Pterodactyl, PufferPanel, Crafty Controller, AMP, an
 
 | Component | Version |
 |---|---|
-| CraftCommand Center | **2.3.0-beta.3** |
+| CraftCommand Center | **2.3.0-beta.6** |
 | Bundled Bedrock item catalog | **26.34/35** |
 | Item identifiers | **1,914** |
 | Bedrock achievement records | **131** |
@@ -18,9 +18,9 @@ General game panels such as Pterodactyl, PufferPanel, Crafty Controller, AMP, an
 
 CraftCommand Center uses semantic prerelease versions:
 
-- `2.3.0-beta.3` identifies the application release.
+- `2.3.0-beta.6` identifies the application release.
 - `2.3` is the feature line.
-- `beta.3` is the prerelease iteration and may change before the stable `2.3.0` release.
+- `beta.6` is the prerelease iteration and may change before the stable `2.3.0` release.
 - GHCR publishes `latest`, version tags, and immutable commit-SHA tags.
 
 The application version is defined in `package.json`, shown by diagnostics, and used to identify support reports. The Minecraft release tag is tracked separately because Mojang item data can change independently of the dashboard.
@@ -44,7 +44,8 @@ The application version is defined in `package.json`, shown by diagnostics, and 
 - Persistent Quick Item ordering and configuration across container updates
 - Quick Item, custom item, and clearly labeled XP actions
 - Day and night world-time controls
-- Persistent, custom-titled teleport buttons with XYZ coordinates, optional dimension changes, player targeting, drag reordering, and collision-safe arrival checks
+- Persistent, custom-titled teleport buttons with in-place editing, XYZ coordinates, optional dimension changes, player targeting, drag reordering, temporary destination-chunk preloading, and collision-safe arrival checks
+- Dashboard connection label showing the active Bedrock `level-name`
 - Starter, recovery, mining, and enchanting kits
 - Kit previews, confirmation dialogs, inventory artwork, and a persistent custom-kit builder
 - Searchable Bedrock item catalog with 1,914 identifiers, categories, descriptions, and give buttons
@@ -68,7 +69,8 @@ Achievement progress is not read from or written to Microsoft or PlayStation acc
 - Persistent activity history showing who sent each action, its target, and whether it succeeded
 - Operators and viewers can only read their own activity; admins can review the full audit trail
 - Automatic rediscovery of GNU screen names such as `140.minecraft` after server or container restarts
-- Dedicated **Status** tab with Docker uptime, last player connection, online players, whitelist, blacklist, permissions, public Bedrock UDP reachability, and Home Server Links
+- Dedicated **Status** tab with Docker uptime, last player connection, online players, whitelist, blacklist, permissions, and public Bedrock UDP reachability
+- Admin-only Home Server Links on the Status tab
 - At-a-Glance diagnostics for Docker, appdata, authentication, backup storage, the public endpoint, and the active screen session
 - Admin-only compressed server backup/export with persistent Unraid storage and browser download
 - Unraid DockerMan template for normal **Edit**, port settings, credentials, icon, WebUI, and GHCR updates

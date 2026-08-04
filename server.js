@@ -485,6 +485,16 @@ function addTeleportLocation(cfg, entry) {
   return { location, teleportLocations: writeTeleportLocations(locations) };
 }
 
+function updateTeleportLocation(cfg, index, entry) {
+  const locations = readTeleportLocations(cfg);
+  const position = Number(index);
+  if (!Number.isInteger(position) || position < 0 || position >= locations.length) throw new Error('Teleport location was not found');
+  const previous = locations[position];
+  const location = sanitizeTeleportLocation(entry);
+  locations[position] = location;
+  return { previous, location, teleportLocations: writeTeleportLocations(locations) };
+}
+
 function deleteTeleportLocation(cfg, index) {
   const locations = readTeleportLocations(cfg);
   const position = Number(index);
@@ -511,6 +521,87 @@ function teleportCommand(location, target) {
   const clean = sanitizeTeleportLocation(location);
   const command = `tp ${target} ${clean.x} ${clean.y} ${clean.z} true`;
   return clean.dimension === 'current' ? command : `execute in ${clean.dimension} run ${command}`;
+}
+
+function teleportPreloadPlan(location, target) {
+  const clean = sanitizeTeleportLocation(location);
+  const areaName = `ccc_tp_${Date.now().toString(36)}_${crypto.randomBytes(3).toString('hex')}`;
+  const add = `tickingarea add circle ${clean.x} ${clean.y} ${clean.z} 1 ${areaName} true`;
+  const dimensions = ['overworld', 'nether', 'the_end'];
+  const addCommands = clean.dimension === 'current'
+    ? (target.startsWith('@') ? dimensions.map(dimension => `execute in ${dimension} run ${add}`) : [`execute at ${target} run ${add}`])
+    : [`execute in ${clean.dimension} run ${add}`];
+  const cleanupDimensions = clean.dimension === 'current' ? dimensions : [clean.dimension];
+  return {
+    addCommands,
+    teleport: teleportCommand(clean, target),
+    cleanupCommands: cleanupDimensions.map(dimension => `execute in ${dimension} run tickingarea remove ${areaName}`)
+  };
+}
+
+function commandOutput(result) {
+  return stripAnsi(`${result?.stdout || ''}\n${result?.stderr || ''}`).trim();
+}
+
+function teleportOutputFailed(result) {
+  return /unable to teleport|no targets matched|syntax error|unknown command|failed to execute/i.test(commandOutput(result));
+}
+
+function conciseCommandFailure(result, fallback) {
+  const output = commandOutput(result);
+  const lines = output.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  const meaningful = lines.filter(line => /unable to teleport|unloaded area|ticking area|no targets matched|syntax error|unknown command|failed to execute/i.test(line)).pop();
+  return meaningful || (output ? output.slice(-800) : fallback);
+}
+
+async function runTeleportWithPreload(location, target, cfg) {
+  const plan = teleportPreloadPlan(location, target);
+  const rawCfg = { ...cfg, showRawOutput: true };
+  const results = [];
+  let preloadOk = true;
+  for (const command of plan.addCommands) {
+    const result = await runMinecraftCommand(command, rawCfg);
+    results.push(result);
+    if (!result.ok || /could not add ticking area|maximum number of ticking areas|syntax error|failed to execute/i.test(commandOutput(result))) {
+      preloadOk = false;
+      break;
+    }
+  }
+
+  let teleportResult = null;
+  if (preloadOk) {
+    await sleep(750);
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      teleportResult = await runMinecraftCommand(plan.teleport, rawCfg);
+      results.push(teleportResult);
+      const unloaded = /unloaded area/i.test(commandOutput(teleportResult));
+      if (teleportResult.ok && !teleportOutputFailed(teleportResult)) break;
+      if (!unloaded || attempt === 2) break;
+      await sleep(1000);
+    }
+  }
+
+  const cleanupResults = [];
+  for (const command of plan.cleanupCommands) {
+    const result = await runMinecraftCommand(command, rawCfg);
+    cleanupResults.push(result);
+    await sleep(75);
+  }
+
+  const ok = preloadOk && Boolean(teleportResult?.ok) && !teleportOutputFailed(teleportResult);
+  const failure = !preloadOk
+    ? conciseCommandFailure(results.find(result => !result.ok || /could not add ticking area|maximum number of ticking areas|syntax error|failed to execute/i.test(commandOutput(result))), 'Could not preload the destination chunks')
+    : (!ok ? conciseCommandFailure(teleportResult, 'Teleport command failed') : null);
+  const cleanupFailed = cleanupResults.some(result => !result.ok);
+  return {
+    ok,
+    command: plan.teleport,
+    activeScreenSession: teleportResult?.activeScreenSession || results[0]?.activeScreenSession || null,
+    method: teleportResult?.method || results[0]?.method || cfg.commandMethod || 'attach',
+    error: failure,
+    warning: cleanupFailed ? 'The teleport completed, but one or more temporary ticking-area cleanup commands could not be sent.' : null,
+    commands: results.length + cleanupResults.length
+  };
 }
 
 
@@ -894,6 +985,49 @@ function markedFileSections(text) {
   return sections;
 }
 
+let worldIdentityCache = null;
+let worldIdentityInFlight = null;
+async function getWorldIdentity(cfg, force = false) {
+  const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+  const now = Date.now();
+  if (!force && worldIdentityCache?.container === container && now - worldIdentityCache.cachedAt < 30000) return worldIdentityCache.value;
+  if (worldIdentityInFlight) return worldIdentityInFlight;
+  worldIdentityInFlight = (async () => {
+    const shell = String.raw`set +e
+for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
+  if [ -d "$p" ]; then
+    find "$p" -maxdepth 6 -iname 'server.properties' -type f -print 2>/dev/null
+  fi
+done | sort -u | while IFS= read -r f; do
+  echo "__CCC_FILE__:$f"
+  cat "$f" 2>/dev/null || true
+  echo "__CCC_END__"
+done`;
+    const result = await runDocker(['exec', '-u', 'root', container, 'bash', '-lc', shell], 10000);
+    const sections = markedFileSections(result.stdout || '');
+    for (const section of sections) {
+      const match = section.content.match(/^level-name\s*=\s*(.*?)\s*$/mi);
+      const name = String(match?.[1] || '').trim();
+      if (name) {
+        const value = { connected: true, name: name.slice(0, 120), checkedAt: new Date().toISOString(), error: null };
+        worldIdentityCache = { container, cachedAt: Date.now(), value };
+        return value;
+      }
+    }
+    const detail = stripAnsi(result.stderr || '').trim();
+    const value = {
+      connected: false,
+      name: null,
+      checkedAt: new Date().toISOString(),
+      error: result.ok ? 'The level-name setting was not found in server.properties' : (detail || 'Could not read server.properties')
+    };
+    worldIdentityCache = { container, cachedAt: Date.now(), value };
+    return value;
+  })();
+  try { return await worldIdentityInFlight; }
+  finally { worldIdentityInFlight = null; }
+}
+
 function accessRecordsFromJson(value, source, out = []) {
   if (Array.isArray(value)) {
     for (const entry of value) accessRecordsFromJson(entry, source, out);
@@ -970,12 +1104,13 @@ async function getServerOverview(cfg, force = false) {
   if (serverOverviewInFlight) return serverOverviewInFlight;
   serverOverviewInFlight = (async () => {
     const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
-    const [inspectResult, logsResult, access, online, external] = await Promise.all([
+    const [inspectResult, logsResult, access, online, external, world] = await Promise.all([
       runDocker(['inspect', container], 10000),
       runDocker(['logs', '--timestamps', '--tail', '20000', container], 15000),
       readServerAccessLists(cfg),
       queryOnlinePlayers(cfg),
-      checkExternalReachability(cfg)
+      checkExternalReachability(cfg),
+      getWorldIdentity(cfg, force)
     ]);
     let docker = { running: false, status: 'unknown', startedAt: null, uptimeSeconds: 0, image: null, restartCount: 0, error: null };
     if (inspectResult.ok) {
@@ -1002,6 +1137,7 @@ async function getServerOverview(cfg, force = false) {
       docker,
       online,
       lastPlayerConnection: parseLastPlayerConnection(logs),
+      world,
       access,
       external,
       attachment: publicAttachmentState(cfg)
@@ -1777,9 +1913,9 @@ function publicConfig(cfg, req, session = null) {
     transportEncrypted: requestIsHttps(req),
     note: requestIsHttps(req) ? 'HTTPS transport detected.' : 'HTTP detected. Use an HTTPS reverse proxy for encrypted transport.'
   };
-  if (Array.isArray(copy.links)) {
+  if (session?.role === 'admin' && Array.isArray(copy.links)) {
     copy.links = copy.links.map(link => ({ ...link, url: resolveTemplateUrl(link.url, req) }));
-  }
+  } else delete copy.links;
   if (copy.backup) copy.backup = { enabled: copy.backup.enabled !== false };
   if (copy.externalServer) copy.externalServer = { enabled: copy.externalServer.enabled === true, host: copy.externalServer.host || '', port: Number(copy.externalServer.port || 19132), mode: copy.externalServer.mode || 'external' };
   return copy;
@@ -1850,7 +1986,12 @@ async function handleApi(req, res, url, cfg) {
     }
 
     if (req.method === 'GET' && url.pathname === '/api/status') {
-      json(res, 200, { ok: true, attachment: publicAttachmentState(cfg) });
+      json(res, 200, { ok: true, attachment: publicAttachmentState(cfg), world: await getWorldIdentity(cfg) });
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/world') {
+      json(res, 200, { ok: true, world: await getWorldIdentity(cfg) });
       return;
     }
 
@@ -2031,6 +2172,14 @@ async function handleApi(req, res, url, cfg) {
       return;
     }
 
+    if (url.pathname === '/api/teleport-locations/update') {
+      requireRole(session, 'admin');
+      const saved = updateTeleportLocation(cfg, body.index, body);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'update-teleport-location', summary: `Updated teleport button ${saved.previous.title} to ${saved.location.title}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, ...saved });
+      return;
+    }
+
     if (url.pathname === '/api/teleport-locations/delete') {
       requireRole(session, 'admin');
       const deleted = deleteTeleportLocation(cfg, body.index);
@@ -2073,9 +2222,8 @@ async function handleApi(req, res, url, cfg) {
       if (!Number.isInteger(position) || position < 0 || position >= locations.length) throw new Error('Teleport location was not found');
       const location = locations[position];
       const target = getTarget(body.target, cfg);
-      const command = teleportCommand(location, target);
-      const result = await runMinecraftCommand(command, cfg);
-      appendActivity(cfg, { username: session.username, role: session.role, action: 'teleport-player', target: body.target || null, summary: `Teleported to ${location.title} (${location.dimension}: ${location.x}, ${location.y}, ${location.z})`, ok: result.ok, error: result.ok ? null : (result.stderr || result.error), commands: result.ok ? 1 : 0, ip: clientIp(req) });
+      const result = await runTeleportWithPreload(location, target, cfg);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'teleport-player', target: body.target || null, summary: `Teleported to ${location.title} (${location.dimension}: ${location.x}, ${location.y}, ${location.z})`, ok: result.ok, error: result.ok ? null : result.error, commands: result.commands, ip: clientIp(req) });
       json(res, result.ok ? 200 : 500, { ...result, location });
       return;
     }
