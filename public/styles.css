@@ -108,6 +108,8 @@ a { color: inherit; }
 .brand { display: flex; align-items: center; gap: .85rem; min-width: 0; }
 .brand h1 { margin: 0; font-size: clamp(1.35rem, 3vw, 2rem); line-height: 1.1; }
 .brand p { margin: .22rem 0 0; font-size: .9rem; }
+.brand .worldConnection { color: var(--accent2); font-weight: 850; }
+.brand .worldConnection.unavailable { color: var(--warn); }
 .appLogo { width: 68px; height: 68px; flex: 0 0 68px; object-fit: contain; border-radius: 16px; background: rgba(255,255,255,.06); box-shadow: 0 8px 22px rgba(0,0,0,.3); }
 .topActions { display: flex; flex-wrap: wrap; align-items: end; justify-content: flex-end; gap: .55rem; }
 .navButton, button, .linkButton { border: 1px solid var(--button-border); background: var(--button); color: var(--text); border-radius: 13px; padding: .72rem .86rem; font-weight: 800; cursor: pointer; text-decoration: none; text-align: center; transition: transform .12s ease, background .12s ease, border-color .12s ease; }
@@ -152,6 +154,7 @@ input:focus, select:focus { outline: 2px solid var(--focus); border-color: var(-
 .quickItemWrap { position: relative; min-width: 0; }
 .quickItemWrap .itemButton { width: 100%; height: 100%; }
 .quickItemRemove { position: absolute; z-index: 2; top: -.45rem; right: -.35rem; width: 2rem; height: 2rem; padding: 0; border-radius: 50%; line-height: 1; }
+.teleportLocationEdit { position: absolute; z-index: 2; right: .35rem; bottom: -.35rem; padding: .32rem .58rem; border-radius: 999px; font-size: .72rem; line-height: 1; }
 .quickItemDrag { position: absolute; z-index: 2; top: -.45rem; left: -.35rem; display: grid; place-items: center; width: 2rem; height: 2rem; border: 1px solid var(--button-border); border-radius: 50%; background: var(--button); color: var(--text); font-size: 1.25rem; font-weight: 900; cursor: grab; touch-action: none; user-select: none; }
 .quickItemDrag:active { cursor: grabbing; }
 .quickItemWrap.dragging { opacity: .62; transform: scale(.98); }
@@ -231,6 +234,7 @@ pre { white-space: pre-wrap; word-break: break-word; background: #08111e; border
 }
 @media (max-width: 430px) {
   .brand p { display: none; }
+  .brand p.worldConnection { display: block; font-size: .78rem; }
   .appLogo { width: 56px; height: 56px; flex-basis: 56px; }
   .buttonGrid { grid-template-columns: 1fr 1fr; }
   .itemButton, .kitButton { min-height: 72px; padding: .62rem; }

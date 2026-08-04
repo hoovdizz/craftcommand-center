@@ -11,8 +11,8 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="/theme.js?v=2.3.0-beta.3"></script>
-  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.3" />
+  <script src="/theme.js?v=2.3.0-beta.6"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.6" />
 </head>
 <body data-display="text">
   <section id="loginView" class="loginShell">
@@ -35,6 +35,7 @@
         <div>
           <h1 id="title">CraftCommand Center</h1>
           <p id="subtitle">Companion dashboard for binhex-minecraftbedrockserver.</p>
+          <p id="worldConnection" class="worldConnection">Connected to: detecting worldâ€¦</p>
         </div>
       </div>
       <nav class="topActions">
@@ -97,7 +98,7 @@
         <div id="teleportLocations" class="buttonGrid"></div>
         <p id="teleportLocationsEmpty" class="hint hidden">No teleport locations have been saved yet. An admin can add one with Manage locations.</p>
         <div id="teleportLocationManager" class="quickItemManager hidden" data-min-role="admin">
-          <h3>Add a teleport location</h3>
+          <h3 id="teleportEditorHeading">Add a teleport location</h3>
           <div class="teleportLocationForm">
             <label>Button title<input id="teleportTitle" maxlength="60" placeholder="Village Market" autocomplete="off" /></label>
             <label>Dimension
@@ -114,9 +115,10 @@
             <button id="addTeleportLocation" class="good" type="button">Add location</button>
           </div>
           <div class="buttonRow smallRow">
+            <button id="cancelTeleportEdit" class="hidden" type="button">Cancel edit</button>
             <button id="resetTeleportLocations" class="danger" type="button">Remove all saved locations</button>
           </div>
-          <p class="hint">Saved locations persist in <code>/app/data/teleport-locations.json</code>. Drag location buttons to rearrange them. Teleports use collision checking and fail instead of placing a player inside solid blocks.</p>
+          <p class="hint">Saved locations persist in <code>/app/data/teleport-locations.json</code>. Use Edit to change a saved button in place or drag buttons to rearrange them. Teleports temporarily preload destination chunks, use collision checking, and remove the temporary ticking area afterward.</p>
         </div>
       </section>
 
@@ -223,8 +225,8 @@
     </form>
   </dialog>
 
-  <script src="/item-icons.js?v=2.3.0-beta.3"></script>
-  <script src="/pwa.js?v=2.3.0-beta.3"></script>
-  <script src="/app.js?v=2.3.0-beta.3"></script>
+  <script src="/item-icons.js?v=2.3.0-beta.6"></script>
+  <script src="/pwa.js?v=2.3.0-beta.6"></script>
+  <script src="/app.js?v=2.3.0-beta.6"></script>
 </body>
 </html>
