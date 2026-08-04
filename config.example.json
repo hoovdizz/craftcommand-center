@@ -33,7 +33,7 @@
     }
   ],
   "display": {
-    "defaultMode": "text",
+    "defaultMode": "both",
     "allowModeToggle": true
   },
   "itemCatalog": {

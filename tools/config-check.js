@@ -17,7 +17,7 @@ const catalog = JSON.parse(fs.readFileSync(path.join(root, 'public/item-catalog.
 const achievements = JSON.parse(fs.readFileSync(path.join(root, 'public/achievements.json'), 'utf8'));
 if (config.minecraftContainerName !== 'binhex-minecraftbedrockserver') throw new Error('Unexpected default Minecraft container');
 if (config.screenSession !== 'auto' || config.commandMethod !== 'attach') throw new Error('Binhex attachment defaults are incorrect');
-if (config.display?.defaultMode !== 'text') throw new Error('Text-only must be the default button mode');
+if (config.display?.defaultMode !== 'both') throw new Error('Icon-and-text must be the default button mode');
 if (!Array.isArray(config.teleportLocations)) throw new Error('Teleport locations must be an array');
 if (config.backup?.sourcePath !== '/config' || config.backup?.directory !== '/app/backups') throw new Error('Backup defaults are incorrect');
 if (Number(config.externalServer?.port) !== 19132) throw new Error('External Bedrock port default is incorrect');

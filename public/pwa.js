@@ -1,10 +1,7 @@
 (() => {
   'use strict';
   let deferredPrompt = null;
-  if (localStorage.getItem('cccDisplayDefaultV220') !== '1') {
-    localStorage.setItem('cccDisplayMode', 'text');
-    localStorage.setItem('cccDisplayDefaultV220', '1');
-  }
+  if (!localStorage.getItem('cccDisplayMode')) localStorage.setItem('cccDisplayMode', 'both');
   const standalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
 

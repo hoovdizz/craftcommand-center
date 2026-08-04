@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.3.0 beta.6
+
+- Added editable, persistent teleport buttons with dimension selection and drag reordering
+- Added temporary destination-chunk preloading and cleanup for more reliable teleports
+- Added the active Bedrock world name to the dashboard and status overview
+- Restricted Home Server Links to administrators
+- Made icon-plus-text the default item-button mode while preserving saved browser preferences
+- Updated cache and application version metadata for the beta.6 release
+
 ## 2.3.0 beta.1
 
 - Added a searchable Bedrock achievement guide with system availability and completion instructions

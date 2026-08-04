@@ -123,7 +123,7 @@ async function init() {
   currentUser = { username: auth.username || '', role: auth.role || 'viewer' };
   applyRole();
   const [config] = await Promise.all([request('/api/config'), loadDiagnostics(), loadOverview(false), loadBackups()]);
-  document.body.dataset.display = localStorage.getItem('cccDisplayMode') || config.display?.defaultMode || 'text';
+  document.body.dataset.display = localStorage.getItem('cccDisplayMode') || config.display?.defaultMode || 'both';
   if (can('admin')) renderServerLinks(config);
 }
 $('#runDiagnostics').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await loadDiagnostics(); setResult('Diagnostics refreshed.'); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });

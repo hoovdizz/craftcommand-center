@@ -33,7 +33,7 @@ The application version is defined in `package.json`, shown by diagnostics, and 
 - Automatic button text and icon fitting when portrait-mode space is limited
 - Deep Ocean, Ember, and Daylight color schemes stored in the browser
 - Correct high-contrast native selectors, kit dialogs, item lists, and action buttons across themes
-- Text-only, icon-only, or icon-plus-text item display modes
+- Icon-plus-text item buttons by default, with optional text-only and icon-only display modes
 - XP labels remain visible in icon-only mode so level and point actions remain distinguishable
 - Installable PWA with Android installation and iPhone/iPad Add to Home Screen guidance located only under **Help**
 
