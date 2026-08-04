@@ -547,7 +547,7 @@ async function initializeApp() {
   applyRoleAccess();
   $('#title').textContent=cfg.appTitle||'CraftCommand Center'; $('#subtitle').textContent=cfg.appSubtitle||'Companion dashboard for binhex-minecraftbedrockserver.';
   if ($('#transportBadge')) { $('#transportBadge').textContent=cfg.security?.transportEncrypted?'HTTPS':'HTTP'; $('#transportBadge').title=cfg.security?.note||''; }
-  setDisplayMode(localStorage.getItem('cccDisplayMode') || cfg.display?.defaultMode || 'text');
+  setDisplayMode(localStorage.getItem('cccDisplayMode') || cfg.display?.defaultMode || 'both');
   $('#displayMode').addEventListener('change',e=>setDisplayMode(e.target.value));
   populateCatalogInputs(); renderWorldTimeButtons(); renderTeleportLocations(); renderQuickItems(); renderXpButtons(); updateCustomHelp();
   await Promise.all([loadPlayers(),loadKits()]);
@@ -628,4 +628,4 @@ $('#deleteKit').addEventListener('click',async()=>{if(!selectedKit?.custom)retur
 window.addEventListener('resize', () => fitVisualButtons());
 window.addEventListener('orientationchange', () => setTimeout(() => fitVisualButtons(), 120));
 
-(async()=>{setDisplayMode(localStorage.getItem('cccDisplayMode')||'text');try{const auth=await request('/api/auth/status');if(auth.authenticated)await initializeApp();else showLogin();}catch(err){showLogin(err.message);}})();
+(async()=>{setDisplayMode(localStorage.getItem('cccDisplayMode')||'both');try{const auth=await request('/api/auth/status');if(auth.authenticated)await initializeApp();else showLogin();}catch(err){showLogin(err.message);}})();
