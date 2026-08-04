@@ -214,6 +214,82 @@ function kitTooltip(kit) {
   if (kit.xp) lines.push(`✨ ${kit.xp.amount}${kit.xp.levels ? ' levels' : ' XP'}`);
   return lines.join('\n');
 }
+
+function renderWorldTimeButtons() {
+  const box = $('#worldTimeButtons');
+  if (!box) return;
+  box.innerHTML = '';
+  [
+    { time: 'day', label: 'Set to Day', icon: '☀️', subtext: 'Sunrise' },
+    { time: 'night', label: 'Set to Night', icon: '🌙', subtext: 'Nightfall' }
+  ].forEach(entry => {
+    const button = makeVisualButton({
+      label: entry.label,
+      icon: entry.icon,
+      subtext: entry.subtext,
+      className: 'good itemButton worldControlButton',
+      click: () => api('/api/world-time', { time: entry.time })
+    });
+    button.disabled = !can('operator');
+    box.appendChild(button);
+  });
+  fitVisualButtons(box);
+}
+
+function teleportDimensionLabel(value) {
+  return ({ current: 'Current dimension', overworld: 'Overworld', nether: 'Nether', the_end: 'The End' })[value] || value;
+}
+
+function renderTeleportLocations() {
+  const box = $('#teleportLocations');
+  if (!box) return;
+  box.innerHTML = '';
+  const locations = cfg.teleportLocations || [];
+  const managing = can('admin') && !$('#teleportLocationManager')?.classList.contains('hidden');
+  locations.forEach((location, index) => {
+    const coordinates = `${location.x}, ${location.y}, ${location.z}`;
+    const button = makeVisualButton({
+      label: location.title,
+      icon: '📍',
+      subtext: `${teleportDimensionLabel(location.dimension)} · ${coordinates}`,
+      className: 'good itemButton teleportButton',
+      tooltip: `Teleport ${target() || 'the selected player'} to ${location.title}\n${teleportDimensionLabel(location.dimension)} · ${coordinates}`,
+      click: () => api('/api/teleport', { target: target(), index })
+    });
+    button.disabled = !can('operator');
+    const wrap = document.createElement('div');
+    wrap.className = 'quickItemWrap managedButtonWrap';
+    wrap.dataset.managedIndex = String(index);
+    wrap.appendChild(button);
+    if (managing) {
+      const handle = document.createElement('span');
+      handle.className = 'quickItemDrag';
+      handle.textContent = '⠿';
+      handle.title = 'Drag to reorder';
+      handle.setAttribute('role', 'button');
+      handle.setAttribute('aria-label', `Drag ${location.title} to reorder`);
+      handle.draggable = true;
+      wrap.appendChild(handle);
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'danger quickItemRemove';
+      remove.textContent = '×';
+      remove.setAttribute('aria-label', `Remove ${location.title}`);
+      remove.addEventListener('click', async () => {
+        if (!confirm(`Remove teleport location “${location.title}”?`)) return;
+        const data = await api('/api/teleport-locations/delete', { index });
+        cfg.teleportLocations = data.teleportLocations || [];
+        renderTeleportLocations();
+      });
+      wrap.appendChild(remove);
+    }
+    box.appendChild(wrap);
+  });
+  $('#teleportLocationsEmpty')?.classList.toggle('hidden', locations.length > 0);
+  if (managing) setupManagedButtonDrag(box, '/api/teleport-locations/reorder', 'teleportLocations', renderTeleportLocations, 'teleport locations');
+  fitVisualButtons(box);
+}
+
 function renderQuickItems() {
   const box = $('#quickItems'); box.innerHTML = '';
   (cfg.quickItems || []).forEach((item, index) => {
@@ -221,8 +297,8 @@ function renderQuickItems() {
     const button = makeVisualButton({ label:item.label || info.name, itemId:item.item, subtext:item.label ? item.item : `× ${item.amount}`, className:'good itemButton', click:()=>api('/api/give',{target:target(),item:item.item,amount:item.amount}) });
     button.disabled = !can('operator');
     const wrap = document.createElement('div');
-    wrap.className = 'quickItemWrap';
-    wrap.dataset.quickIndex = String(index);
+    wrap.className = 'quickItemWrap managedButtonWrap';
+    wrap.dataset.managedIndex = String(index);
     wrap.appendChild(button);
     if (can('admin') && !$('#quickItemManager')?.classList.contains('hidden')) {
       const handle = document.createElement('span');
@@ -248,11 +324,13 @@ function renderQuickItems() {
     }
     box.appendChild(wrap);
   });
-  if (can('admin') && !$('#quickItemManager')?.classList.contains('hidden')) setupQuickItemDrag(box);
+  if (can('admin') && !$('#quickItemManager')?.classList.contains('hidden')) {
+    setupManagedButtonDrag(box, '/api/quick-items/reorder', 'quickItems', renderQuickItems, 'quick buttons');
+  }
   fitVisualButtons(box);
 }
 
-function setupQuickItemDrag(box) {
+function setupManagedButtonDrag(box, endpoint, collectionKey, renderCollection, description) {
   let dragged = null;
   let changed = false;
   const positionBefore = (target, x, y) => {
@@ -268,10 +346,10 @@ function setupQuickItemDrag(box) {
   };
   const save = async () => {
     if (!changed) return;
-    const order = [...box.querySelectorAll('.quickItemWrap')].map(element => Number(element.dataset.quickIndex));
-    const data = await api('/api/quick-items/reorder', { order });
-    cfg.quickItems = data.quickItems || [];
-    renderQuickItems();
+    const order = [...box.querySelectorAll('.managedButtonWrap')].map(element => Number(element.dataset.managedIndex));
+    const data = await api(endpoint, { order });
+    cfg[collectionKey] = data[collectionKey] || [];
+    renderCollection();
   };
 
   box.querySelectorAll('.quickItemDrag').forEach(handle => {
@@ -281,11 +359,11 @@ function setupQuickItemDrag(box) {
       changed = false;
       wrap.classList.add('dragging');
       event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('text/plain', wrap.dataset.quickIndex);
+      event.dataTransfer.setData('text/plain', wrap.dataset.managedIndex);
     });
     handle.addEventListener('dragend', async () => {
       wrap.classList.remove('dragging');
-      await save().catch(error => show(`Could not reorder quick buttons: ${error.message}`));
+      await save().catch(error => show(`Could not reorder ${description}: ${error.message}`));
       dragged = null;
     });
     handle.addEventListener('pointerdown', event => {
@@ -299,17 +377,17 @@ function setupQuickItemDrag(box) {
     handle.addEventListener('pointermove', event => {
       if (!dragged || event.pointerType === 'mouse') return;
       event.preventDefault();
-      const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.quickItemWrap');
+      const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.managedButtonWrap');
       if (target && target.parentElement === box) moveNear(target, event.clientX, event.clientY);
     });
     handle.addEventListener('pointerup', async event => {
       if (!dragged || event.pointerType === 'mouse') return;
       wrap.classList.remove('dragging');
-      await save().catch(error => show(`Could not reorder quick buttons: ${error.message}`));
+      await save().catch(error => show(`Could not reorder ${description}: ${error.message}`));
       dragged = null;
     });
   });
-  box.querySelectorAll('.quickItemWrap').forEach(target => {
+  box.querySelectorAll('.managedButtonWrap').forEach(target => {
     target.addEventListener('dragover', event => {
       if (!dragged) return;
       event.preventDefault();
@@ -413,7 +491,7 @@ async function initializeApp() {
   if ($('#transportBadge')) { $('#transportBadge').textContent=cfg.security?.transportEncrypted?'HTTPS':'HTTP'; $('#transportBadge').title=cfg.security?.note||''; }
   setDisplayMode(localStorage.getItem('cccDisplayMode') || cfg.display?.defaultMode || 'text');
   $('#displayMode').addEventListener('change',e=>setDisplayMode(e.target.value));
-  populateCatalogInputs(); renderQuickItems(); renderXpButtons(); updateCustomHelp();
+  populateCatalogInputs(); renderWorldTimeButtons(); renderTeleportLocations(); renderQuickItems(); renderXpButtons(); updateCustomHelp();
   await Promise.all([loadPlayers(),loadKits()]);
   document.querySelectorAll('[data-admin-nav]').forEach(el => el.classList.toggle('hidden', !can('admin')));
   const urlItem=new URLSearchParams(location.search).get('item'); if(urlItem){$('#customItem').value=urlItem;updateCustomHelp();$('#customItem').scrollIntoView({behavior:'smooth'});}
@@ -429,9 +507,37 @@ $('#runDiagnostics')?.addEventListener('click', async e=>{const b=e.currentTarge
 $('#refreshAttachment')?.addEventListener('click',()=>api('/api/refresh-attachment',{}));
 $('#loadStatus')?.addEventListener('click',()=>loadStatus().then(show));
 $('#refreshPlayers').addEventListener('click',async e=>{const b=e.currentTarget,old=b.textContent;b.disabled=true;b.textContent='Pulling…';try{const data=await api('/api/players/refresh',{});renderPlayers(data);}finally{b.disabled=false;b.textContent=old;}});
+$('#target').addEventListener('change', renderTeleportLocations);
 const addPlayer=async()=>{const input=$('#manualPlayer');const name=input.value.trim();if(!name)return show('Type a player name first.');const data=await api('/api/players/add',{name});renderPlayers(data);input.value='';};
 $('#addPlayer').addEventListener('click',addPlayer); $('#manualPlayer').addEventListener('keydown',e=>{if(e.key==='Enter')addPlayer();});
 $('#sendCustom').addEventListener('click',()=>api('/api/give',{target:target(),item:$('#customItem').value,amount:Number($('#customAmount').value)})); $('#customItem').addEventListener('input',updateCustomHelp);
+$('#manageTeleportLocations')?.addEventListener('click', () => {
+  $('#teleportLocationManager').classList.toggle('hidden');
+  $('#manageTeleportLocations').textContent = $('#teleportLocationManager').classList.contains('hidden') ? 'Manage locations' : 'Done managing';
+  renderTeleportLocations();
+});
+$('#addTeleportLocation')?.addEventListener('click', async () => {
+  const title = $('#teleportTitle').value.trim();
+  if (!title) return show('Type a teleport button title first.');
+  if (['teleportX', 'teleportY', 'teleportZ'].some(id => $(`#${id}`).value.trim() === '')) return show('Enter X, Y, and Z coordinates.');
+  const location = {
+    title,
+    dimension: $('#teleportDimension').value,
+    x: Number($('#teleportX').value),
+    y: Number($('#teleportY').value),
+    z: Number($('#teleportZ').value)
+  };
+  const data = await api('/api/teleport-locations/add', location);
+  cfg.teleportLocations = data.teleportLocations || [];
+  $('#teleportTitle').value = '';
+  renderTeleportLocations();
+});
+$('#resetTeleportLocations')?.addEventListener('click', async () => {
+  if (!confirm('Remove every saved teleport location?')) return;
+  const data = await api('/api/teleport-locations/reset', {});
+  cfg.teleportLocations = data.teleportLocations || [];
+  renderTeleportLocations();
+});
 $('#openKitBuilder').addEventListener('click',()=>{$('#kitBuilderCard').classList.remove('hidden');$('#kitBuilderCard').scrollIntoView({behavior:'smooth'});}); $('#closeKitBuilder').addEventListener('click',()=>$('#kitBuilderCard').classList.add('hidden'));
 $('#manageQuickItems')?.addEventListener('click', () => {
   $('#quickItemManager').classList.toggle('hidden');

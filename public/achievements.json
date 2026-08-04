@@ -2,8 +2,9 @@
   "metadata": {
     "edition": "Bedrock Edition",
     "count": 131,
-    "snapshotDate": "2026-08-03",
+    "snapshotDate": "2026-08-04",
     "source": "https://minecraft.fandom.com/wiki/Achievement",
+    "supplyMethod": "Achievement requirements and crafting quantities were audited against the linked Minecraft Fandom item and recipe pages. Recipe goals list raw ingredients; activity goals list usable equipment and consumables.",
     "platformNote": "Xbox, Windows, Android, iOS, and Nintendo Switch use Microsoft-account achievements. PlayStation records supported goals as PSN trophies."
   },
   "achievements": [
@@ -24,6 +25,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "No item kit",
+      "supplyNote": "No inventory kit is required. Follow the activity guide in a legitimate Survival world.",
       "items": []
     },
     {
@@ -43,12 +46,9 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": [
-        {
-          "item": "log",
-          "amount": 1
-        }
-      ]
+      "supplyType": "No item kit",
+      "supplyNote": "No inventory kit is required; punch a naturally generated tree.",
+      "items": []
     },
     {
       "id": "benchmaking",
@@ -67,14 +67,12 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Four planks make one crafting table in the 2×2 inventory grid.",
       "items": [
         {
-          "item": "crafting_table",
-          "amount": 1
-        },
-        {
           "item": "planks",
-          "amount": 1
+          "amount": 4
         }
       ]
     },
@@ -95,10 +93,16 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Three planks and two sticks make one wooden pickaxe.",
       "items": [
         {
+          "item": "planks",
+          "amount": 3
+        },
+        {
           "item": "stick",
-          "amount": 1
+          "amount": 2
         },
         {
           "item": "crafting_table",
@@ -123,14 +127,12 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Eight cobblestone make one furnace.",
       "items": [
         {
-          "item": "furnace",
-          "amount": 1
-        },
-        {
           "item": "cobblestone",
-          "amount": 1
+          "amount": 8
         },
         {
           "item": "crafting_table",
@@ -155,9 +157,15 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Smelt one raw iron with fuel in a furnace.",
       "items": [
         {
-          "item": "iron_ingot",
+          "item": "raw_iron",
+          "amount": 1
+        },
+        {
+          "item": "coal",
           "amount": 1
         },
         {
@@ -183,7 +191,17 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Two planks and two sticks make one wooden hoe.",
       "items": [
+        {
+          "item": "planks",
+          "amount": 2
+        },
+        {
+          "item": "stick",
+          "amount": 2
+        },
         {
           "item": "crafting_table",
           "amount": 1
@@ -207,10 +225,16 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Three wheat make one loaf of bread.",
       "items": [
         {
           "item": "wheat",
           "amount": 3
+        },
+        {
+          "item": "crafting_table",
+          "amount": 1
         }
       ]
     },
@@ -231,6 +255,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Ingredients for one recipe. A crafting table is included when the recipe needs the 3×3 grid.",
       "items": [
         {
           "item": "wheat",
@@ -246,6 +272,10 @@
         },
         {
           "item": "egg",
+          "amount": 1
+        },
+        {
+          "item": "crafting_table",
           "amount": 1
         }
       ]
@@ -267,7 +297,17 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Three cobblestone and two sticks make one stone pickaxe.",
       "items": [
+        {
+          "item": "cobblestone",
+          "amount": 3
+        },
+        {
+          "item": "stick",
+          "amount": 2
+        },
         {
           "item": "crafting_table",
           "amount": 1
@@ -291,25 +331,19 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Catch raw cod, then cook it with fuel in a furnace.",
       "items": [
         {
-          "item": "cooked_cod",
+          "item": "cod",
+          "amount": 1
+        },
+        {
+          "item": "coal",
           "amount": 1
         },
         {
           "item": "furnace",
-          "amount": 1
-        },
-        {
-          "item": "smoker",
-          "amount": 1
-        },
-        {
-          "item": "campfire",
-          "amount": 1
-        },
-        {
-          "item": "soul_campfire",
           "amount": 1
         }
       ]
@@ -331,6 +365,8 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Five hundred regular rails cover the required straight-line distance; slopes or powered sections may need powered rails.",
       "items": [
         {
           "item": "minecart",
@@ -359,7 +395,13 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Two planks and one stick make one wooden sword.",
       "items": [
+        {
+          "item": "planks",
+          "amount": 2
+        },
         {
           "item": "stick",
           "amount": 1
@@ -387,7 +429,14 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
+      "items": [
+        {
+          "item": "wooden_sword",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "cow-tipper",
@@ -406,9 +455,11 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Leather must be harvested from a cow; the sword is only the required equipment.",
       "items": [
         {
-          "item": "leather",
+          "item": "wooden_sword",
           "amount": 1
         }
       ]
@@ -430,6 +481,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "saddle",
@@ -458,6 +511,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "bow",
@@ -486,9 +541,11 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Mine naturally generated diamond ore with an iron-tier or better pickaxe.",
       "items": [
         {
-          "item": "diamond",
+          "item": "iron_pickaxe",
           "amount": 1
         }
       ]
@@ -510,6 +567,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Ten obsidian build the smallest valid portal frame; ignite it with flint and steel.",
       "items": [
         {
           "item": "obsidian",
@@ -538,6 +597,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "No item kit",
+      "supplyNote": "Return a Ghast fireball with a timed attack; no inventory item is required.",
       "items": []
     },
     {
@@ -557,9 +618,11 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Defeat a naturally spawned Blaze and collect its dropped rod.",
       "items": [
         {
-          "item": "blaze_rod",
+          "item": "wooden_sword",
           "amount": 1
         }
       ]
@@ -581,6 +644,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Fill the bottles with water, fuel the stand with blaze powder, and brew with nether wart.",
       "items": [
         {
           "item": "brewing_stand",
@@ -592,6 +657,10 @@
         },
         {
           "item": "nether_wart",
+          "amount": 1
+        },
+        {
+          "item": "blaze_powder",
           "amount": 1
         }
       ]
@@ -613,6 +682,8 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "Activity supplies",
+      "supplyNote": "A portal can require up to twelve Eyes of Ender; naturally generated frames may already contain some.",
       "items": [
         {
           "item": "ender_eye",
@@ -637,7 +708,22 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
+      "items": [
+        {
+          "item": "bow",
+          "amount": 1
+        },
+        {
+          "item": "arrow",
+          "amount": 64
+        },
+        {
+          "item": "diamond_sword",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "enchanter",
@@ -656,9 +742,23 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Ingredients for one recipe. A crafting table is included when the recipe needs the 3×3 grid.",
       "items": [
         {
-          "item": "enchanting_table",
+          "item": "book",
+          "amount": 1
+        },
+        {
+          "item": "diamond",
+          "amount": 2
+        },
+        {
+          "item": "obsidian",
+          "amount": 4
+        },
+        {
+          "item": "crafting_table",
           "amount": 1
         }
       ]
@@ -680,6 +780,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Enchantments or a Strength effect may still be needed to reach nine hearts in one hit.",
       "items": [
         {
           "item": "diamond_sword",
@@ -704,10 +806,20 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Six matching planks and three books make one bookshelf. Repeat the recipe for additional shelves.",
       "items": [
         {
-          "item": "bookshelf",
-          "amount": 15
+          "item": "planks",
+          "amount": 6
+        },
+        {
+          "item": "book",
+          "amount": 3
+        },
+        {
+          "item": "crafting_table",
+          "amount": 1
         }
       ]
     },
@@ -728,6 +840,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "No item kit",
+      "supplyNote": "This is an exploration achievement; visit the required biomes in one Survival world.",
       "items": []
     },
     {
@@ -747,6 +861,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "wither_skeleton_skull",
@@ -775,10 +891,20 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
-          "item": "nether_star",
+          "item": "diamond_sword",
           "amount": 1
+        },
+        {
+          "item": "bow",
+          "amount": 1
+        },
+        {
+          "item": "arrow",
+          "amount": 64
         }
       ]
     },
@@ -799,9 +925,23 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "Recipe materials",
+      "supplyNote": "The beacon recipe uses five glass, one Nether Star, and three obsidian. A full four-level solid pyramid needs 164 mineral blocks.",
       "items": [
         {
-          "item": "beacon",
+          "item": "glass",
+          "amount": 5
+        },
+        {
+          "item": "nether_star",
+          "amount": 1
+        },
+        {
+          "item": "obsidian",
+          "amount": 3
+        },
+        {
+          "item": "crafting_table",
           "amount": 1
         },
         {
@@ -827,6 +967,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "wheat",
@@ -851,6 +993,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "diamond",
@@ -875,6 +1019,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "enchanted_golden_apple",
@@ -899,7 +1045,22 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Recipe materials",
+      "supplyNote": "Nine planks and eight sticks make one wooden pickaxe, axe, shovel, and hoe.",
+      "items": [
+        {
+          "item": "planks",
+          "amount": 9
+        },
+        {
+          "item": "stick",
+          "amount": 8
+        },
+        {
+          "item": "crafting_table",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "dispense-with-this",
@@ -918,9 +1079,23 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Ingredients for one recipe. A crafting table is included when the recipe needs the 3×3 grid.",
       "items": [
         {
-          "item": "dispenser",
+          "item": "cobblestone",
+          "amount": 7
+        },
+        {
+          "item": "bow",
+          "amount": 1
+        },
+        {
+          "item": "redstone",
+          "amount": 1
+        },
+        {
+          "item": "crafting_table",
           "amount": 1
         }
       ]
@@ -942,6 +1117,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Taming is chance-based, so the kit includes extra bones for five wolves.",
       "items": [
         {
           "item": "bone",
@@ -966,9 +1143,19 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Cook a raw porkchop with fuel, then eat the cooked result.",
       "items": [
         {
-          "item": "cooked_porkchop",
+          "item": "porkchop",
+          "amount": 1
+        },
+        {
+          "item": "coal",
+          "amount": 1
+        },
+        {
+          "item": "furnace",
           "amount": 1
         }
       ]
@@ -990,6 +1177,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "No item kit",
+      "supplyNote": "No inventory kit is required. Follow the activity guide in a legitimate Survival world.",
       "items": []
     },
     {
@@ -1009,7 +1198,14 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Spend these emeralds through villager or wandering-trader trades; availability depends on the traders you find.",
+      "items": [
+        {
+          "item": "emerald",
+          "amount": 30
+        }
+      ]
     },
     {
       "id": "pot-planter",
@@ -1028,9 +1224,15 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Three bricks make one flower pot.",
       "items": [
         {
-          "item": "flower_pot",
+          "item": "brick",
+          "amount": 3
+        },
+        {
+          "item": "crafting_table",
           "amount": 1
         }
       ]
@@ -1052,7 +1254,22 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Recipe materials",
+      "supplyNote": "Six matching planks and one stick make three signs; place one oak sign.",
+      "items": [
+        {
+          "item": "planks",
+          "amount": 6
+        },
+        {
+          "item": "stick",
+          "amount": 1
+        },
+        {
+          "item": "crafting_table",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "iron-belly",
@@ -1071,6 +1288,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "rotten_flesh",
@@ -1095,9 +1314,11 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
-          "item": "wool",
+          "item": "shears",
           "amount": 1
         }
       ]
@@ -1119,6 +1340,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "white_wool",
@@ -1203,7 +1426,30 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Recipe materials",
+      "supplyNote": "Fill the bottle with water, brew an Awkward Potion with nether wart, then add magma cream for Fire Resistance.",
+      "items": [
+        {
+          "item": "brewing_stand",
+          "amount": 1
+        },
+        {
+          "item": "glass_bottle",
+          "amount": 1
+        },
+        {
+          "item": "nether_wart",
+          "amount": 1
+        },
+        {
+          "item": "magma_cream",
+          "amount": 1
+        },
+        {
+          "item": "blaze_powder",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "chestful-of-cobblestone",
@@ -1222,6 +1468,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "cobblestone",
@@ -1250,13 +1498,19 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Use charcoal as the fuel while smelting a log into more charcoal.",
       "items": [
+        {
+          "item": "log",
+          "amount": 1
+        },
         {
           "item": "charcoal",
           "amount": 1
         },
         {
-          "item": "log",
+          "item": "furnace",
           "amount": 1
         }
       ]
@@ -1278,6 +1532,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "iron_block",
@@ -1306,21 +1562,15 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Twenty-four iron ingots make a full helmet, chestplate, leggings, and boots set.",
       "items": [
         {
-          "item": "iron_helmet",
-          "amount": 1
+          "item": "iron_ingot",
+          "amount": 24
         },
         {
-          "item": "iron_chestplate",
-          "amount": 1
-        },
-        {
-          "item": "iron_leggings",
-          "amount": 1
-        },
-        {
-          "item": "iron_boots",
+          "item": "crafting_table",
           "amount": 1
         }
       ]
@@ -1342,7 +1592,29 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Fill the bottle, brew Weakness with a fermented spider eye, add gunpowder to make it splash, then use it before the golden apple.",
       "items": [
+        {
+          "item": "brewing_stand",
+          "amount": 1
+        },
+        {
+          "item": "glass_bottle",
+          "amount": 1
+        },
+        {
+          "item": "fermented_spider_eye",
+          "amount": 1
+        },
+        {
+          "item": "gunpowder",
+          "amount": 1
+        },
+        {
+          "item": "blaze_powder",
+          "amount": 1
+        },
         {
           "item": "golden_apple",
           "amount": 1
@@ -1366,7 +1638,14 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Ocelot trust is chance-based; approach slowly and feed raw cod.",
+      "items": [
+        {
+          "item": "cod",
+          "amount": 16
+        }
+      ]
     },
     {
       "id": "archer",
@@ -1385,6 +1664,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "bow",
@@ -1413,10 +1694,20 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "In Bedrock Edition, add water and dye to the cauldron, then dye all four leather armor pieces.",
       "items": [
         {
           "item": "cauldron",
           "amount": 1
+        },
+        {
+          "item": "water_bucket",
+          "amount": 1
+        },
+        {
+          "item": "red_dye",
+          "amount": 4
         },
         {
           "item": "leather_helmet",
@@ -1453,7 +1744,14 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "The Bedrock command ID for a slime block is “slime.”",
+      "items": [
+        {
+          "item": "slime",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "camouflage",
@@ -1472,7 +1770,18 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Wear the zombie head while killing a zombie. Other matching mob/head combinations also work.",
+      "items": [
+        {
+          "item": "zombie_head",
+          "amount": 1
+        },
+        {
+          "item": "wooden_sword",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "map-room",
@@ -1491,7 +1800,13 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Explore and align all nine maps before placing them in a 3×3 grid of item frames.",
       "items": [
+        {
+          "item": "frame",
+          "amount": 9
+        },
         {
           "item": "empty_map",
           "amount": 9
@@ -1515,6 +1830,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "hopper",
@@ -1526,6 +1843,10 @@
         },
         {
           "item": "chest",
+          "amount": 1
+        },
+        {
+          "item": "rail",
           "amount": 1
         }
       ]
@@ -1547,6 +1868,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "furnace",
@@ -1579,7 +1902,34 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Recipe materials",
+      "supplyNote": "Brew an Awkward Potion, add a spider eye for Poison, then gunpowder to make it a splash potion.",
+      "items": [
+        {
+          "item": "brewing_stand",
+          "amount": 1
+        },
+        {
+          "item": "glass_bottle",
+          "amount": 1
+        },
+        {
+          "item": "nether_wart",
+          "amount": 1
+        },
+        {
+          "item": "spider_eye",
+          "amount": 1
+        },
+        {
+          "item": "gunpowder",
+          "amount": 1
+        },
+        {
+          "item": "blaze_powder",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "inception",
@@ -1598,14 +1948,20 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Use the regular piston to push the sticky piston, then power the sticky piston to pull the first piston.",
       "items": [
         {
           "item": "piston",
-          "amount": 2
+          "amount": 1
         },
         {
-          "item": "redstone",
-          "amount": 8
+          "item": "sticky_piston",
+          "amount": 1
+        },
+        {
+          "item": "lever",
+          "amount": 2
         }
       ]
     },
@@ -1626,7 +1982,18 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Taming itself requires repeated mounting; food helps growth/healing and the saddle lets you control the horse afterward.",
+      "items": [
+        {
+          "item": "golden_carrot",
+          "amount": 8
+        },
+        {
+          "item": "saddle",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "artificial-selection",
@@ -1645,7 +2012,14 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Feed one golden carrot to a tamed horse and one to a tamed donkey.",
+      "items": [
+        {
+          "item": "golden_carrot",
+          "amount": 2
+        }
+      ]
     },
     {
       "id": "free-diver",
@@ -1664,7 +2038,34 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Recipe materials",
+      "supplyNote": "Brew Water Breathing and add redstone dust to extend it to eight minutes.",
+      "items": [
+        {
+          "item": "brewing_stand",
+          "amount": 1
+        },
+        {
+          "item": "glass_bottle",
+          "amount": 1
+        },
+        {
+          "item": "nether_wart",
+          "amount": 1
+        },
+        {
+          "item": "pufferfish",
+          "amount": 1
+        },
+        {
+          "item": "redstone",
+          "amount": 1
+        },
+        {
+          "item": "blaze_powder",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "rabbit-season",
@@ -1683,9 +2084,19 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Cook raw rabbit with fuel, then eat the cooked rabbit.",
       "items": [
         {
-          "item": "cooked_rabbit",
+          "item": "rabbit",
+          "amount": 1
+        },
+        {
+          "item": "coal",
+          "amount": 1
+        },
+        {
+          "item": "furnace",
           "amount": 1
         }
       ]
@@ -1707,7 +2118,18 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Water Breathing and defensive enchantments are recommended but cannot be encoded by a plain item command.",
+      "items": [
+        {
+          "item": "trident",
+          "amount": 1
+        },
+        {
+          "item": "shield",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "dry-spell",
@@ -1726,9 +2148,15 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Smelt one wet sponge with fuel in a furnace.",
       "items": [
         {
-          "item": "sponge",
+          "item": "wet_sponge",
+          "amount": 1
+        },
+        {
+          "item": "coal",
           "amount": 1
         },
         {
@@ -1754,6 +2182,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "lava_bucket",
@@ -1782,6 +2212,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "glass_bottle",
@@ -1806,6 +2238,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "ender_pearl",
@@ -1830,6 +2264,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "end_crystal",
@@ -1854,6 +2290,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "No item kit",
+      "supplyNote": "Stand in a Shulker projectile path and maintain Levitation for fifty blocks.",
       "items": []
     },
     {
@@ -1873,6 +2311,8 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "elytra",
@@ -1901,7 +2341,18 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Trade with a cartographer for its explorer map; a command-given generic map does not contain the required destination data.",
+      "items": [
+        {
+          "item": "emerald",
+          "amount": 20
+        },
+        {
+          "item": "compass",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "organizational-wizard",
@@ -1920,6 +2371,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Rename the Shulker Box directly in the anvil; a name tag is not required.",
       "items": [
         {
           "item": "shulker_box",
@@ -1927,10 +2380,6 @@
         },
         {
           "item": "anvil",
-          "amount": 1
-        },
-        {
-          "item": "name_tag",
           "amount": 1
         }
       ]
@@ -1952,6 +2401,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "totem_of_undying",
@@ -1976,7 +2427,14 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
+      "items": [
+        {
+          "item": "diamond_sword",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "let-it-go",
@@ -1995,9 +2453,19 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "The boots must actually have Frost Walker. Plain /give commands cannot select that enchantment, so obtain a Frost Walker book before using the anvil.",
       "items": [
         {
           "item": "leather_boots",
+          "amount": 1
+        },
+        {
+          "item": "enchanted_book",
+          "amount": 1
+        },
+        {
+          "item": "anvil",
           "amount": 1
         }
       ]
@@ -2019,7 +2487,14 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Lead one llama and let four nearby tamed llamas join its caravan; extra leads make setup easier.",
+      "items": [
+        {
+          "item": "lead",
+          "amount": 5
+        }
+      ]
     },
     {
       "id": "atlantis-question",
@@ -2038,7 +2513,14 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
+      "items": [
+        {
+          "item": "oak_boat",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "sail-the-7-seas",
@@ -2057,7 +2539,14 @@
         "PlayStation"
       ],
       "trophy": "Gold",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
+      "items": [
+        {
+          "item": "oak_boat",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "castaway",
@@ -2076,6 +2565,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "dried_kelp",
@@ -2100,7 +2591,14 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
+      "items": [
+        {
+          "item": "oak_boat",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "i-am-a-marine-biologist",
@@ -2119,6 +2617,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Use the water bucket on a live fish to collect it; a pre-filled fish bucket skips the required action.",
       "items": [
         {
           "item": "water_bucket",
@@ -2143,9 +2643,11 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Find the buried-treasure location legitimately; generic command-given maps do not contain treasure data.",
       "items": [
         {
-          "item": "chest",
+          "item": "iron_shovel",
           "amount": 1
         }
       ]
@@ -2167,7 +2669,34 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Recipe materials",
+      "supplyNote": "One brewing batch makes three extended Water Breathing potions, enough for one full Minecraft day.",
+      "items": [
+        {
+          "item": "brewing_stand",
+          "amount": 1
+        },
+        {
+          "item": "glass_bottle",
+          "amount": 3
+        },
+        {
+          "item": "nether_wart",
+          "amount": 1
+        },
+        {
+          "item": "pufferfish",
+          "amount": 1
+        },
+        {
+          "item": "redstone",
+          "amount": 1
+        },
+        {
+          "item": "blaze_powder",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "alternative-fuel",
@@ -2186,6 +2715,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "dried_kelp_block",
@@ -2214,9 +2745,19 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "The trident must actually have Riptide. Plain /give commands cannot select that enchantment.",
       "items": [
         {
           "item": "trident",
+          "amount": 1
+        },
+        {
+          "item": "enchanted_book",
+          "amount": 1
+        },
+        {
+          "item": "anvil",
           "amount": 1
         }
       ]
@@ -2238,6 +2779,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "sea_pickle",
@@ -2262,6 +2805,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "cod",
@@ -2286,9 +2831,19 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Eight nautilus shells and one Heart of the Sea make the conduit; sixteen valid prismarine-family blocks form the minimum activation frame.",
       "items": [
         {
-          "item": "conduit",
+          "item": "nautilus_shell",
+          "amount": 8
+        },
+        {
+          "item": "heart_of_the_sea",
+          "amount": 1
+        },
+        {
+          "item": "crafting_table",
           "amount": 1
         },
         {
@@ -2314,10 +2869,12 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "This covers the full modern Overworld height range; the exact number used depends on the starting elevation.",
       "items": [
         {
           "item": "scaffolding",
-          "amount": 64
+          "amount": 384
         }
       ]
     },
@@ -2338,7 +2895,18 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Tame a cat with raw cod, sleep with it able to reach you, and leave room for its morning gift.",
+      "items": [
+        {
+          "item": "cod",
+          "amount": 16
+        },
+        {
+          "item": "bed",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "zoologist",
@@ -2357,10 +2925,12 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "bamboo",
-          "amount": 1
+          "amount": 2
         }
       ]
     },
@@ -2381,6 +2951,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Craft the Thing/Mojang banner pattern from paper and an enchanted golden apple, then apply it to a banner with dye in a loom.",
       "items": [
         {
           "item": "enchanted_golden_apple",
@@ -2388,6 +2960,18 @@
         },
         {
           "item": "paper",
+          "amount": 1
+        },
+        {
+          "item": "banner",
+          "amount": 1
+        },
+        {
+          "item": "red_dye",
+          "amount": 1
+        },
+        {
+          "item": "loom",
           "amount": 1
         }
       ]
@@ -2409,7 +2993,14 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Cat taming is chance-based, so the kit includes extra raw cod.",
+      "items": [
+        {
+          "item": "cod",
+          "amount": 64
+        }
+      ]
     },
     {
       "id": "kill-the-beast",
@@ -2428,7 +3019,22 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
+      "items": [
+        {
+          "item": "bow",
+          "amount": 1
+        },
+        {
+          "item": "arrow",
+          "amount": 64
+        },
+        {
+          "item": "diamond_sword",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "buy-low-sell-high",
@@ -2447,6 +3053,8 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "No item kit",
+      "supplyNote": "Earn a strong villager discount, such as Hero of the Village or curing a zombie villager, then complete a discounted trade.",
       "items": []
     },
     {
@@ -2466,6 +3074,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "grindstone",
@@ -2494,7 +3104,14 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Drink the Ominous Bottle, then enter a village to convert Bad Omen into Raid Omen and trigger the raid.",
+      "items": [
+        {
+          "item": "ominous_bottle",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "sound-the-alarm",
@@ -2513,6 +3130,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Ring the bell while a hostile raid enemy is present in the village.",
       "items": [
         {
           "item": "bell",
@@ -2537,9 +3156,11 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Defeat a naturally spawned Pillager Captain.",
       "items": [
         {
-          "item": "ominous_bottle",
+          "item": "diamond_sword",
           "amount": 1
         }
       ]
@@ -2561,12 +3182,9 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": [
-        {
-          "item": "emerald",
-          "amount": 1
-        }
-      ]
+      "supplyType": "No item kit",
+      "supplyNote": "This long-term achievement requires receiving a cumulative 1,000 emeralds through legitimate villager trades.",
+      "items": []
     },
     {
       "id": "time-for-stew",
@@ -2585,6 +3203,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "suspicious_stew",
@@ -2609,6 +3229,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "campfire",
@@ -2637,6 +3259,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "The tool must actually have Silk Touch. Plain /give commands cannot select that enchantment, and the nest must contain three bees.",
       "items": [
         {
           "item": "diamond_pickaxe",
@@ -2661,6 +3285,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "honey_block",
@@ -2685,9 +3311,19 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Four redstone dust and one hay bale make the target; use the bow and arrows to hit its center.",
       "items": [
         {
-          "item": "target",
+          "item": "redstone",
+          "amount": 4
+        },
+        {
+          "item": "hay_block",
+          "amount": 1
+        },
+        {
+          "item": "crafting_table",
           "amount": 1
         },
         {
@@ -2717,6 +3353,8 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "netherite_helmet",
@@ -2753,6 +3391,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "gold_ingot",
@@ -2777,6 +3417,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "No item kit",
+      "supplyNote": "This is an exploration achievement; visit every Nether biome in one Survival world.",
       "items": []
     },
     {
@@ -2796,6 +3438,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "oak_boat",
@@ -2820,10 +3464,76 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Wax and then scrape the original sixteen copper block, cut-block, slab, and stair oxidation variants. Newer copper shapes are not part of this achievement.",
       "items": [
         {
+          "item": "copper_block",
+          "amount": 1
+        },
+        {
+          "item": "exposed_copper",
+          "amount": 1
+        },
+        {
+          "item": "weathered_copper",
+          "amount": 1
+        },
+        {
+          "item": "oxidized_copper",
+          "amount": 1
+        },
+        {
+          "item": "cut_copper",
+          "amount": 1
+        },
+        {
+          "item": "exposed_cut_copper",
+          "amount": 1
+        },
+        {
+          "item": "weathered_cut_copper",
+          "amount": 1
+        },
+        {
+          "item": "oxidized_cut_copper",
+          "amount": 1
+        },
+        {
+          "item": "cut_copper_slab",
+          "amount": 1
+        },
+        {
+          "item": "exposed_cut_copper_slab",
+          "amount": 1
+        },
+        {
+          "item": "weathered_cut_copper_slab",
+          "amount": 1
+        },
+        {
+          "item": "oxidized_cut_copper_slab",
+          "amount": 1
+        },
+        {
+          "item": "cut_copper_stairs",
+          "amount": 1
+        },
+        {
+          "item": "exposed_cut_copper_stairs",
+          "amount": 1
+        },
+        {
+          "item": "weathered_cut_copper_stairs",
+          "amount": 1
+        },
+        {
+          "item": "oxidized_cut_copper_stairs",
+          "amount": 1
+        },
+        {
           "item": "honeycomb",
-          "amount": 64
+          "amount": 16
         },
         {
           "item": "stone_axe",
@@ -2848,7 +3558,18 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
+      "items": [
+        {
+          "item": "axolotl_bucket",
+          "amount": 1
+        },
+        {
+          "item": "diamond_sword",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "caves-cliffs",
@@ -2867,6 +3588,8 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Land in placed water to survive the full build-limit-to-bottom fall.",
       "items": [
         {
           "item": "water_bucket",
@@ -2891,7 +3614,22 @@
         "PlayStation"
       ],
       "trophy": "Silver",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Move or find a villager at build height, then complete any available trade there.",
+      "items": [
+        {
+          "item": "emerald",
+          "amount": 16
+        },
+        {
+          "item": "minecart",
+          "amount": 1
+        },
+        {
+          "item": "rail",
+          "amount": 64
+        }
+      ]
     },
     {
       "id": "sound-of-music",
@@ -2910,6 +3648,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "jukebox",
@@ -2938,6 +3678,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "warped_fungus_on_a_stick",
@@ -2970,9 +3712,15 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "sculk_catalyst",
+          "amount": 1
+        },
+        {
+          "item": "wooden_sword",
           "amount": 1
         }
       ]
@@ -2994,10 +3742,16 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Give the Allay one cake as its filter item and let it collect the second cake, then play the note block so it drops the collected cake there.",
       "items": [
         {
           "item": "cake",
           "amount": 2
+        },
+        {
+          "item": "noteblock",
+          "amount": 1
         }
       ]
     },
@@ -3018,6 +3772,8 @@
         "PlayStation"
       ],
       "trophy": "Gold",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "pearlescent_froglight",
@@ -3050,6 +3806,8 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "sculk_sensor",
@@ -3074,7 +3832,18 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Plant either a Torchflower Seed or a Pitcher Pod; both are supplied so either route is available.",
+      "items": [
+        {
+          "item": "torchflower_seeds",
+          "amount": 1
+        },
+        {
+          "item": "pitcher_pod",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "careful-restoration",
@@ -3093,9 +3862,27 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
+      "supplyType": "Recipe materials",
+      "supplyNote": "Place four pottery sherds in the decorated-pot recipe; any four sherd types can be used.",
       "items": [
         {
-          "item": "decorated_pot",
+          "item": "angler_pottery_sherd",
+          "amount": 1
+        },
+        {
+          "item": "archer_pottery_sherd",
+          "amount": 1
+        },
+        {
+          "item": "arms_up_pottery_sherd",
+          "amount": 1
+        },
+        {
+          "item": "blade_pottery_sherd",
+          "amount": 1
+        },
+        {
+          "item": "crafting_table",
           "amount": 1
         }
       ]
@@ -3117,7 +3904,54 @@
         "PlayStation"
       ],
       "trophy": "Gold",
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Apply each of the eight named templates. The same armor piece can be re-trimmed; each application consumes one template and one trim material.",
+      "items": [
+        {
+          "item": "spire_armor_trim_smithing_template",
+          "amount": 1
+        },
+        {
+          "item": "snout_armor_trim_smithing_template",
+          "amount": 1
+        },
+        {
+          "item": "rib_armor_trim_smithing_template",
+          "amount": 1
+        },
+        {
+          "item": "ward_armor_trim_smithing_template",
+          "amount": 1
+        },
+        {
+          "item": "silence_armor_trim_smithing_template",
+          "amount": 1
+        },
+        {
+          "item": "vex_armor_trim_smithing_template",
+          "amount": 1
+        },
+        {
+          "item": "tide_armor_trim_smithing_template",
+          "amount": 1
+        },
+        {
+          "item": "wayfinder_armor_trim_smithing_template",
+          "amount": 1
+        },
+        {
+          "item": "iron_chestplate",
+          "amount": 1
+        },
+        {
+          "item": "redstone",
+          "amount": 8
+        },
+        {
+          "item": "smithing_table",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "crafters-crafting-crafters",
@@ -3135,10 +3969,28 @@
         "Nintendo Switch"
       ],
       "trophy": null,
+      "supplyType": "Recipe materials",
+      "supplyNote": "Use the first Crafter as the machine. Five iron ingots, one crafting table, two redstone dust, and one dropper are the ingredients for the Crafter it must produce.",
       "items": [
         {
           "item": "crafter",
+          "amount": 1
+        },
+        {
+          "item": "iron_ingot",
+          "amount": 5
+        },
+        {
+          "item": "crafting_table",
+          "amount": 1
+        },
+        {
+          "item": "redstone",
           "amount": 2
+        },
+        {
+          "item": "dropper",
+          "amount": 1
         }
       ]
     },
@@ -3158,7 +4010,14 @@
         "Nintendo Switch"
       ],
       "trophy": null,
-      "items": []
+      "supplyType": "Recipe materials",
+      "supplyNote": "Each Breeze Rod crafts into four Wind Charges, so two rods provide the eight charges named by the achievement.",
+      "items": [
+        {
+          "item": "breeze_rod",
+          "amount": 2
+        }
+      ]
     },
     {
       "id": "over-overkill",
@@ -3176,6 +4035,8 @@
         "Nintendo Switch"
       ],
       "trophy": null,
+      "supplyType": "Activity supplies",
+      "supplyNote": "Use a high-density smash attack; appropriate enchantments and a sufficient fall height are still required to reach fifty hearts.",
       "items": [
         {
           "item": "mace",
@@ -3199,7 +4060,14 @@
         "Nintendo Switch"
       ],
       "trophy": null,
-      "items": []
+      "supplyType": "Activity supplies",
+      "supplyNote": "Ominous Trial Keys carry special item data and are not safely generated by the generic item command. Drink the bottle, complete an ominous trial, and earn a key from its spawners.",
+      "items": [
+        {
+          "item": "ominous_bottle",
+          "amount": 1
+        }
+      ]
     },
     {
       "id": "stay-hydrated",
@@ -3218,6 +4086,8 @@
         "PlayStation"
       ],
       "trophy": "Silver",
+      "supplyType": "Activity supplies",
+      "supplyNote": "Equipment and consumables used for this achievement. Complete the activity in a legitimate Survival world for credit.",
       "items": [
         {
           "item": "dried_ghast",
@@ -3246,7 +4116,22 @@
         "PlayStation"
       ],
       "trophy": "Bronze",
-      "items": []
+      "supplyType": "Recipe materials",
+      "supplyNote": "One plank and two sticks make a wooden spear. Line up five mobs and hit them with the same charge.",
+      "items": [
+        {
+          "item": "planks",
+          "amount": 1
+        },
+        {
+          "item": "stick",
+          "amount": 2
+        },
+        {
+          "item": "crafting_table",
+          "amount": 1
+        }
+      ]
     }
   ]
 }

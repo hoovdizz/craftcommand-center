@@ -274,6 +274,7 @@ function loadConfig() {
   const cfg = JSON.parse(fs.readFileSync(p, 'utf8'));
   const resolved = applyEnvOverrides(cfg);
   resolved.quickItems = readQuickItems(resolved);
+  resolved.teleportLocations = readTeleportLocations(resolved);
   return resolved;
 }
 
@@ -421,6 +422,95 @@ function reorderQuickItems(cfg, order) {
     throw new Error('Quick button order is invalid');
   }
   return writeQuickItems(indexes.map(index => items[index]));
+}
+
+function teleportLocationsPath() {
+  return path.join(DEFAULT_DATA_DIR, 'teleport-locations.json');
+}
+
+function safeCoordinate(value, axis) {
+  if (value === null || value === undefined || String(value).trim() === '') throw new Error(`${axis.toUpperCase()} coordinate is required`);
+  const coordinate = Number(value);
+  const limit = axis === 'y' ? 2048 : 30000000;
+  if (!Number.isFinite(coordinate) || coordinate < -limit || coordinate > limit) {
+    throw new Error(`${axis.toUpperCase()} coordinate must be between ${-limit} and ${limit}`);
+  }
+  return Object.is(coordinate, -0) ? 0 : coordinate;
+}
+
+function sanitizeTeleportLocation(entry) {
+  const title = String(entry?.title || '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 60);
+  if (!title) throw new Error('Teleport button title is required');
+  const dimension = String(entry?.dimension || 'current').trim().toLowerCase();
+  if (!['current', 'overworld', 'nether', 'the_end'].includes(dimension)) throw new Error('Invalid teleport dimension');
+  return {
+    title,
+    dimension,
+    x: safeCoordinate(entry?.x, 'x'),
+    y: safeCoordinate(entry?.y, 'y'),
+    z: safeCoordinate(entry?.z, 'z')
+  };
+}
+
+function factoryTeleportLocations() {
+  const factory = JSON.parse(fs.readFileSync(FALLBACK_CONFIG, 'utf8'));
+  return (factory.teleportLocations || []).map(sanitizeTeleportLocation);
+}
+
+function readTeleportLocations(cfg) {
+  const filePath = teleportLocationsPath();
+  if (!fs.existsSync(filePath)) return (cfg.teleportLocations || []).map(sanitizeTeleportLocation);
+  try {
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const list = Array.isArray(raw) ? raw : raw.teleportLocations;
+    return (Array.isArray(list) ? list : []).map(sanitizeTeleportLocation);
+  } catch (err) {
+    console.log(`Could not load teleport locations: ${err.message}`);
+    return (cfg.teleportLocations || []).map(sanitizeTeleportLocation);
+  }
+}
+
+function writeTeleportLocations(locations) {
+  const clean = locations.map(sanitizeTeleportLocation);
+  if (clean.length > 50) throw new Error('A maximum of 50 teleport locations is allowed');
+  fs.mkdirSync(DEFAULT_DATA_DIR, { recursive: true });
+  fs.writeFileSync(teleportLocationsPath(), `${JSON.stringify({ teleportLocations: clean, updatedAt: new Date().toISOString() }, null, 2)}\n`, 'utf8');
+  return clean;
+}
+
+function addTeleportLocation(cfg, entry) {
+  const location = sanitizeTeleportLocation(entry);
+  const locations = readTeleportLocations(cfg);
+  locations.push(location);
+  return { location, teleportLocations: writeTeleportLocations(locations) };
+}
+
+function deleteTeleportLocation(cfg, index) {
+  const locations = readTeleportLocations(cfg);
+  const position = Number(index);
+  if (!Number.isInteger(position) || position < 0 || position >= locations.length) throw new Error('Teleport location was not found');
+  const [deleted] = locations.splice(position, 1);
+  return { deleted, teleportLocations: writeTeleportLocations(locations) };
+}
+
+function resetTeleportLocations() {
+  return writeTeleportLocations(factoryTeleportLocations());
+}
+
+function reorderTeleportLocations(cfg, order) {
+  const locations = readTeleportLocations(cfg);
+  if (!Array.isArray(order) || order.length !== locations.length) throw new Error('Teleport location order is incomplete');
+  const indexes = order.map(Number);
+  if (indexes.some(index => !Number.isInteger(index) || index < 0 || index >= locations.length) || new Set(indexes).size !== locations.length) {
+    throw new Error('Teleport location order is invalid');
+  }
+  return writeTeleportLocations(indexes.map(index => locations[index]));
+}
+
+function teleportCommand(location, target) {
+  const clean = sanitizeTeleportLocation(location);
+  const command = `tp ${target} ${clean.x} ${clean.y} ${clean.z} true`;
+  return clean.dimension === 'current' ? command : `execute in ${clean.dimension} run ${command}`;
 }
 
 
@@ -1930,6 +2020,63 @@ async function handleApi(req, res, url, cfg) {
       const quickItems = reorderQuickItems(cfg, body.order);
       appendActivity(cfg, { username: session.username, role: session.role, action: 'reorder-quick-items', summary: 'Reordered quick buttons', ok: true, ip: clientIp(req) });
       json(res, 200, { ok: true, quickItems });
+      return;
+    }
+
+    if (url.pathname === '/api/teleport-locations/add') {
+      requireRole(session, 'admin');
+      const saved = addTeleportLocation(cfg, body);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'add-teleport-location', summary: `Added teleport button ${saved.location.title}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, ...saved });
+      return;
+    }
+
+    if (url.pathname === '/api/teleport-locations/delete') {
+      requireRole(session, 'admin');
+      const deleted = deleteTeleportLocation(cfg, body.index);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'delete-teleport-location', summary: `Removed teleport button ${deleted.deleted.title}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, ...deleted });
+      return;
+    }
+
+    if (url.pathname === '/api/teleport-locations/reset') {
+      requireRole(session, 'admin');
+      const teleportLocations = resetTeleportLocations();
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'reset-teleport-locations', summary: 'Restored factory teleport locations', ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, teleportLocations });
+      return;
+    }
+
+    if (url.pathname === '/api/teleport-locations/reorder') {
+      requireRole(session, 'admin');
+      const teleportLocations = reorderTeleportLocations(cfg, body.order);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'reorder-teleport-locations', summary: 'Reordered teleport buttons', ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, teleportLocations });
+      return;
+    }
+
+    if (url.pathname === '/api/world-time') {
+      requireRole(session, 'operator');
+      const time = String(body.time || '').trim().toLowerCase();
+      if (!['day', 'night'].includes(time)) throw new Error('World time must be day or night');
+      const command = `time set ${time}`;
+      const result = await runMinecraftCommand(command, cfg);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'set-world-time', summary: `Set world time to ${time}`, ok: result.ok, error: result.ok ? null : (result.stderr || result.error), commands: result.ok ? 1 : 0, ip: clientIp(req) });
+      json(res, result.ok ? 200 : 500, result);
+      return;
+    }
+
+    if (url.pathname === '/api/teleport') {
+      requireRole(session, 'operator');
+      const locations = readTeleportLocations(cfg);
+      const position = Number(body.index);
+      if (!Number.isInteger(position) || position < 0 || position >= locations.length) throw new Error('Teleport location was not found');
+      const location = locations[position];
+      const target = getTarget(body.target, cfg);
+      const command = teleportCommand(location, target);
+      const result = await runMinecraftCommand(command, cfg);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'teleport-player', target: body.target || null, summary: `Teleported to ${location.title} (${location.dimension}: ${location.x}, ${location.y}, ${location.z})`, ok: result.ok, error: result.ok ? null : (result.stderr || result.error), commands: result.ok ? 1 : 0, ip: clientIp(req) });
+      json(res, result.ok ? 200 : 500, { ...result, location });
       return;
     }
 

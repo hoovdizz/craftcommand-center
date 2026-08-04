@@ -41,6 +41,7 @@
     "snapshotDate": "2026-08-03",
     "file": "/item-catalog.json"
   },
+  "teleportLocations": [],
   "quickItems": [
     {
       "label": "Stone Bricks x64",

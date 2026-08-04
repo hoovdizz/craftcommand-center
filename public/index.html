@@ -11,8 +11,8 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="/theme.js?v=2.2.0"></script>
-  <link rel="stylesheet" href="/styles.css?v=2.2.0" />
+  <script src="/theme.js?v=2.3.0-beta.3"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.3" />
 </head>
 <body data-display="text">
   <section id="loginView" class="loginShell">
@@ -68,7 +68,7 @@
 
       <section class="card wide targetCard">
         <h2>Player Target</h2>
-        <label for="target">Give to</label>
+        <label for="target">Apply actions to</label>
         <select id="target"></select>
         <div class="buttonRow smallRow">
           <button id="refreshPlayers" class="warn">🔄 Pull Known Players</button>
@@ -80,6 +80,44 @@
           <button id="addPlayer" class="good">➕ Add Player</button>
         </div>
         <p id="playerStatus" class="hint">Loading known players…</p>
+      </section>
+
+      <section class="card wide" data-min-role="operator">
+        <div class="sectionHeading">
+          <div><h2>World Time</h2><p class="hint">Set the current world time for everyone.</p></div>
+        </div>
+        <div id="worldTimeButtons" class="buttonGrid worldControlGrid"></div>
+      </section>
+
+      <section class="card wide">
+        <div class="sectionHeading">
+          <div><h2>Saved Teleports</h2><p class="hint">Pick a player above, then send them to a saved location.</p></div>
+          <button id="manageTeleportLocations" class="compact" type="button" data-min-role="admin">Manage locations</button>
+        </div>
+        <div id="teleportLocations" class="buttonGrid"></div>
+        <p id="teleportLocationsEmpty" class="hint hidden">No teleport locations have been saved yet. An admin can add one with Manage locations.</p>
+        <div id="teleportLocationManager" class="quickItemManager hidden" data-min-role="admin">
+          <h3>Add a teleport location</h3>
+          <div class="teleportLocationForm">
+            <label>Button title<input id="teleportTitle" maxlength="60" placeholder="Village Market" autocomplete="off" /></label>
+            <label>Dimension
+              <select id="teleportDimension">
+                <option value="current">Current dimension</option>
+                <option value="overworld">Overworld</option>
+                <option value="nether">Nether</option>
+                <option value="the_end">The End</option>
+              </select>
+            </label>
+            <label>X<input id="teleportX" type="number" step="any" value="0" required /></label>
+            <label>Y<input id="teleportY" type="number" step="any" value="64" required /></label>
+            <label>Z<input id="teleportZ" type="number" step="any" value="0" required /></label>
+            <button id="addTeleportLocation" class="good" type="button">Add location</button>
+          </div>
+          <div class="buttonRow smallRow">
+            <button id="resetTeleportLocations" class="danger" type="button">Remove all saved locations</button>
+          </div>
+          <p class="hint">Saved locations persist in <code>/app/data/teleport-locations.json</code>. Drag location buttons to rearrange them. Teleports use collision checking and fail instead of placing a player inside solid blocks.</p>
+        </div>
       </section>
 
       <section class="card wide">
@@ -185,8 +223,8 @@
     </form>
   </dialog>
 
-  <script src="/item-icons.js?v=2.2.0"></script>
-  <script src="/pwa.js?v=2.2.0"></script>
-  <script src="/app.js?v=2.2.0"></script>
+  <script src="/item-icons.js?v=2.3.0-beta.3"></script>
+  <script src="/pwa.js?v=2.3.0-beta.3"></script>
+  <script src="/app.js?v=2.3.0-beta.3"></script>
 </body>
 </html>

@@ -29,7 +29,7 @@ function itemInfo(id) {
   return itemMap.get(id) || { id, name: id.replace(/^minecraft:/, '').split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' '), description: '' };
 }
 function itemListHtml(items) {
-  if (!items.length) return '<p class="hint">No specific inventory item is required; follow the activity guide.</p>';
+  if (!items.length) return '';
   return `<ul class="achievementItems">${items.map(entry => {
     const info = itemInfo(entry.item);
     return `<li data-achievement-item="${escapeHtml(entry.item)}"><span class="achievementItemIcon"></span><span><strong>${escapeHtml(info.name)} × ${entry.amount}</strong><code>${escapeHtml(entry.item)}</code></span></li>`;
@@ -44,7 +44,7 @@ function mountItemIcons(card, achievement) {
 
 async function sendPracticeSupplies(achievement, button) {
   if (!achievement.items.length || !can('operator') || !$('#achievementTarget').value) return;
-  if (!confirm(`Send the suggested supplies for “${achievement.title}” to ${$('#achievementTarget').selectedOptions[0]?.textContent || 'the selected player'}?\n\nThis uses commands. It is for practice only and can make the world ineligible for achievements.`)) return;
+  if (!confirm(`Send the listed ${achievement.supplyType.toLowerCase()} for “${achievement.title}” to ${$('#achievementTarget').selectedOptions[0]?.textContent || 'the selected player'}?\n\nThis uses commands. It is for practice only and can make the world ineligible for achievements.`)) return;
   button.disabled = true;
   const original = button.textContent;
   button.textContent = 'Sending…';
@@ -91,12 +91,13 @@ function render() {
       <h2>${escapeHtml(achievement.title)}</h2>
       <p class="achievementDescription">${escapeHtml(achievement.description)}</p>
       <details><summary>How to complete it</summary><p>${escapeHtml(achievement.guide)}</p></details>
-      <h3>Suggested preparation</h3>
+      <h3>${escapeHtml(achievement.supplyType)}</h3>
+      <p class="hint achievementSupplyNote">${escapeHtml(achievement.supplyNote)}</p>
       ${itemListHtml(achievement.items)}
       <p class="achievementPlatforms">${achievement.platforms.map(value => `<span>${escapeHtml(value)}</span>`).join('')}</p>
       <div class="achievementActions">
         <button type="button" class="${done ? '' : 'good'}" data-toggle-achievement>${done ? 'Mark not completed' : 'Mark completed'}</button>
-        ${achievement.items.length ? `<button type="button" class="warn" data-practice-supplies ${can('operator') && hasTarget ? '' : 'disabled'}>Practice supplies</button>` : ''}
+        ${achievement.items.length ? `<button type="button" class="warn" data-practice-supplies ${can('operator') && hasTarget ? '' : 'disabled'}>Send listed supplies</button>` : ''}
       </div>`;
     card.querySelector('[data-toggle-achievement]').addEventListener('click', () => {
       const updated = completedSet();

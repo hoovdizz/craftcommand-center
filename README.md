@@ -10,17 +10,17 @@ General game panels such as Pterodactyl, PufferPanel, Crafty Controller, AMP, an
 
 | Component | Version |
 |---|---|
-| CraftCommand Center | **2.3.0-beta.1** |
+| CraftCommand Center | **2.3.0-beta.3** |
 | Bundled Bedrock item catalog | **26.34/35** |
 | Item identifiers | **1,914** |
 | Bedrock achievement records | **131** |
-| Catalog snapshot | **August 3, 2026** |
+| Achievement supply audit | **August 4, 2026** |
 
 CraftCommand Center uses semantic prerelease versions:
 
-- `2.3.0-beta.1` identifies the application release.
+- `2.3.0-beta.3` identifies the application release.
 - `2.3` is the feature line.
-- `beta.1` is the prerelease iteration and may change before the stable `2.3.0` release.
+- `beta.3` is the prerelease iteration and may change before the stable `2.3.0` release.
 - GHCR publishes `latest`, version tags, and immutable commit-SHA tags.
 
 The application version is defined in `package.json`, shown by diagnostics, and used to identify support reports. The Minecraft release tag is tracked separately because Mojang item data can change independently of the dashboard.
@@ -43,6 +43,8 @@ The application version is defined in `package.json`, shown by diagnostics, and 
 - Configurable Quick Items that admins can add, remove, restore to factory defaults, and drag to reorder
 - Persistent Quick Item ordering and configuration across container updates
 - Quick Item, custom item, and clearly labeled XP actions
+- Day and night world-time controls
+- Persistent, custom-titled teleport buttons with XYZ coordinates, optional dimension changes, player targeting, drag reordering, and collision-safe arrival checks
 - Starter, recovery, mining, and enchanting kits
 - Kit previews, confirmation dialogs, inventory artwork, and a persistent custom-kit builder
 - Searchable Bedrock item catalog with 1,914 identifiers, categories, descriptions, and give buttons
@@ -52,9 +54,10 @@ The application version is defined in `package.json`, shown by diagnostics, and 
 - Dedicated **Achievements** tab with 131 published Bedrock achievement records
 - Search, category, completion-state, platform, and player filters
 - Coverage for Xbox, Windows, Android, iOS, Nintendo Switch, and supported PlayStation trophies
-- Completion instructions, platform availability, gamerscore/trophy information, and suggested preparation items
+- Completion instructions, platform availability, gamerscore/trophy information, and audited recipe materials or activity supplies
+- Exact crafting quantities for recipe-based goals, with notes for required stations, enchantments, filled bottles, map data, and naturally earned keys
 - Private per-player and per-platform checklists stored in the current browser
-- Optional practice-supply actions for operators
+- Optional send-listed-supplies actions for operators
 
 Achievement progress is not read from or written to Microsoft or PlayStation accounts. Minecraft only awards achievements in an eligible Survival world. Using dashboard commands to grant practice supplies can make a world ineligible, so the interface warns and requests confirmation before sending them.
 
@@ -76,8 +79,8 @@ Achievement progress is not read from or written to Microsoft or PlayStation acc
 | Role | Access |
 |---|---|
 | Viewer | Dashboard, Status, diagnostics, players, kits, catalogs, achievement checklists, and only their own activity history |
-| Operator | Viewer access plus item, XP, kit, achievement practice-supply, player-refresh, and attachment-refresh actions; activity remains limited to their own account |
-| Admin | Operator access plus account management, manual players, Quick Item management, custom kits, all activity, and server backup/export |
+| Operator | Viewer access plus item, XP, kit, achievement practice-supply, world-time, saved-teleport, player-refresh, and attachment-refresh actions; activity remains limited to their own account |
+| Admin | Operator access plus account management, manual players, Quick Item and teleport-location management, custom kits, all activity, and server backup/export |
 
 The primary admin username/password is managed in the Unraid template. Additional accounts are created from the **Accounts** page and stored in `/app/data/users.json`.
 
@@ -151,6 +154,7 @@ Persistent files include:
 manual-players.json
 custom-kits.json
 quick-items.json
+teleport-locations.json
 users.json
 activity.jsonl
 ```
