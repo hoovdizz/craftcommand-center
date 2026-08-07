@@ -1,6 +1,10 @@
 # CraftCommand Center
 
-CraftCommand Center is a lightweight, mobile-friendly companion dashboard for **`binhex-minecraftbedrockserver` on Unraid**. It connects to the Binhex container's existing GNU `screen` console instead of replacing the server container.
+CraftCommand Center is a lightweight, mobile-friendly Minecraft companion dashboard. It supports **`binhex-minecraftbedrockserver` on Unraid** through its existing GNU `screen` console and LAN-hosted servers through RCON.
+
+Admins can choose the connection method on the Status page, scan directly connected IPv4 networks for Bedrock servers, select a discovered host, and configure both the Minecraft game port and the separate RCON port/password. This makes multiple Minecraft instances on one host addressable by their individual ports. The RCON password is stored in persistent app data with owner-only file permissions and is never returned to the browser.
+
+LAN discovery uses the Bedrock UDP status protocol and scans the selected game port. Remote commands require a standard RCON endpoint; enable RCON in a compatible server or hosting controller. Mojang's stock Bedrock Dedicated Server does not provide native RCON, so it requires an RCON-capable wrapper/controller for command features.
 
 ## Why this exists
 
