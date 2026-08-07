@@ -146,6 +146,45 @@ ghcr.io/hoovdizz/craftcommand-center:latest
 
 Unraid can then pull updates with **Docker → Check for Updates** without rebuilding locally.
 
+## Install with Docker Desktop on Windows
+
+This is the recommended setup for Windows users who are not running the Binhex Unraid container. It runs the dashboard in Docker Desktop and connects to a Minecraft server over your LAN.
+
+1. Install and start [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/), then make sure Docker is using Linux containers.
+2. Create a persistent data folder in PowerShell:
+
+   ```powershell
+   New-Item -ItemType Directory -Force .\craftcommand-data | Out-Null
+   ```
+
+3. Start the dashboard (replace the password before running this command):
+
+   ```powershell
+   docker run -d --name craftcommand-center `
+     --restart unless-stopped `
+     -p 8223:8223 `
+     -e CCC_USERNAME=admin `
+     -e CCC_PASSWORD="replace-with-a-long-password" `
+     -v "${PWD}\craftcommand-data:/app/data" `
+     ghcr.io/hoovdizz/craftcommand-center:latest
+   ```
+
+4. Open [http://localhost:8223](http://localhost:8223), sign in, and open **Status → Minecraft Server Connection**.
+5. Select **LAN server / RCON**, enter the Minecraft server's LAN IP, game port (usually `19132` for Bedrock), RCON port (commonly `25575`), and RCON password, then choose **Save and Authenticate**.
+
+The dashboard container does not need the Docker socket for LAN/RCON mode. Do not add the Unraid-only `/var/run/docker.sock` mount to a Windows installation. The **Scan LAN** button checks the selected Bedrock UDP game port; if Docker Desktop's network translation prevents discovery, enter the server's LAN IP manually. The Windows host firewall and the Minecraft server firewall must allow the game and RCON ports from the local network.
+
+To update the image later:
+
+```powershell
+docker pull ghcr.io/hoovdizz/craftcommand-center:latest
+docker stop craftcommand-center
+docker rm craftcommand-center
+# Run the same docker run command above again; .\craftcommand-data preserves settings.
+```
+
+The stock Bedrock Dedicated Server does not expose native RCON. For remote commands, use an RCON-capable wrapper/controller or use a Minecraft server implementation that supports RCON. Status discovery can still work through the Bedrock UDP protocol.
+
 ## Persistent data
 
 Map:
@@ -163,6 +202,7 @@ quick-items.json
 teleport-locations.json
 users.json
 activity.jsonl
+connection.json
 ```
 
 Only `Everyone` is hard-coded in the default target config. Player names come from discovery or the manual player list.
