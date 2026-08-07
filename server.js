@@ -4,6 +4,8 @@ const path = require('path');
 const { spawn } = require('child_process');
 const crypto = require('crypto');
 const dgram = require('dgram');
+const net = require('net');
+const os = require('os');
 const https = require('https');
 const PACKAGE = require('./package.json');
 
@@ -273,9 +275,42 @@ function loadConfig() {
   const p = fs.existsSync(CONFIG_PATH) ? CONFIG_PATH : FALLBACK_CONFIG;
   const cfg = JSON.parse(fs.readFileSync(p, 'utf8'));
   const resolved = applyEnvOverrides(cfg);
+  resolved.connection = readConnectionSettings(resolved);
   resolved.quickItems = readQuickItems(resolved);
   resolved.teleportLocations = readTeleportLocations(resolved);
   return resolved;
+}
+
+function connectionSettingsPath() { return path.join(DEFAULT_DATA_DIR, 'connection.json'); }
+function sanitizePort(value, fallback) {
+  const port = Number(value == null || value === '' ? fallback : value);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Ports must be whole numbers from 1 to 65535');
+  return port;
+}
+function sanitizeConnectionSettings(value = {}) {
+  const mode = String(value.mode || 'binhex').toLowerCase();
+  if (!['binhex', 'rcon'].includes(mode)) throw new Error('Connection mode must be binhex or rcon');
+  const host = String(value.host || '').trim().replace(/^\[|\]$/g, '');
+  if (host && (host.length > 253 || !/^[A-Za-z0-9_.:-]+$/.test(host))) throw new Error('Server host must be a hostname or IP address');
+  return { mode, host, gamePort: sanitizePort(value.gamePort, 19132), rconPort: sanitizePort(value.rconPort, 25575), rconPassword: String(value.rconPassword || '').slice(0, 512) };
+}
+function readConnectionSettings(cfg) {
+  const defaults = sanitizeConnectionSettings(cfg.connection || {});
+  try {
+    if (!fs.existsSync(connectionSettingsPath())) return defaults;
+    return sanitizeConnectionSettings({ ...defaults, ...JSON.parse(fs.readFileSync(connectionSettingsPath(), 'utf8')) });
+  } catch (err) { console.log(`Could not load connection settings: ${err.message}`); return defaults; }
+}
+function writeConnectionSettings(value) {
+  const clean = sanitizeConnectionSettings(value);
+  if (clean.mode === 'rcon' && (!clean.host || !clean.rconPassword)) throw new Error('RCON mode requires a server host and RCON password');
+  fs.mkdirSync(DEFAULT_DATA_DIR, { recursive: true });
+  fs.writeFileSync(connectionSettingsPath(), `${JSON.stringify(clean, null, 2)}\n`, { encoding: 'utf8', mode: 0o600 });
+  return clean;
+}
+function publicConnectionSettings(cfg) {
+  const value = sanitizeConnectionSettings(cfg.connection || {});
+  return { ...value, rconPassword: '', passwordConfigured: Boolean(value.rconPassword) };
 }
 
 
@@ -762,11 +797,14 @@ async function runDiagnostics(cfg, req) {
   const checks = [];
   const add = (id, label, ok, detail, severity = 'error') => checks.push({ id, label, ok: Boolean(ok), detail: String(detail || ''), severity });
   add('app', 'CraftCommand Center', true, `Version ${APP_VERSION}`);
-  add('docker-socket', 'Docker socket', fs.existsSync('/var/run/docker.sock'), fs.existsSync('/var/run/docker.sock') ? 'Available' : 'Missing /var/run/docker.sock');
+  const networkMode = (cfg.connection || {}).mode === 'rcon';
+  add('connection-mode', 'Minecraft connection', true, networkMode ? `LAN/RCON at ${(cfg.connection || {}).host}:${(cfg.connection || {}).rconPort}` : 'Binhex Docker / GNU screen');
+  if (!networkMode) add('docker-socket', 'Docker socket', fs.existsSync('/var/run/docker.sock'), fs.existsSync('/var/run/docker.sock') ? 'Available' : 'Missing /var/run/docker.sock');
   add('data', 'Persistent data', dataDirectoryWritable(), dataDirectoryWritable() ? `${DEFAULT_DATA_DIR} is writable` : `${DEFAULT_DATA_DIR} is not writable`);
   add('https', 'Encrypted browser connection', requestIsHttps(req), requestIsHttps(req) ? 'HTTPS detected' : 'HTTP detected; use a reverse proxy for encryption', 'warning');
 
   const containerName = safeDockerName(cfg.minecraftContainerName || 'binhex-minecraftbedrockserver', 'Minecraft container name');
+  if (!networkMode) {
   const inspect = await runDocker(['inspect', '--format', '{{.State.Running}}|{{.State.Status}}|{{.Config.Image}}', containerName], 8000);
   if (inspect.ok) {
     const [running, status, image] = inspect.stdout.trim().split('|');
@@ -774,9 +812,10 @@ async function runDiagnostics(cfg, req) {
   } else {
     add('container', 'Binhex container', false, stripAnsi(inspect.stderr || inspect.stdout || 'Container not found').trim());
   }
+  }
 
   const attachment = await refreshAttachment(cfg, 'diagnostics');
-  add('screen', 'Minecraft console attachment', attachment.ok, attachment.ok ? `${attachment.activeScreenSession} as ${attachment.dockerUser}` : attachment.error || 'Screen session not found');
+  add('console', networkMode ? 'RCON authentication' : 'Minecraft console attachment', attachment.ok, attachment.ok ? (networkMode ? attachment.endpoint : `${attachment.activeScreenSession} as ${attachment.dockerUser}`) : attachment.error || 'Console connection unavailable');
 
   const external = await checkExternalReachability(cfg);
   if (external.configured) add('external', 'Public Bedrock endpoint', external.reachable, external.reachable ? `${external.endpoint} replied in ${external.latencyMs} ms` : `${external.endpoint}: ${external.error || 'No response'}`, 'warning');
@@ -867,6 +906,64 @@ function queryBedrockUdp(hostValue, portValue, timeoutMsValue) {
     crypto.randomBytes(8).copy(packet, 25);
     socket.send(packet, port, host, err => {
       if (err) finish({ configured: true, reachable: false, error: err.message, latencyMs: null });
+    });
+  });
+}
+
+function localIpv4Subnets(hintAddress = '') {
+  const subnets = new Set();
+  for (const entries of Object.values(os.networkInterfaces())) for (const entry of entries || []) {
+    if (entry.family === 'IPv4' && !entry.internal && entry.address) subnets.add(entry.address.split('.').slice(0, 3).join('.'));
+  }
+  const hint = String(hintAddress || '').replace(/^::ffff:/, '');
+  if (/^(?:10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+)$/.test(hint)) subnets.add(hint.split('.').slice(0, 3).join('.'));
+  return [...subnets];
+}
+
+function scanLanBedrockServers(portValue, timeoutMs = 1800, hintAddress = '') {
+  const port = sanitizePort(portValue, 19132);
+  const subnets = localIpv4Subnets(hintAddress);
+  if (!subnets.length) return Promise.resolve([]);
+  return new Promise(resolve => {
+    const socket = dgram.createSocket('udp4');
+    const found = new Map();
+    const magic = Buffer.from('00ffff00fefefefefdfdfdfd12345678', 'hex');
+    const packet = Buffer.alloc(33); packet[0] = 0x01; packet.writeBigInt64BE(BigInt(Date.now()), 1); magic.copy(packet, 9); crypto.randomBytes(8).copy(packet, 25);
+    const finish = () => { try { socket.close(); } catch {} resolve([...found.values()].sort((a, b) => a.host.localeCompare(b.host, undefined, { numeric: true }))); };
+    socket.on('message', (message, remote) => {
+      if (!message || message.length < 35 || message[0] !== 0x1c) return;
+      const length = message.readUInt16BE(33); const fields = message.subarray(35, Math.min(message.length, 35 + length)).toString('utf8').split(';');
+      found.set(`${remote.address}:${remote.port}`, { host: remote.address, port: remote.port, motd: fields[1] || 'Minecraft Server', version: fields[3] || '', onlinePlayers: Number(fields[4] || 0), maxPlayers: Number(fields[5] || 0), gameMode: fields[8] || '' });
+    });
+    socket.on('error', finish);
+    socket.bind(0, '0.0.0.0', () => {
+      for (const subnet of subnets) for (let last = 1; last <= 254; last += 1) socket.send(packet, port, `${subnet}.${last}`, () => {});
+      setTimeout(finish, Math.max(500, Math.min(10000, Number(timeoutMs) || 1800)));
+    });
+  });
+}
+
+function rconPacket(id, type, body) {
+  const payload = Buffer.from(String(body), 'utf8'); const packet = Buffer.alloc(payload.length + 14);
+  packet.writeInt32LE(payload.length + 10, 0); packet.writeInt32LE(id, 4); packet.writeInt32LE(type, 8); payload.copy(packet, 12); return packet;
+}
+function runRconCommand(command, cfg) {
+  const settings = sanitizeConnectionSettings(cfg.connection || {});
+  return new Promise(resolve => {
+    if (!settings.host || !settings.rconPassword) { resolve({ ok: false, code: 1, stdout: '', stderr: 'RCON host or password is not configured', command, method: 'rcon' }); return; }
+    const socket = net.createConnection({ host: settings.host, port: settings.rconPort }); let buffer = Buffer.alloc(0); let authenticated = false; let settled = false;
+    const finish = result => { if (settled) return; settled = true; clearTimeout(timer); socket.destroy(); resolve(compactResult({ command, method: 'rcon', endpoint: `${settings.host}:${settings.rconPort}`, ...result }, cfg)); };
+    const timer = setTimeout(() => finish({ ok: false, code: 1, stdout: '', stderr: 'RCON connection timed out', timedOut: true }), Number(cfg.commandTimeoutMs || 15000));
+    socket.on('connect', () => socket.write(rconPacket(1, 3, settings.rconPassword)));
+    socket.on('error', err => finish({ ok: false, code: 1, stdout: '', stderr: err.message }));
+    socket.on('data', chunk => {
+      buffer = Buffer.concat([buffer, chunk]);
+      while (buffer.length >= 4 && buffer.length >= buffer.readInt32LE(0) + 4) {
+        const size = buffer.readInt32LE(0); const packet = buffer.subarray(0, size + 4); buffer = buffer.subarray(size + 4);
+        const id = packet.readInt32LE(4); const body = packet.subarray(12, size + 2).toString('utf8');
+        if (!authenticated) { if (id === -1) return finish({ ok: false, code: 1, stdout: '', stderr: 'RCON authentication failed' }); authenticated = true; socket.write(rconPacket(2, 2, command)); }
+        else return finish({ ok: true, code: 0, stdout: body, stderr: '' });
+      }
     });
   });
 }
@@ -1104,13 +1201,14 @@ async function getServerOverview(cfg, force = false) {
   if (serverOverviewInFlight) return serverOverviewInFlight;
   serverOverviewInFlight = (async () => {
     const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+    const networkMode = (cfg.connection || {}).mode === 'rcon';
     const [inspectResult, logsResult, access, online, external, world] = await Promise.all([
-      runDocker(['inspect', container], 10000),
-      runDocker(['logs', '--timestamps', '--tail', '20000', container], 15000),
-      readServerAccessLists(cfg),
+      networkMode ? Promise.resolve({ ok: false, stdout: '', stderr: '' }) : runDocker(['inspect', container], 10000),
+      networkMode ? Promise.resolve({ ok: true, stdout: '', stderr: '' }) : runDocker(['logs', '--timestamps', '--tail', '20000', container], 15000),
+      networkMode ? Promise.resolve({ whitelist: [], blacklist: [], permissions: [], allowListEnabled: null }) : readServerAccessLists(cfg),
       queryOnlinePlayers(cfg),
       checkExternalReachability(cfg),
-      getWorldIdentity(cfg, force)
+      networkMode ? Promise.resolve({ connected: true, name: null, error: 'World metadata requires local server-file access' }) : getWorldIdentity(cfg, force)
     ]);
     let docker = { running: false, status: 'unknown', startedAt: null, uptimeSeconds: 0, image: null, restartCount: 0, error: null };
     if (inspectResult.ok) {
@@ -1128,10 +1226,11 @@ async function getServerOverview(cfg, force = false) {
           error: inspected?.State?.Error || null
         };
       } catch (err) { docker.error = err.message; }
-    } else docker.error = stripAnsi(inspectResult.stderr || inspectResult.stdout || 'Docker inspect failed').trim();
+    } else docker.error = networkMode ? null : stripAnsi(inspectResult.stderr || inspectResult.stdout || 'Docker inspect failed').trim();
     const logs = `${logsResult.stdout || ''}\n${logsResult.stderr || ''}`;
     const value = {
-      ok: docker.running,
+      ok: networkMode ? online.ok : docker.running,
+      connectionMode: networkMode ? 'rcon' : 'binhex',
       checkedAt: new Date().toISOString(),
       appVersion: APP_VERSION,
       docker,
@@ -1689,6 +1788,7 @@ function parseMinecraftScreenSession(screenList, configured = 'auto') {
 }
 
 function publicAttachmentState(cfg) {
+  if ((cfg.connection || {}).mode === 'rcon') return { ok: attachmentState.ok, method: 'rcon', endpoint: `${cfg.connection.host}:${cfg.connection.rconPort}`, gameEndpoint: `${cfg.connection.host}:${cfg.connection.gamePort}`, checkedAt: attachmentState.checkedAt, reason: attachmentState.reason, error: attachmentState.error || null };
   return {
     ok: attachmentState.ok,
     container: attachmentState.container || cfg.minecraftContainerName,
@@ -1706,6 +1806,11 @@ function publicAttachmentState(cfg) {
 async function refreshAttachment(cfg, reason = 'manual') {
   if (refreshInFlight) return refreshInFlight;
   refreshInFlight = (async () => {
+    if ((cfg.connection || {}).mode === 'rcon') {
+      const result = await runRconCommand('list', { ...cfg, showRawOutput: true });
+      attachmentState = { ok: result.ok, method: 'rcon', endpoint: `${cfg.connection.host}:${cfg.connection.rconPort}`, checkedAt: new Date().toISOString(), reason, error: result.ok ? null : result.stderr };
+      return attachmentState;
+    }
     const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
     const user = safeDockerName(cfg.dockerUser || 'nobody', 'Docker user');
     const configuredScreenSession = String(cfg.screenSession || 'auto').trim() || 'auto';
@@ -1844,6 +1949,7 @@ function looksLikeStaleScreen(result) {
 }
 
 async function runMinecraftCommand(command, cfg) {
+  if ((cfg.connection || {}).mode === 'rcon') return runRconCommand(command, cfg);
   try {
     const activeSession = await getActiveScreenSession(cfg);
     let result = await sendMinecraftCommandOnce(command, cfg, activeSession);
@@ -1918,6 +2024,7 @@ function publicConfig(cfg, req, session = null) {
   } else delete copy.links;
   if (copy.backup) copy.backup = { enabled: copy.backup.enabled !== false };
   if (copy.externalServer) copy.externalServer = { enabled: copy.externalServer.enabled === true, host: copy.externalServer.host || '', port: Number(copy.externalServer.port || 19132), mode: copy.externalServer.mode || 'external' };
+  copy.connection = publicConnectionSettings(cfg);
   return copy;
 }
 
@@ -1982,6 +2089,12 @@ async function handleApi(req, res, url, cfg) {
 
     if (req.method === 'GET' && url.pathname === '/api/config') {
       json(res, 200, publicConfig(cfg, req, session));
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/connection') {
+      requireRole(session, 'admin');
+      json(res, 200, { ok: true, connection: publicConnectionSettings(cfg) });
       return;
     }
 
@@ -2051,6 +2164,23 @@ async function handleApi(req, res, url, cfg) {
     }
 
     const body = await readBody(req);
+
+    if (url.pathname === '/api/connection/scan') {
+      requireRole(session, 'admin');
+      const servers = await scanLanBedrockServers(body.port || (cfg.connection || {}).gamePort || 19132, 1800, clientIp(req));
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'lan-scan', summary: `Found ${servers.length} Minecraft server(s) on UDP port ${body.port || (cfg.connection || {}).gamePort || 19132}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, servers }); return;
+    }
+
+    if (url.pathname === '/api/connection/save') {
+      requireRole(session, 'admin');
+      const existing = sanitizeConnectionSettings(cfg.connection || {});
+      const connection = writeConnectionSettings({ ...body, rconPassword: String(body.rconPassword || '') || existing.rconPassword });
+      const fresh = { ...cfg, connection };
+      const state = connection.mode === 'rcon' ? await refreshAttachment(fresh, 'settings-save') : { ok: true };
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'connection-save', target: connection.host, summary: `Selected ${connection.mode === 'rcon' ? 'LAN/RCON' : 'Binhex'} connection mode`, ok: state.ok, error: state.error, ip: clientIp(req) });
+      json(res, state.ok ? 200 : 400, { ok: state.ok, connection: publicConnectionSettings(fresh), attachment: publicAttachmentState(fresh), error: state.error || undefined }); return;
+    }
 
     if (url.pathname === '/api/users/save') {
       requireRole(session, 'admin');
