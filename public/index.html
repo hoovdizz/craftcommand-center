@@ -11,8 +11,8 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="/theme.js?v=2.3.0-beta.6"></script>
-  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.6" />
+  <script src="/theme.js?v=2.3.0-beta.9"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.9" />
 </head>
 <body data-display="text">
   <section id="loginView" class="loginShell">
@@ -59,8 +59,21 @@
             <option value="deep-ocean">Deep Ocean</option>
             <option value="ember">Ember</option>
             <option value="daylight">Daylight</option>
+            <option value="minecraft">Minecraft</option>
           </select>
         </label>
+        <label class="compactLabel">Background
+          <select data-background-choice aria-label="Background image">
+            <option value="default">Theme background</option>
+            <option value="minecraft-wallpaper-1">Minecraft wallpaper 1</option>
+            <option value="minecraft-wallpaper-2">Minecraft wallpaper 2</option>
+            <option value="custom">Custom image URL</option>
+          </select>
+        </label>
+        <label class="compactLabel backgroundUrlLabel">Custom background URL
+          <input data-background-url type="url" placeholder="https://example.com/wallpaper.jpg" />
+        </label>
+        <button type="button" class="compact" data-background-apply>Apply background</button>
         <button id="logout" class="danger smallButton">Log out</button>
       </nav>
     </header>
@@ -226,7 +239,7 @@
   </dialog>
 
   <script src="/item-icons.js?v=2.3.0-beta.6"></script>
-  <script src="/pwa.js?v=2.3.0-beta.6"></script>
-  <script src="/app.js?v=2.3.0-beta.6"></script>
+  <script src="/pwa.js?v=2.3.0-beta.9"></script>
+  <script src="/app.js?v=2.3.0-beta.9"></script>
 </body>
 </html>
