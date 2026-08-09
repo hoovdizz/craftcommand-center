@@ -170,7 +170,7 @@ This is the recommended setup for Windows users who are not running the Binhex U
    ```
 
 4. Open [http://localhost:8223](http://localhost:8223), sign in, and open **Status → Minecraft Server Connection**.
-5. Select **LAN server / RCON**, enter the Minecraft server's LAN IP, game port (usually `19132` for Bedrock), RCON port (commonly `25575`), and RCON password, then choose **Save and Authenticate**.
+5. Select **Binhex Windows / RCON**, enter the Windows Binhex server's LAN IP, game port (usually `19132` for Bedrock), RCON port (commonly `25575`), and RCON password, then choose **Save and Authenticate**.
 
 The dashboard container does not need the Docker socket for LAN/RCON mode. Do not add the Unraid-only `/var/run/docker.sock` mount to a Windows installation. The **Scan LAN** button checks the selected Bedrock UDP game port; if Docker Desktop's network translation prevents discovery, enter the server's LAN IP manually. The Windows host firewall and the Minecraft server firewall must allow the game and RCON ports from the local network.
 

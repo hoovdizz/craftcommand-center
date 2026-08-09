@@ -31,16 +31,16 @@
 
   <main>
     <section class="card wide hidden" data-min-role="admin">
-      <div class="sectionHeading"><div><h2>Minecraft Server Connection</h2><p class="hint">Keep the Binhex console integration, or connect to any RCON-enabled Minecraft server on your LAN.</p></div><button id="scanLan" class="warn" type="button">Scan LAN</button></div>
+      <div class="sectionHeading"><div><h2>Minecraft Server Connection</h2><p class="hint">Choose the Binhex Unraid console integration, or connect to Binhex Windows through RCON.</p></div><button id="scanLan" class="warn" type="button">Scan LAN</button></div>
       <form id="connectionForm" class="formGrid twoCol">
-        <label>Connection method<select id="connectionMode"><option value="binhex">Binhex Docker / screen</option><option value="rcon">LAN server / RCON</option></select></label>
+        <label>Connection method<select id="connectionMode"><option value="binhex">Binhex Unraid / screen</option><option value="rcon">Binhex Windows / RCON</option></select></label>
         <label>Server host or IP<input id="connectionHost" placeholder="192.168.1.50" autocomplete="off" /></label>
         <label>Minecraft game port<input id="connectionGamePort" type="number" min="1" max="65535" value="19132" required /></label>
         <label>RCON port<input id="connectionRconPort" type="number" min="1" max="65535" value="25575" required /></label>
         <label>RCON password<input id="connectionPassword" type="password" maxlength="512" placeholder="Leave blank to keep saved password" autocomplete="new-password" /></label>
         <button class="good" type="submit">Save and Authenticate</button>
       </form>
-      <p class="hint">LAN scanning checks the selected Bedrock UDP game port across directly connected IPv4 /24 networks. Enable RCON on the server and use its separate RCON port/password for dashboard commands.</p>
+      <p class="hint">LAN scanning checks the selected Bedrock UDP game port across directly connected IPv4 /24 networks. For Binhex Windows, enable its RCON endpoint and use the separate RCON port/password for dashboard commands.</p>
       <div id="lanServers" class="accessList"></div>
     </section>
 
