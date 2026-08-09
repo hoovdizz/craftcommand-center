@@ -86,9 +86,32 @@
   --input: #ffffff;
   --focus: rgba(8,127,91,.28);
 }
+:root[data-theme="minecraft"] {
+  color-scheme: dark;
+  --bg: #121b18;
+  --bg-glow: #385c47;
+  --card: #24352e;
+  --card2: #2d4438;
+  --surface: #17231f;
+  --surface2: #1e3028;
+  --text: #f2f0df;
+  --muted: #bdc9b5;
+  --accent: #8fca4a;
+  --accent2: #68b4ac;
+  --danger: #e26b55;
+  --warn: #d9a447;
+  --border: #536d5b;
+  --shadow: 0 12px 35px rgba(0,0,0,.42);
+  --topbar: rgba(18,27,24,.95);
+  --button: #3a5e48;
+  --button-hover: #4b7654;
+  --button-border: #729365;
+  --input: #17231f;
+  --focus: rgba(143,202,74,.4);
+}
 * { box-sizing: border-box; }
 html { min-height: 100%; background: var(--bg); }
-body { margin: 0; min-height: 100vh; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; background: radial-gradient(circle at 15% 0%, var(--bg-glow), var(--bg) 46%); color: var(--text); }
+body { margin: 0; min-height: 100vh; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; background-image: var(--page-background-image, radial-gradient(circle at 15% 0%, var(--bg-glow), var(--bg) 46%)); background-size: cover; background-position: center; background-attachment: fixed; background-color: var(--bg); color: var(--text); }
 button, input, select { font: inherit; }
 button, .linkButton, .navButton { touch-action: manipulation; }
 .hidden { display: none !important; }
@@ -176,6 +199,19 @@ body[data-display="icon"] .btnIcon { font-size: 1.85rem; }
 body[data-display="text"] .btnIcon { display: none; }
 .kitButton { border-color: #7769d8; background: #392f78; }
 :root[data-theme="daylight"] .kitButton { color: #fff; background: #4c3b91; border-color: #7563c4; }
+:root[data-theme="minecraft"] button.good,
+:root[data-theme="minecraft"] .linkButton.good { background: #477d3f; border-color: #91c65a; }
+:root[data-theme="minecraft"] button.warn { background: #765326; border-color: #d9a447; }
+:root[data-theme="minecraft"] button.danger { background: #773b32; border-color: #e26b55; }
+:root[data-theme="minecraft"] .healthSummary,
+:root[data-theme="minecraft"] .diagnosticItem,
+:root[data-theme="minecraft"] .activityEntry,
+:root[data-theme="minecraft"] .builderItem,
+:root[data-theme="minecraft"] .roleCards article,
+:root[data-theme="minecraft"] details,
+:root[data-theme="minecraft"] .statItem,
+:root[data-theme="minecraft"] .accessEntry,
+:root[data-theme="minecraft"] .backupEntry { background: var(--surface); }
 .kitButton::after { content: attr(data-tooltip); pointer-events: none; position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%) translateY(4px); z-index: 20; width: min(340px, 85vw); padding: .7rem; border-radius: 12px; background: #07101d; border: 1px solid #64759a; box-shadow: var(--shadow); color: white; white-space: pre-line; text-align: left; font-size: .78rem; font-weight: 600; opacity: 0; visibility: hidden; transition: .12s ease; }
 .kitButton:hover::after, .kitButton:focus-visible::after { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
