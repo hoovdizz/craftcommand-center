@@ -798,7 +798,7 @@ async function runDiagnostics(cfg, req) {
   const add = (id, label, ok, detail, severity = 'error') => checks.push({ id, label, ok: Boolean(ok), detail: String(detail || ''), severity });
   add('app', 'CraftCommand Center', true, `Version ${APP_VERSION}`);
   const networkMode = (cfg.connection || {}).mode === 'rcon';
-  add('connection-mode', 'Minecraft connection', true, networkMode ? `LAN/RCON at ${(cfg.connection || {}).host}:${(cfg.connection || {}).rconPort}` : 'Binhex Docker / GNU screen');
+  add('connection-mode', 'Minecraft connection', true, networkMode ? `Binhex Windows / RCON at ${(cfg.connection || {}).host}:${(cfg.connection || {}).rconPort}` : 'Binhex Unraid / GNU screen');
   if (!networkMode) add('docker-socket', 'Docker socket', fs.existsSync('/var/run/docker.sock'), fs.existsSync('/var/run/docker.sock') ? 'Available' : 'Missing /var/run/docker.sock');
   add('data', 'Persistent data', dataDirectoryWritable(), dataDirectoryWritable() ? `${DEFAULT_DATA_DIR} is writable` : `${DEFAULT_DATA_DIR} is not writable`);
   add('https', 'Encrypted browser connection', requestIsHttps(req), requestIsHttps(req) ? 'HTTPS detected' : 'HTTP detected; use a reverse proxy for encryption', 'warning');
@@ -2178,7 +2178,7 @@ async function handleApi(req, res, url, cfg) {
       const connection = writeConnectionSettings({ ...body, rconPassword: String(body.rconPassword || '') || existing.rconPassword });
       const fresh = { ...cfg, connection };
       const state = connection.mode === 'rcon' ? await refreshAttachment(fresh, 'settings-save') : { ok: true };
-      appendActivity(cfg, { username: session.username, role: session.role, action: 'connection-save', target: connection.host, summary: `Selected ${connection.mode === 'rcon' ? 'LAN/RCON' : 'Binhex'} connection mode`, ok: state.ok, error: state.error, ip: clientIp(req) });
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'connection-save', target: connection.host, summary: `Selected ${connection.mode === 'rcon' ? 'Binhex Windows / RCON' : 'Binhex Unraid'} connection mode`, ok: state.ok, error: state.error, ip: clientIp(req) });
       json(res, state.ok ? 200 : 400, { ok: state.ok, connection: publicConnectionSettings(fresh), attachment: publicAttachmentState(fresh), error: state.error || undefined }); return;
     }
 
