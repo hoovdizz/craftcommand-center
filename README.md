@@ -8,7 +8,7 @@ The dashboard requires access to the Docker socket and should run only on a trus
 
 | Component | Version |
 |---|---|
-| CraftCommand Center | **2.3.0-beta.17** |
+| CraftCommand Center | **2.3.0-beta.18** |
 | Bedrock item catalog | **26.34/35** |
 | Item identifiers | **1,914** |
 | Achievement records | **131** |
@@ -31,6 +31,7 @@ ghcr.io/hoovdizz/craftcommand-center:development   # development
 - GNU `screen` attachment rediscovery after container restarts.
 - Admin-only account management, audit history, backups, restores, world renaming, and reachability settings.
 - Admin-only server-property editor for performance, security, and core gameplay settings.
+- Admin restart action to apply saved server properties, plus Bedrock `server-name` (server-list name/MOTD) editing.
 - Public Bedrock reachability checks using an internet probe, local Docker-host probe, or both.
 
 ## Roles

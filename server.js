@@ -1171,7 +1171,7 @@ const SERVER_PROPERTY_DEFINITIONS = {
     { key: 'default-player-permission-level', label: 'Default player permission', type: 'select', options: ['visitor', 'member', 'operator'], default: 'member', description: 'Permission level assigned to new players.' }
   ]
 };
-const SERVER_PROPERTY_KEYS = Object.values(SERVER_PROPERTY_DEFINITIONS).flat().map(definition => definition.key);
+const SERVER_PROPERTY_KEYS = [...Object.values(SERVER_PROPERTY_DEFINITIONS).flat().map(definition => definition.key), 'server-name'];
 
 function parseServerProperties(content) {
   const values = {};
@@ -1214,12 +1214,17 @@ function validateServerPropertyValues(input) {
       values[definition.key] = raw.toLowerCase();
     }
   }
-  if (!Object.keys(values).length) throw new Error('No server properties were supplied');
+  if (!Object.keys(values).length && input['server-name'] === undefined) throw new Error('No server properties were supplied');
   return values;
 }
 
 async function saveServerProperties(cfg, input) {
   const values = validateServerPropertyValues(input);
+  if (input['server-name'] !== undefined) {
+    const serverName = String(input['server-name']).trim();
+    if (!serverName || serverName.length > 63 || serverName.includes(';') || /[\r\n]/.test(serverName)) throw new Error('MOTD/server name must be 1-63 characters and cannot contain semicolons or new lines');
+    values['server-name'] = serverName;
+  }
   const assignments = Object.entries(values).map(([key, value]) => {
     return `if grep -q "^${key}=" "$FILE"; then sed -i "s|^${key}=.*$|${key}=${value}|" "$FILE"; else printf '\\n${key}=${value}\\n' >> "$FILE"; fi`;
   }).join('\n');
@@ -1237,6 +1242,15 @@ ${assignments}`;
   if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Could not save server.properties').trim());
   worldIdentityCache = null;
   return readServerProperties(cfg);
+}
+
+async function restartMinecraftContainer(cfg) {
+  const container = configuredMinecraftContainer(cfg);
+  const result = await runDocker(['restart', container], 30000);
+  if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Could not restart the Minecraft container').trim());
+  await sleep(1500);
+  const attachment = await refreshAttachment(cfg, 'admin-restart');
+  return { container, attachment: publicAttachmentState(cfg) };
 }
 
 async function renameWorld(cfg, value) {
@@ -2324,6 +2338,13 @@ async function handleApi(req, res, url, cfg) {
       const world = await renameWorld(cfg, body.name);
       appendActivity(cfg, { username: session.username, role: session.role, action: 'rename-world', target: world.name, summary: `Renamed world to ${world.name}`, ok: true, ip: clientIp(req) });
       json(res, 200, { ok: true, world }); return;
+    }
+
+    if (url.pathname === '/api/minecraft/restart') {
+      requireRole(session, 'admin');
+      const restarted = await restartMinecraftContainer(cfg);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'restart-minecraft', target: restarted.container, summary: 'Restarted the Minecraft container', ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, ...restarted }); return;
     }
 
     if (url.pathname === '/api/server-properties/save') {

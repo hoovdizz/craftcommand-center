@@ -11,8 +11,8 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="/theme.js?v=2.3.0-beta.16"></script>
-  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.16" />
+  <script src="/theme.js?v=2.3.0-beta.18"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.18" />
 </head>
 <body>
   <header class="topbar">
@@ -61,6 +61,12 @@
         <button class="good" type="submit">Save Server Properties</button>
       </form>
       <p id="serverPropertiesResult" class="notice">Loading server propertiesâ€¦</p>
+      <form id="motdForm" class="formGrid twoCol">
+        <label>Server name / MOTD<input id="serverMotd" maxlength="63" placeholder="Dedicated Server" required /></label>
+        <button class="good" type="submit">Save MOTD</button>
+      </form>
+      <p class="hint">Bedrock uses the <code>server-name</code> property for the name shown in the server list. It is not an RCON MOTD field.</p>
+      <div class="buttonRow"><button id="restartMinecraft" class="warn" type="button">Restart Minecraft Container</button><span id="restartMinecraftResult" class="notice">Restart after saving settings to apply them.</span></div>
     </section>
     <section class="card wide">
       <h2>Internet reachability</h2>
@@ -114,7 +120,7 @@
       <p id="adminPasswordResult" class="notice">Ready.</p>
     </section>
   </main>
-  <script src="/pwa.js?v=2.3.0-beta.16"></script>
-  <script src="/accounts.js?v=2.3.0-beta.16"></script>
+  <script src="/pwa.js?v=2.3.0-beta.18"></script>
+  <script src="/accounts.js?v=2.3.0-beta.18"></script>
 </body>
 </html>
