@@ -1,6 +1,6 @@
 {
   "name": "craftcommand-center",
-  "version": "2.3.0-beta.11",
+  "version": "2.3.0-beta.12",
   "description": "Mobile-friendly Minecraft companion dashboard for Binhex or LAN-hosted servers",
   "main": "server.js",
   "scripts": {
