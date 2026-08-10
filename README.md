@@ -158,6 +158,29 @@ Then choose **Apply** and **Check for Updates**. Use `:latest` for the stable `m
 
 This setup runs both CraftCommand Center and the Binhex Minecraft container in Docker Desktop on Windows. CraftCommand uses the Docker socket and the Binhex container's GNU screen console, just like the Unraid integration.
 
+### Automated Windows bundle installer
+
+The repository includes [tools/Windows-Bundle-Install.ps1](tools/Windows-Bundle-Install.ps1). It validates Docker Desktop and Linux-container mode, starts Docker Desktop when needed, preserves Minecraft and CraftCommand data, pulls the selected image channel, recreates the containers and Windows Firewall rules, and verifies the resulting ports. It deploys the Minecraft container as `minecraftbedrockserver` and mounts Docker's socket into CraftCommand for screen-console control.
+
+Download and run it from an elevated PowerShell window:
+
+```powershell
+Invoke-WebRequest `
+  -Uri https://raw.githubusercontent.com/hoovdizz/craftcommand-center/main/tools/Windows-Bundle-Install.ps1 `
+  -OutFile .\Windows-Bundle-Install.ps1
+Set-ExecutionPolicy -Scope Process Bypass
+.\Windows-Bundle-Install.ps1
+```
+
+The script prompts for the stable `latest` or `development` CraftCommand image. To select a channel without prompting:
+
+```powershell
+.\Windows-Bundle-Install.ps1 -CraftChannel latest
+.\Windows-Bundle-Install.ps1 -CraftChannel development
+```
+
+Persistent data is stored under `C:\Docker\minecraftbedrockserver` and `C:\Docker\craftcommand-center\data`; the script does not delete those directories. Change the default Binhex web-console password after installation.
+
 1. Install and start [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/), then make sure Docker is using Linux containers.
 2. Create a persistent data folder in PowerShell:
 
