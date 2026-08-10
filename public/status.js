@@ -82,6 +82,7 @@ function renderOverview(data) {
     ['Uptime', docker.running ? formatDuration(docker.uptimeSeconds) : 'Not running'],
     ['Started', formatTime(docker.startedAt)],
     ['Image', docker.image || 'Unknown'],
+    ['Bedrock version', data.bedrockVersion || 'Not reported in container logs'],
     ['Restarts', docker.restartCount ?? 0],
     ['Health', docker.health || 'No Docker health state'],
     ['Last player connection', last ? `${last.player} • ${formatTime(last.at)}` : 'Not found in retained Docker logs']

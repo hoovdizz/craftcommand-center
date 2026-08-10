@@ -1056,6 +1056,19 @@ function parseLastPlayerConnection(logText) {
   return last;
 }
 
+function parseBedrockVersion(logText) {
+  const text = stripAnsi(logText || '');
+  const patterns = [
+    /(?:bedrock\s+)?(?:server\s+)?version\s*[:=]?\s*v?([0-9]+\.[0-9]+(?:\.[0-9]+){1,2})/i,
+    /starting\s+(?:minecraft\s+)?bedrock[^\r\n]*?v?([0-9]+\.[0-9]+(?:\.[0-9]+){1,2})/i
+  ];
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match?.[1]) return match[1];
+  }
+  return null;
+}
+
 function parseOnlinePlayerList(text) {
   const lines = stripAnsi(text || '').split(/\r?\n/);
   let found = { online: 0, max: 0, players: [], raw: '' };
@@ -1361,6 +1374,7 @@ async function getServerOverview(cfg, force = false) {
       docker,
       online,
       lastPlayerConnection: parseLastPlayerConnection(logs),
+      bedrockVersion: parseBedrockVersion(logs),
       world,
       access,
       external,

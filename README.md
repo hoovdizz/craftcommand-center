@@ -8,7 +8,7 @@ The dashboard requires access to the Docker socket and should run only on a trus
 
 | Component | Version |
 |---|---|
-| CraftCommand Center | **2.3.0-beta.16** |
+| CraftCommand Center | **2.3.0-beta.17** |
 | Bedrock item catalog | **26.34/35** |
 | Item identifiers | **1,914** |
 | Achievement records | **131** |
