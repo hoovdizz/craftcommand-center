@@ -1484,6 +1484,20 @@ Start-Sleep `
     --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
 
 
+$SocketMount = & docker inspect `
+    $CraftContainer `
+    --format "{{range .Mounts}}{{if eq .Destination \"/var/run/docker.sock\"}}{{.Source}}{{end}}{{end}}" `
+    2>$null
+
+if ([string]::IsNullOrWhiteSpace(($SocketMount | Out-String).Trim())) {
+    throw "CraftCommand Center is missing the Docker socket mount. Recreate it with -v /var/run/docker.sock:/var/run/docker.sock."
+}
+
+Write-Host `
+    "CraftCommand Docker socket mount confirmed." `
+    -ForegroundColor Green
+
+
 
 # ====================================================================
 # 16. VERIFY MINECRAFT PORT MAPPINGS
