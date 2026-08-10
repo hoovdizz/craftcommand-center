@@ -168,9 +168,11 @@ function normalizedAuthUsers(cfg) {
     });
   };
 
-  for (const entry of readPersistentAuthUsers()) add(entry, 'persistent', 'operator');
   if (Array.isArray(auth.users)) for (const entry of auth.users) add(entry, 'config', 'operator');
   if (auth.username && auth.passwordHash) add({ username: auth.username, passwordHash: auth.passwordHash, role: auth.role || 'admin' }, 'primary', 'admin');
+  // Persistent entries are applied last so an Admin password changed in the WebUI
+  // overrides the template's default password without changing the container env.
+  for (const entry of readPersistentAuthUsers()) add(entry, 'persistent', 'operator');
   return Array.from(byName.values());
 }
 
@@ -196,6 +198,16 @@ function savePersistentAuthUser(cfg, input) {
   users.push({ username, passwordHash: hashPassword(password), role, enabled: true });
   writePersistentAuthUsers(users);
   return { username, role, source: 'persistent' };
+}
+
+function changeAdminPassword(usernameValue, passwordValue) {
+  const username = validateAccountUsername(usernameValue);
+  const password = String(passwordValue || '');
+  if (password.length < 10) throw new Error('Password must be at least 10 characters');
+  const users = readPersistentAuthUsers().filter(user => String(user.username || '').toLowerCase() !== username.toLowerCase());
+  users.push({ username, passwordHash: hashPassword(password), role: 'admin', enabled: true });
+  writePersistentAuthUsers(users);
+  return { username, role: 'admin', source: 'persistent' };
 }
 
 function deletePersistentAuthUser(cfg, usernameValue, currentUsername) {
@@ -2211,6 +2223,17 @@ async function handleApi(req, res, url, cfg) {
       appendActivity(cfg, { username: session.username, role: session.role, action: 'save-account', target: user.username, summary: `Saved ${user.role} account ${user.username}`, ok: true, ip: clientIp(req) });
       json(res, 200, { ok: true, user, users: publicAuthUsers(loadConfig()) });
       return;
+    }
+
+    if (url.pathname === '/api/auth/password') {
+      requireRole(session, 'admin');
+      const current = findAuthUser(cfg, session.username);
+      if (!current || !verifyPassword(String(body.currentPassword || ''), current.passwordHash)) {
+        json(res, 400, { ok: false, error: 'Current password is incorrect' }); return;
+      }
+      const changed = changeAdminPassword(session.username, body.newPassword);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'change-password', target: changed.username, summary: 'Changed admin password', ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, user: changed }); return;
     }
 
     if (url.pathname === '/api/users/delete') {

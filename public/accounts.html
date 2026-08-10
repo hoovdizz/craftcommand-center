@@ -11,8 +11,8 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="/theme.js?v=2.3.0-beta.13"></script>
-  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.13" />
+  <script src="/theme.js?v=2.3.0-beta.14"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.14" />
 </head>
 <body>
   <header class="topbar">
@@ -52,6 +52,15 @@
       <p id="worldNameResult" class="notice">Loading current world name…</p>
     </section>
     <section class="card wide">
+      <h2>Common Minecraft server properties</h2>
+      <p class="hint">Most server-property adjustments fall into three categories. These values are edited in the container's <code>server.properties</code> file and generally require a server restart.</p>
+      <div class="roleCards">
+        <article><strong>Performance optimization</strong><p><code>view-distance</code>, <code>tick-distance</code>, <code>max-threads</code>, and <code>player-idle-timeout</code> balance simulation range, CPU use, and memory.</p></article>
+        <article><strong>Security</strong><p><code>allow-list</code>, <code>online-mode</code>, <code>texturepack-required</code>, and <code>allow-cheats</code> control who can join and which server privileges are enabled.</p></article>
+        <article><strong>Core gameplay</strong><p><code>gamemode</code>, <code>difficulty</code>, <code>force-gamemode</code>, and <code>default-player-permission-level</code> define the default player experience.</p></article>
+      </div>
+    </section>
+    <section class="card wide">
       <div class="sectionHeading"><div><h2>Backup / Export Server</h2><p class="hint">Admin-only compressed exports of the selected Minecraft container. By default this exports <code>/config</code> into persistent backup storage.</p></div><button id="createBackup" class="good" type="button">Create Server Export</button></div>
       <div id="backupSettings" class="statusBox"></div>
       <div id="backupList" class="backupList"><p class="hint">Loading exports…</p></div>
@@ -79,8 +88,19 @@
       </form>
       <p id="accountResult" class="notice">Ready.</p>
     </section>
+    <section class="card wide">
+      <h2>Change admin password</h2>
+      <p class="hint">Change the password for the account currently signed in. The new password is stored persistently and overrides the default template password.</p>
+      <form id="adminPasswordForm" class="accountForm">
+        <label>Current password<input id="adminCurrentPassword" type="password" autocomplete="current-password" required /></label>
+        <label>New password<input id="adminNewPassword" type="password" minlength="10" autocomplete="new-password" required /></label>
+        <label>Confirm new password<input id="adminNewPasswordConfirm" type="password" minlength="10" autocomplete="new-password" required /></label>
+        <button class="good" type="submit">Change Admin Password</button>
+      </form>
+      <p id="adminPasswordResult" class="notice">Ready.</p>
+    </section>
   </main>
-  <script src="/pwa.js?v=2.3.0-beta.13"></script>
-  <script src="/accounts.js?v=2.3.0-beta.13"></script>
+  <script src="/pwa.js?v=2.3.0-beta.14"></script>
+  <script src="/accounts.js?v=2.3.0-beta.14"></script>
 </body>
 </html>
