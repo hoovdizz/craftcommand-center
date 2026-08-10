@@ -4,7 +4,6 @@ const path = require('path');
 const { spawn } = require('child_process');
 const crypto = require('crypto');
 const dgram = require('dgram');
-const net = require('net');
 const os = require('os');
 const https = require('https');
 const PACKAGE = require('./package.json');
@@ -289,10 +288,10 @@ function sanitizePort(value, fallback) {
 }
 function sanitizeConnectionSettings(value = {}) {
   const mode = String(value.mode || 'binhex').toLowerCase();
-  if (!['binhex', 'rcon'].includes(mode)) throw new Error('Connection mode must be binhex or rcon');
-  const host = String(value.host || '').trim().replace(/^\[|\]$/g, '');
-  if (host && (host.length > 253 || !/^[A-Za-z0-9_.:-]+$/.test(host))) throw new Error('Server host must be a hostname or IP address');
-  return { mode, host, gamePort: sanitizePort(value.gamePort, 19132), rconPort: sanitizePort(value.rconPort, 25575), rconPassword: String(value.rconPassword || '').slice(0, 512) };
+  const normalizedMode = mode === 'rcon' ? 'windows' : mode;
+  if (!['binhex', 'windows'].includes(normalizedMode)) throw new Error('Connection mode must be binhex or windows');
+  const containerName = safeDockerName(value.containerName || 'binhex-minecraftbedrockserver', 'Minecraft container name');
+  return { mode: normalizedMode, containerName };
 }
 function readConnectionSettings(cfg) {
   const defaults = sanitizeConnectionSettings(cfg.connection || {});
@@ -303,14 +302,17 @@ function readConnectionSettings(cfg) {
 }
 function writeConnectionSettings(value) {
   const clean = sanitizeConnectionSettings(value);
-  if (clean.mode === 'rcon' && (!clean.host || !clean.rconPassword)) throw new Error('RCON mode requires a server host and RCON password');
   fs.mkdirSync(DEFAULT_DATA_DIR, { recursive: true });
   fs.writeFileSync(connectionSettingsPath(), `${JSON.stringify(clean, null, 2)}\n`, { encoding: 'utf8', mode: 0o600 });
   return clean;
 }
 function publicConnectionSettings(cfg) {
   const value = sanitizeConnectionSettings(cfg.connection || {});
-  return { ...value, rconPassword: '', passwordConfigured: Boolean(value.rconPassword) };
+  return value;
+}
+
+function configuredMinecraftContainer(cfg) {
+  return safeDockerName(cfg.connection?.containerName || cfg.minecraftContainerName || 'binhex-minecraftbedrockserver', 'Minecraft container name');
 }
 
 
@@ -797,14 +799,14 @@ async function runDiagnostics(cfg, req) {
   const checks = [];
   const add = (id, label, ok, detail, severity = 'error') => checks.push({ id, label, ok: Boolean(ok), detail: String(detail || ''), severity });
   add('app', 'CraftCommand Center', true, `Version ${APP_VERSION}`);
-  const networkMode = (cfg.connection || {}).mode === 'rcon';
-  add('connection-mode', 'Minecraft connection', true, networkMode ? `Binhex Windows / RCON at ${(cfg.connection || {}).host}:${(cfg.connection || {}).rconPort}` : 'Binhex Unraid / GNU screen');
-  if (!networkMode) add('docker-socket', 'Docker socket', fs.existsSync('/var/run/docker.sock'), fs.existsSync('/var/run/docker.sock') ? 'Available' : 'Missing /var/run/docker.sock');
+  const windowsMode = (cfg.connection || {}).mode === 'windows';
+  add('connection-mode', 'Minecraft connection', true, windowsMode ? 'Binhex Windows Docker / GNU screen' : 'Binhex Unraid / GNU screen');
+  add('docker-socket', 'Docker socket', fs.existsSync('/var/run/docker.sock'), fs.existsSync('/var/run/docker.sock') ? 'Available' : 'Missing /var/run/docker.sock');
   add('data', 'Persistent data', dataDirectoryWritable(), dataDirectoryWritable() ? `${DEFAULT_DATA_DIR} is writable` : `${DEFAULT_DATA_DIR} is not writable`);
   add('https', 'Encrypted browser connection', requestIsHttps(req), requestIsHttps(req) ? 'HTTPS detected' : 'HTTP detected; use a reverse proxy for encryption', 'warning');
 
-  const containerName = safeDockerName(cfg.minecraftContainerName || 'binhex-minecraftbedrockserver', 'Minecraft container name');
-  if (!networkMode) {
+  const containerName = configuredMinecraftContainer(cfg);
+  {
   const inspect = await runDocker(['inspect', '--format', '{{.State.Running}}|{{.State.Status}}|{{.Config.Image}}', containerName], 8000);
   if (inspect.ok) {
     const [running, status, image] = inspect.stdout.trim().split('|');
@@ -815,7 +817,7 @@ async function runDiagnostics(cfg, req) {
   }
 
   const attachment = await refreshAttachment(cfg, 'diagnostics');
-  add('console', networkMode ? 'RCON authentication' : 'Minecraft console attachment', attachment.ok, attachment.ok ? (networkMode ? attachment.endpoint : `${attachment.activeScreenSession} as ${attachment.dockerUser}`) : attachment.error || 'Console connection unavailable');
+  add('console', 'Minecraft console attachment', attachment.ok, attachment.ok ? `${attachment.activeScreenSession} in ${attachment.container} as ${attachment.dockerUser}` : attachment.error || 'Console connection unavailable');
 
   const external = await checkExternalReachability(cfg);
   if (external.configured) add('external', 'Public Bedrock endpoint', external.reachable, external.reachable ? `${external.endpoint} replied in ${external.latencyMs} ms` : `${external.endpoint}: ${external.error || 'No response'}`, 'warning');
@@ -943,32 +945,6 @@ function scanLanBedrockServers(portValue, timeoutMs = 1800, hintAddress = '') {
   });
 }
 
-function rconPacket(id, type, body) {
-  const payload = Buffer.from(String(body), 'utf8'); const packet = Buffer.alloc(payload.length + 14);
-  packet.writeInt32LE(payload.length + 10, 0); packet.writeInt32LE(id, 4); packet.writeInt32LE(type, 8); payload.copy(packet, 12); return packet;
-}
-function runRconCommand(command, cfg) {
-  const settings = sanitizeConnectionSettings(cfg.connection || {});
-  return new Promise(resolve => {
-    if (!settings.host || !settings.rconPassword) { resolve({ ok: false, code: 1, stdout: '', stderr: 'RCON host or password is not configured', command, method: 'rcon' }); return; }
-    const socket = net.createConnection({ host: settings.host, port: settings.rconPort }); let buffer = Buffer.alloc(0); let authenticated = false; let settled = false; let connected = false;
-    const finish = result => { if (settled) return; settled = true; clearTimeout(timer); socket.destroy(); resolve(compactResult({ command, method: 'rcon', endpoint: `${settings.host}:${settings.rconPort}`, ...result }, cfg)); };
-    const timer = setTimeout(() => finish({ ok: false, code: 1, stdout: '', stderr: connected ? 'TCP connected, but the endpoint did not answer the RCON handshake. Check that this is the RCON port (not the Binhex web console port 8222) and that RCON is enabled.' : 'Could not connect to the RCON endpoint. Check the host, TCP port mapping, and Windows firewall.', timedOut: true }), Number(cfg.commandTimeoutMs || 15000));
-    socket.on('connect', () => { connected = true; socket.write(rconPacket(1, 3, settings.rconPassword)); });
-    socket.on('error', err => finish({ ok: false, code: 1, stdout: '', stderr: err.message }));
-    socket.on('data', chunk => {
-      buffer = Buffer.concat([buffer, chunk]);
-      while (buffer.length >= 4 && buffer.length >= buffer.readInt32LE(0) + 4) {
-        const size = buffer.readInt32LE(0); const packet = buffer.subarray(0, size + 4); buffer = buffer.subarray(size + 4);
-        const id = packet.readInt32LE(4); const body = packet.subarray(12, size + 2).toString('utf8');
-        if (!authenticated) { if (id === -1) return finish({ ok: false, code: 1, stdout: '', stderr: 'RCON authentication failed' }); authenticated = true; socket.write(rconPacket(2, 2, command)); }
-        else return finish({ ok: true, code: 0, stdout: body, stderr: '' });
-      }
-    });
-  });
-}
-
-
 function queryExternalBedrockStatus(hostValue, portValue, timeoutMsValue) {
   return new Promise((resolve) => {
     const host = validateExternalHost(hostValue);
@@ -1085,7 +1061,7 @@ function markedFileSections(text) {
 let worldIdentityCache = null;
 let worldIdentityInFlight = null;
 async function getWorldIdentity(cfg, force = false) {
-  const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+  const container = configuredMinecraftContainer(cfg);
   const now = Date.now();
   if (!force && worldIdentityCache?.container === container && now - worldIdentityCache.cachedAt < 30000) return worldIdentityCache.value;
   if (worldIdentityInFlight) return worldIdentityInFlight;
@@ -1153,7 +1129,7 @@ function uniqueAccessRecords(records) {
 }
 
 async function readServerAccessLists(cfg) {
-  const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+  const container = configuredMinecraftContainer(cfg);
   const shell = String.raw`set +e
 for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
   if [ -d "$p" ]; then
@@ -1200,15 +1176,14 @@ async function getServerOverview(cfg, force = false) {
   if (!force && serverOverviewCache && now - serverOverviewCache.cachedAt < 20000) return serverOverviewCache.value;
   if (serverOverviewInFlight) return serverOverviewInFlight;
   serverOverviewInFlight = (async () => {
-    const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
-    const networkMode = (cfg.connection || {}).mode === 'rcon';
+    const container = configuredMinecraftContainer(cfg);
     const [inspectResult, logsResult, access, online, external, world] = await Promise.all([
-      networkMode ? Promise.resolve({ ok: false, stdout: '', stderr: '' }) : runDocker(['inspect', container], 10000),
-      networkMode ? Promise.resolve({ ok: true, stdout: '', stderr: '' }) : runDocker(['logs', '--timestamps', '--tail', '20000', container], 15000),
-      networkMode ? Promise.resolve({ whitelist: [], blacklist: [], permissions: [], allowListEnabled: null }) : readServerAccessLists(cfg),
+      runDocker(['inspect', container], 10000),
+      runDocker(['logs', '--timestamps', '--tail', '20000', container], 15000),
+      readServerAccessLists(cfg),
       queryOnlinePlayers(cfg),
       checkExternalReachability(cfg),
-      networkMode ? Promise.resolve({ connected: true, name: null, error: 'World metadata requires local server-file access' }) : getWorldIdentity(cfg, force)
+      getWorldIdentity(cfg, force)
     ]);
     let docker = { running: false, status: 'unknown', startedAt: null, uptimeSeconds: 0, image: null, restartCount: 0, error: null };
     if (inspectResult.ok) {
@@ -1226,11 +1201,11 @@ async function getServerOverview(cfg, force = false) {
           error: inspected?.State?.Error || null
         };
       } catch (err) { docker.error = err.message; }
-    } else docker.error = networkMode ? null : stripAnsi(inspectResult.stderr || inspectResult.stdout || 'Docker inspect failed').trim();
+    } else docker.error = stripAnsi(inspectResult.stderr || inspectResult.stdout || 'Docker inspect failed').trim();
     const logs = `${logsResult.stdout || ''}\n${logsResult.stderr || ''}`;
     const value = {
-      ok: networkMode ? online.ok : docker.running,
-      connectionMode: networkMode ? 'rcon' : 'binhex',
+      ok: docker.running,
+      connectionMode: (cfg.connection || {}).mode || 'binhex',
       checkedAt: new Date().toISOString(),
       appVersion: APP_VERSION,
       docker,
@@ -1320,7 +1295,7 @@ async function createServerBackup(cfg) {
   const settings = backupSettings(cfg);
   if (!settings.enabled) throw new Error('Server backup/export is disabled');
   fs.mkdirSync(settings.directory, { recursive: true });
-  const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+    const container = configuredMinecraftContainer(cfg);
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const name = `craftcommand-bedrock-${stamp}.tar.gz`;
   const finalPath = path.join(settings.directory, name);
@@ -1592,8 +1567,7 @@ async function discoverKnownPlayers(cfg, reason = 'manual') {
   if (playerRefreshInFlight) return playerRefreshInFlight;
   playerRefreshInFlight = (async () => {
     const started = new Date().toISOString();
-    const networkMode = (cfg.connection || {}).mode === 'rcon';
-    const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+    const container = configuredMinecraftContainer(cfg);
     const user = safeDockerName(cfg.dockerUser || 'nobody', 'Docker user');
     const discoveryCfg = cfg.playerDiscovery || {};
     const map = new Map();
@@ -1608,7 +1582,7 @@ async function discoverKnownPlayers(cfg, reason = 'manual') {
     }
 
     try {
-      if (!networkMode && discoveryCfg.useDockerLogs !== false) {
+      if (discoveryCfg.useDockerLogs !== false) {
         const inspect = await runDocker(['inspect', '-f', '{{.State.Running}}', container], 7000);
         if (!inspect.ok || inspect.stdout.trim() !== 'true') {
           throw new Error(`Minecraft container is not running or not found: ${container}`);
@@ -1635,7 +1609,7 @@ ${online.stderr || ''}`, map);
         }
       }
 
-      if (!networkMode && discoveryCfg.useServerFiles !== false) {
+      if (discoveryCfg.useServerFiles !== false) {
         const shell = String.raw`set -e
 for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
   if [ -d "$p" ]; then
@@ -1788,10 +1762,9 @@ function parseMinecraftScreenSession(screenList, configured = 'auto') {
 }
 
 function publicAttachmentState(cfg) {
-  if ((cfg.connection || {}).mode === 'rcon') return { ok: attachmentState.ok, method: 'rcon', endpoint: `${cfg.connection.host}:${cfg.connection.rconPort}`, gameEndpoint: `${cfg.connection.host}:${cfg.connection.gamePort}`, checkedAt: attachmentState.checkedAt, reason: attachmentState.reason, error: attachmentState.error || null };
   return {
     ok: attachmentState.ok,
-    container: attachmentState.container || cfg.minecraftContainerName,
+    container: attachmentState.container || configuredMinecraftContainer(cfg),
     dockerUser: attachmentState.dockerUser || cfg.dockerUser || 'nobody',
     configuredScreenSession: attachmentState.configuredScreenSession || cfg.screenSession || 'auto',
     activeScreenSession: attachmentState.activeScreenSession || null,
@@ -1806,12 +1779,7 @@ function publicAttachmentState(cfg) {
 async function refreshAttachment(cfg, reason = 'manual') {
   if (refreshInFlight) return refreshInFlight;
   refreshInFlight = (async () => {
-    if ((cfg.connection || {}).mode === 'rcon') {
-      const result = await runRconCommand('list', { ...cfg, showRawOutput: true });
-      attachmentState = { ok: result.ok, method: 'rcon', endpoint: `${cfg.connection.host}:${cfg.connection.rconPort}`, checkedAt: new Date().toISOString(), reason, error: result.ok ? null : result.stderr };
-      return attachmentState;
-    }
-    const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+    const container = configuredMinecraftContainer(cfg);
     const user = safeDockerName(cfg.dockerUser || 'nobody', 'Docker user');
     const configuredScreenSession = String(cfg.screenSession || 'auto').trim() || 'auto';
     const method = String(cfg.commandMethod || 'attach').toLowerCase();
@@ -1893,7 +1861,7 @@ async function getActiveScreenSession(cfg) {
 
 async function sendMinecraftCommandOnce(command, cfg, activeSession) {
   return new Promise((resolve) => {
-    const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
+    const container = configuredMinecraftContainer(cfg);
     const user = safeDockerName(cfg.dockerUser || 'nobody', 'Docker user');
     const prefix = cfg.commandPrefix || '';
     const cmdToSend = `${prefix}${command}`;
@@ -1949,7 +1917,6 @@ function looksLikeStaleScreen(result) {
 }
 
 async function runMinecraftCommand(command, cfg) {
-  if ((cfg.connection || {}).mode === 'rcon') return runRconCommand(command, cfg);
   try {
     const activeSession = await getActiveScreenSession(cfg);
     let result = await sendMinecraftCommandOnce(command, cfg, activeSession);
@@ -2175,10 +2142,10 @@ async function handleApi(req, res, url, cfg) {
     if (url.pathname === '/api/connection/save') {
       requireRole(session, 'admin');
       const existing = sanitizeConnectionSettings(cfg.connection || {});
-      const connection = writeConnectionSettings({ ...body, rconPassword: String(body.rconPassword || '') || existing.rconPassword });
+      const connection = writeConnectionSettings({ ...existing, ...body });
       const fresh = { ...cfg, connection };
-      const state = connection.mode === 'rcon' ? await refreshAttachment(fresh, 'settings-save') : { ok: true };
-      appendActivity(cfg, { username: session.username, role: session.role, action: 'connection-save', target: connection.host, summary: `Selected ${connection.mode === 'rcon' ? 'Binhex Windows / RCON' : 'Binhex Unraid'} connection mode`, ok: state.ok, error: state.error, ip: clientIp(req) });
+      const state = await refreshAttachment(fresh, 'settings-save');
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'connection-save', target: connection.containerName, summary: `Selected ${connection.mode === 'windows' ? 'Binhex Windows Docker' : 'Binhex Unraid'} connection mode`, ok: state.ok, error: state.error, ip: clientIp(req) });
       json(res, state.ok ? 200 : 400, { ok: state.ok, connection: publicConnectionSettings(fresh), attachment: publicAttachmentState(fresh), error: state.error || undefined }); return;
     }
 

@@ -1,10 +1,10 @@
 # CraftCommand Center
 
-CraftCommand Center is a lightweight, mobile-friendly Minecraft companion dashboard. It supports **`binhex-minecraftbedrockserver` on Unraid** through its existing GNU `screen` console and LAN-hosted servers through RCON.
+CraftCommand Center is a lightweight, mobile-friendly Minecraft companion dashboard. It supports Binhex Minecraft containers on Unraid and Windows Docker Desktop through their existing GNU `screen` console.
 
-Admins can choose the connection method on the Status page, scan directly connected IPv4 networks for Bedrock servers, select a discovered host, and configure both the Minecraft game port and the separate RCON port/password. This makes multiple Minecraft instances on one host addressable by their individual ports. The RCON password is stored in persistent app data with owner-only file permissions and is never returned to the browser.
+Admins can choose Unraid or Windows Docker mode on the Status page and configure the exact Minecraft container name. Commands run through Docker and GNU `screen`; the selected container can be discovered and reattached after restarts.
 
-LAN discovery uses the Bedrock UDP status protocol and scans the selected game port. Remote commands require a standard RCON endpoint; enable RCON in a compatible server or hosting controller. Mojang's stock Bedrock Dedicated Server does not provide native RCON, so it requires an RCON-capable wrapper/controller for command features.
+The Docker socket is required because CraftCommand executes commands inside the selected Minecraft container. Keep the socket mounted only on a trusted machine.
 
 ## Why this exists
 
@@ -156,7 +156,7 @@ Then choose **Apply** and **Check for Updates**. Use `:latest` for the stable `m
 
 ## Install with Docker Desktop on Windows
 
-This is the recommended setup for Windows users who are not running the Binhex Unraid container. It runs the dashboard in Docker Desktop and connects to a Minecraft server over your LAN.
+This setup runs both CraftCommand Center and the Binhex Minecraft container in Docker Desktop on Windows. CraftCommand uses the Docker socket and the Binhex container's GNU screen console, just like the Unraid integration.
 
 1. Install and start [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/), then make sure Docker is using Linux containers.
 2. Create a persistent data folder in PowerShell:
@@ -174,13 +174,14 @@ This is the recommended setup for Windows users who are not running the Binhex U
      -e CCC_USERNAME=admin `
      -e CCC_PASSWORD="replace-with-a-long-password" `
      -v "${PWD}\craftcommand-data:/app/data" `
+     -v /var/run/docker.sock:/var/run/docker.sock `
      ghcr.io/hoovdizz/craftcommand-center:latest
    ```
 
 4. Open [http://localhost:8223](http://localhost:8223), sign in, and open **Status → Minecraft Server Connection**.
-5. Select **Binhex Windows / RCON**, enter the Windows Binhex server's LAN IP, game port (usually `19132` for Bedrock), RCON port (commonly `25575`), and RCON password, then choose **Save and Authenticate**.
+5. Run `docker ps --format "{{.Names}}"` and note the Minecraft container name (for example, `minecraftbedrockserver`). On the Status page select **Binhex Windows Docker / screen**, enter that exact name, and choose **Save and Attach**.
 
-The dashboard container does not need the Docker socket for LAN/RCON mode. Do not add the Unraid-only `/var/run/docker.sock` mount to a Windows installation. The **Scan LAN** button checks the selected Bedrock UDP game port; if Docker Desktop's network translation prevents discovery, enter the server's LAN IP manually. The Windows host firewall and the Minecraft server firewall must allow the game and RCON ports from the local network.
+The Windows Docker command must include `-v /var/run/docker.sock:/var/run/docker.sock`. The Minecraft game port does not need to be scanned by CraftCommand because commands go through the Docker screen console. The dashboard container name and Minecraft container name are separate; configure the latter from `docker ps`.
 
 To update the stable `main` image later:
 
@@ -206,7 +207,7 @@ docker rm craftcommand-center
 # Run the same docker run command again with :development.
 ```
 
-Binhex's web console is a separate HTTP service on TCP `8222`, protected by `WEBUI_USER` and `WEBUI_PASS`. Those credentials are not RCON credentials. The **Binhex Windows / RCON** mode in CraftCommand Center requires a standard RCON listener and its password on a separate TCP port; pointing it at port `8222` will result in an RCON handshake timeout. The stock Bedrock Dedicated Server does not expose native RCON, so use an RCON-capable wrapper/controller or a server implementation that supports it. Status discovery can still work through the Bedrock UDP protocol.
+Binhex's optional web console on TCP `8222` is separate from CraftCommand; this integration uses Docker screen access and does not require RCON or web-console credentials.
 
 ## Persistent data
 

@@ -11,10 +11,7 @@
   "minecraftContainerName": "binhex-minecraftbedrockserver",
   "connection": {
     "mode": "binhex",
-    "host": "",
-    "gamePort": 19132,
-    "rconPort": 25575,
-    "rconPassword": ""
+    "containerName": "binhex-minecraftbedrockserver"
   },
   "screenSession": "auto",
   "dockerUser": "nobody",
