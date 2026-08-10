@@ -1,168 +1,63 @@
 # CraftCommand Center
 
-CraftCommand Center is a lightweight, mobile-friendly Minecraft companion dashboard. It supports Binhex Minecraft containers on Unraid and Windows Docker Desktop through their existing GNU `screen` console.
+CraftCommand Center is a mobile-friendly control dashboard for Binhex Minecraft Bedrock Docker containers. It sends commands through the selected container's GNU `screen` console; it does not use RCON.
 
-Admins can choose Unraid or Windows Docker mode on the Status page and configure the exact Minecraft container name. Commands run through Docker and GNU `screen`; the selected container can be discovered and reattached after restarts.
+The dashboard requires access to the Docker socket and should run only on a trusted Docker host or behind an HTTPS reverse proxy.
 
-The Docker socket is required because CraftCommand executes commands inside the selected Minecraft container. Keep the socket mounted only on a trusted machine.
-
-## Why this exists
-
-General game panels such as Pterodactyl, PufferPanel, Crafty Controller, AMP, and Bedrock Server Manager can provision or fully manage servers. CraftCommand Center is intentionally narrower: it adds safe family/admin shortcuts to a Binhex Bedrock server that is already working.
-
-## Current version
+## Current release
 
 | Component | Version |
 |---|---|
-| CraftCommand Center | **2.3.0-beta.6** |
-| Bundled Bedrock item catalog | **26.34/35** |
+| CraftCommand Center | **2.3.0-beta.16** |
+| Bedrock item catalog | **26.34/35** |
 | Item identifiers | **1,914** |
-| Bedrock achievement records | **131** |
-| Achievement supply audit | **August 4, 2026** |
+| Achievement records | **131** |
 
-CraftCommand Center uses semantic prerelease versions:
+Images are published to GHCR:
 
-- `2.3.0-beta.6` identifies the application release.
-- `2.3` is the feature line.
-- `beta.6` is the prerelease iteration and may change before the stable `2.3.0` release.
-- GHCR publishes `latest`, version tags, and immutable commit-SHA tags.
-
-The application version is defined in `package.json`, shown by diagnostics, and used to identify support reports. The Minecraft release tag is tracked separately because Mojang item data can change independently of the dashboard.
+```text
+ghcr.io/hoovdizz/craftcommand-center:latest        # main
+ghcr.io/hoovdizz/craftcommand-center:development   # development
+```
 
 ## Features
 
-### Mobile interface and appearance
+- Responsive dashboard and installable PWA.
+- Deep Ocean, Ember, Daylight, and Minecraft themes.
+- Custom background image URLs and bundled Minecraft wallpaper choices.
+- Icon + text, icon-only, and text-only button layouts.
+- Player discovery, item catalog, XP, kits, teleport locations, and day/night controls.
+- Status page with Docker state, uptime, image, online players, access lists, permissions, world name, and recent player connections.
+- GNU `screen` attachment rediscovery after container restarts.
+- Admin-only account management, audit history, backups, restores, world renaming, and reachability settings.
+- Admin-only server-property editor for performance, security, and core gameplay settings.
+- Public Bedrock reachability checks using an internet probe, local Docker-host probe, or both.
 
-- Responsive phone, tablet, and desktop interface
-- Automatic button text and icon fitting when portrait-mode space is limited
-- Deep Ocean, Ember, and Daylight color schemes stored in the browser
-- Correct high-contrast native selectors, kit dialogs, item lists, and action buttons across themes
-- Icon-plus-text item buttons by default, with optional text-only and icon-only display modes
-- XP labels remain visible in icon-only mode so level and point actions remain distinguishable
-- Installable PWA with Android installation and iPhone/iPad Add to Home Screen guidance located only under **Help**
+## Roles
 
-### Players, items, XP, and kits
-
-- Player discovery from the live `list` command, Docker logs, allowlist files, permissions files, and a persistent manual list
-- Configurable Quick Items that admins can add, remove, restore to factory defaults, and drag to reorder
-- Persistent Quick Item ordering and configuration across container updates
-- Quick Item, custom item, and clearly labeled XP actions
-- Day and night world-time controls
-- Persistent, custom-titled teleport buttons with in-place editing, XYZ coordinates, optional dimension changes, player targeting, drag reordering, temporary destination-chunk preloading, and collision-safe arrival checks
-- Dashboard connection label showing the active Bedrock `level-name`
-- Starter, recovery, mining, and enchanting kits
-- Kit previews, confirmation dialogs, inventory artwork, and a persistent custom-kit builder
-- Searchable Bedrock item catalog with 1,914 identifiers, categories, descriptions, and give buttons
-
-### Achievement guide
-
-- Dedicated **Achievements** tab with 131 published Bedrock achievement records
-- Search, category, completion-state, platform, and player filters
-- Coverage for Xbox, Windows, Android, iOS, Nintendo Switch, and supported PlayStation trophies
-- Completion instructions, platform availability, gamerscore/trophy information, and audited recipe materials or activity supplies
-- Exact crafting quantities for recipe-based goals, with notes for required stations, enchantments, filled bottles, map data, and naturally earned keys
-- Private per-player and per-platform checklists stored in the current browser
-- Optional send-listed-supplies actions for operators
-
-Achievement progress is not read from or written to Microsoft or PlayStation accounts. Minecraft only awards achievements in an eligible Survival world. Using dashboard commands to grant practice supplies can make a world ineligible, so the interface warns and requests confirmation before sending them.
-
-### Status, security, and administration
-
-- Username/password authentication using salted scrypt hashes and `HttpOnly` session cookies
-- Persistent **viewer**, **operator**, and **admin** accounts with case-insensitive usernames
-- Persistent activity history showing who sent each action, its target, and whether it succeeded
-- Operators and viewers can only read their own activity; admins can review the full audit trail
-- Automatic rediscovery of GNU screen names such as `140.minecraft` after server or container restarts
-- Dedicated **Status** tab with Docker uptime, last player connection, online players, whitelist, blacklist, permissions, and public Bedrock UDP reachability
-- Admin-only Home Server Links on the Status tab
-- At-a-Glance diagnostics for Docker, appdata, authentication, backup storage, the public endpoint, and the active screen session
-- Admin-only compressed server backup/export with persistent Unraid storage and browser download
-- Unraid DockerMan template for normal **Edit**, port settings, credentials, icon, WebUI, and GHCR updates
-- GitHub Actions validation and multi-architecture GHCR publishing
-
-## Role permissions
-
-| Role | Access |
+| Role | Capabilities |
 |---|---|
-| Viewer | Dashboard, Status, diagnostics, players, kits, catalogs, achievement checklists, and only their own activity history |
-| Operator | Viewer access plus item, XP, kit, achievement practice-supply, world-time, saved-teleport, player-refresh, and attachment-refresh actions; activity remains limited to their own account |
-| Admin | Operator access plus account management, manual players, Quick Item and teleport-location management, custom kits, all activity, and server backup/export |
+| Viewer | Read dashboard, status, players, catalogs, kits, achievements, and personal activity. |
+| Operator | Viewer access plus Minecraft commands, XP/items/kits, time, teleports, player refresh, and screen attachment refresh. |
+| Admin | Operator access plus accounts, server properties, world settings, backups/restores, reachability, links, and full activity history. |
 
-The primary admin username/password is managed in the Unraid template. Additional accounts are created from the **Accounts** page and stored in `/app/data/users.json`.
+Only administrators can change server properties. Changes are written to the Minecraft container's `server.properties`; restart the Minecraft container after saving when the server does not reload a value automatically.
 
-## Item catalog version
+### Server properties in Admin
 
-The bundled catalog contains **1,914 identifiers** based on Microsoft's official Default Minecraft Item Listings reference.
+The Admin page loads the current values and keeps each category collapsed until expanded:
 
-- Minecraft Bedrock release tag: **26.34/35**
-- Latest hotfix update used for the tag: **July 28, 2026**
-- Catalog snapshot date: **August 3, 2026**
+- **Performance optimization:** `view-distance`, `tick-distance`, `max-threads`, `player-idle-timeout`.
+- **Security:** `allow-list`, `online-mode`, `texturepack-required`, `allow-cheats`.
+- **Core gameplay:** `gamemode`, `difficulty`, `force-gamemode`, `default-player-permission-level`.
 
-Descriptions and categories are generated by CraftCommand Center. Item artwork is loaded at view time from the current Minecraft Wiki using its inventory-sprite file names, with the legacy Fandom wiki as a fallback. The repository and Docker image do not bundle or redistribute the wiki's Mojang-owned item artwork. An internet connection is required to display those remote icons. Technical, Education, experimental, or feature-dependent items may not work on every server.
+## Docker deployment
 
-## Security
+### Docker Desktop on Windows
 
-Username/password authentication does not encrypt plain HTTP. Keep port 8223 on a trusted LAN or use an HTTPS reverse proxy. Do not expose this app directly to the internet.
+The dashboard and Minecraft container must use the same Docker engine. CraftCommand needs the Docker socket mounted at `/var/run/docker.sock`.
 
-The Docker socket is powerful. CraftCommand Center limits its app actions, but anyone who controls the container or Unraid host can control Docker. Protect Unraid and use operator/viewer accounts for routine access.
-
-## Publish to GitHub and GHCR
-
-Repository target:
-
-```text
-https://github.com/hoovdizz/craftcommand-center
-```
-
-The included workflow publishes:
-
-```text
-ghcr.io/hoovdizz/craftcommand-center:latest
-```
-
-It also creates a `development` image from the `development` branch, plus version-tag and immutable SHA-tag images. See [BETA_TESTING.md](BETA_TESTING.md).
-
-## Install from GHCR on Unraid
-
-After the public repository and package exist, run:
-
-```bash
-mkdir -p /boot/config/plugins/dockerMan/templates-user
-wget -O /boot/config/plugins/dockerMan/templates-user/my-craftcommand-center.xml \
-  https://raw.githubusercontent.com/hoovdizz/craftcommand-center/main/templates/my-craftcommand-center.xml
-```
-
-Then open:
-
-```text
-Unraid → Docker → Add Container → Template → CraftCommand-Center
-```
-
-Set a strong admin password before applying the template. The default image is:
-
-```text
-ghcr.io/hoovdizz/craftcommand-center:latest
-```
-
-Unraid can then pull updates with **Docker → Check for Updates** without rebuilding locally.
-
-To explicitly use the development image on Unraid, edit the container's **Repository** field to:
-
-```text
-ghcr.io/hoovdizz/craftcommand-center:development
-```
-
-Then choose **Apply** and **Check for Updates**. Use `:latest` for the stable `main` build.
-
-## Install with Docker Desktop on Windows
-
-This setup runs both CraftCommand Center and the Binhex Minecraft container in Docker Desktop on Windows. CraftCommand uses the Docker socket and the Binhex container's GNU screen console, just like the Unraid integration.
-
-### Automated Windows bundle installer
-
-The repository includes [tools/Windows-Bundle-Install.ps1](tools/Windows-Bundle-Install.ps1). It validates Docker Desktop and Linux-container mode, starts Docker Desktop when needed, preserves Minecraft and CraftCommand data, pulls the selected image channel, recreates the containers and Windows Firewall rules, and verifies the resulting ports. It deploys the Minecraft container as `minecraftbedrockserver` and mounts Docker's socket into CraftCommand for screen-console control.
-
-Download and run it from an elevated PowerShell window:
+The automated installer is available at [tools/Windows-Bundle-Install.ps1](tools/Windows-Bundle-Install.ps1):
 
 ```powershell
 Invoke-WebRequest `
@@ -172,123 +67,109 @@ Set-ExecutionPolicy -Scope Process Bypass
 .\Windows-Bundle-Install.ps1
 ```
 
-The script prompts for the stable `latest` or `development` CraftCommand image. To select a channel without prompting:
+To install manually:
 
 ```powershell
-.\Windows-Bundle-Install.ps1 -CraftChannel latest
-.\Windows-Bundle-Install.ps1 -CraftChannel development
+New-Item -ItemType Directory -Force .\craftcommand-data | Out-Null
+docker run -d --name craftcommand-center `
+  --restart unless-stopped `
+  -p 8223:8223 `
+  -e CCC_USERNAME=admin `
+  -e CCC_PASSWORD="replace-with-a-long-password" `
+  -v "${PWD}\craftcommand-data:/app/data" `
+  -v /var/run/docker.sock:/var/run/docker.sock `
+  ghcr.io/hoovdizz/craftcommand-center:latest
 ```
 
-Persistent data is stored under `C:\Docker\minecraftbedrockserver` and `C:\Docker\craftcommand-center\data`; the script does not delete those directories. Change the default Binhex web-console password after installation.
+Open `http://localhost:8223`, then on **Status → Minecraft Server Connection** select **Binhex Windows Docker / screen** and enter the exact Minecraft container name from:
 
-1. Install and start [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/), then make sure Docker is using Linux containers.
-2. Create a persistent data folder in PowerShell:
+```powershell
+docker ps --format "{{.Names}}"
+```
 
-   ```powershell
-   New-Item -ItemType Directory -Force .\craftcommand-data | Out-Null
-   ```
+The dashboard container and Minecraft container have different names. No RCON port, RCON password, or LAN scan is required.
 
-3. Start the dashboard (replace the password before running this command):
+### Linux or other Docker hosts
 
-   ```powershell
-   docker run -d --name craftcommand-center `
-     --restart unless-stopped `
-     -p 8223:8223 `
-     -e CCC_USERNAME=admin `
-     -e CCC_PASSWORD="replace-with-a-long-password" `
-     -v "${PWD}\craftcommand-data:/app/data" `
-     -v /var/run/docker.sock:/var/run/docker.sock `
-     ghcr.io/hoovdizz/craftcommand-center:latest
-   ```
+Use the same image and mount `/var/run/docker.sock` into CraftCommand. Mount `/app/data` to persistent storage, publish port `8223`, and select **Binhex Docker / screen** on the Status page. The Minecraft container name must exactly match `docker ps --format "{{.Names}}"` output.
 
-4. Open [http://localhost:8223](http://localhost:8223), sign in, and open **Status → Minecraft Server Connection**.
-5. Run `docker ps --format "{{.Names}}"` and note the Minecraft container name (for example, `minecraftbedrockserver`). On the Status page select **Binhex Windows Docker / screen**, enter that exact name, and choose **Save and Attach**.
-
-The Windows Docker command must include `-v /var/run/docker.sock:/var/run/docker.sock`. The Minecraft game port does not need to be scanned by CraftCommand because commands go through the Docker screen console. The dashboard container name and Minecraft container name are separate; configure the latter from `docker ps`.
-
-To update the stable `main` image later:
+### Updating
 
 ```powershell
 docker pull ghcr.io/hoovdizz/craftcommand-center:latest
 docker stop craftcommand-center
 docker rm craftcommand-center
-# Run the same docker run command above again; .\craftcommand-data preserves settings.
+# Run the original docker run command again.
 ```
 
-To run the current `development` image instead, use this image name in the original `docker run` command:
+For the development channel, replace `:latest` with `:development` in both the pull and run commands.
 
-```powershell
-ghcr.io/hoovdizz/craftcommand-center:development
-```
+## Reachability configuration
 
-Then update it later with:
+Open **Admin → Internet reachability** and set:
 
-```powershell
-docker pull ghcr.io/hoovdizz/craftcommand-center:development
-docker stop craftcommand-center
-docker rm craftcommand-center
-# Run the same docker run command again with :development.
-```
+- Public hostname or IP.
+- Public Bedrock UDP port (normally `19132`).
+- Probe mode: internet-hosted, local Docker-host, or both.
+- Enable/disable the check.
 
-Binhex's optional web console on TCP `8222` is separate from CraftCommand; this integration uses Docker screen access and does not require RCON or web-console credentials.
+The settings persist in `/app/data/external-server.json`. The internet probe may be briefly cached. Local mode tests from the Docker host and can be affected by router NAT loopback.
 
-## Persistent data
+## Authentication and security
 
-Map:
+- The first admin account comes from `CCC_USERNAME` and `CCC_PASSWORD`.
+- Change the signed-in admin password from **Admin → Change admin password**. The change persists in `/app/data/users.json` and overrides the bootstrap password.
+- Additional viewer, operator, and admin accounts are managed from **Admin → Accounts**.
+- Passwords are stored as salted scrypt hashes and sessions use `HttpOnly` cookies.
+- Plain HTTP is not encrypted. Use an HTTPS reverse proxy before exposing the dashboard beyond a trusted LAN.
+- Docker socket access is equivalent to powerful host access; protect the host and limit routine users to viewer/operator roles.
+
+## Persistent storage
+
+Mount `/app/data` for dashboard settings and `/app/backups` for server exports. Important data files include:
 
 ```text
-/mnt/user/appdata/craftcommand-center/data → /app/data
-```
-
-Persistent files include:
-
-```text
+users.json
+activity.jsonl
+connection.json
+external-server.json
 manual-players.json
 custom-kits.json
 quick-items.json
 teleport-locations.json
-users.json
-activity.jsonl
-connection.json
 ```
 
-Only `Everyone` is hard-coded in the default target config. Player names come from discovery or the manual player list.
-
-Color scheme, display mode, achievement checklists, and the dismissed install prompt are browser-local preferences. They are not written to `/app/data` and do not synchronize between browsers or devices.
-
-The default `external` reachability mode asks the public `mcsrvstat.us` Bedrock API to probe the configured public hostname and port. Select `local` to avoid the third-party lookup, or `both` to compare the external result with Unraid/NAT loopback.
-
-Admin-created server exports are stored separately at:
-
-```text
-/mnt/user/backups/craftcommand-center → /app/backups
-```
+Themes, background selection, button layout, and achievement checklist state are browser-local preferences.
 
 ## Environment variables
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `CCC_APP_TITLE` | `CraftCommand Center` | Dashboard title |
-| `CCC_USERNAME` | `admin` | Primary admin username |
-| `CCC_PASSWORD` | `changemenow` | Primary admin password |
-| `CCC_PASSWORD_HASH` | blank | Optional scrypt hash overriding the password |
-| `CCC_SESSION_HOURS` | `12` | Login session duration |
-| `CCC_MINECRAFT_CONTAINER` | `binhex-minecraftbedrockserver` | Exact Binhex Docker name |
-| `CCC_DOCKER_USER` | `nobody` | User owning the Binhex screen socket |
-| `CCC_SCREEN_SESSION` | `auto` | Rediscover the current `*.minecraft` session |
-| `CCC_COMMAND_METHOD` | `attach` | Compatible Binhex PTY attachment method |
-| `CCC_MINECRAFT_WEBUI_URL` | `http://[IP]:8222` | Dashboard quick link |
-| `CCC_UNRAID_DOCKER_URL` | `http://[IP]/Docker` | Dashboard quick link |
-| `CCC_AUDIT_ENABLED` | `true` | Persistent activity logging |
-| `CCC_AUDIT_MAX_ENTRIES` | `2000` | Approximate activity retention |
-| `CCC_EXTERNAL_CHECK_ENABLED` | `false` | Enable the public Bedrock UDP reachability check |
-| `CCC_EXTERNAL_HOST` | blank | Public DNS name or IP used by outside players |
-| `CCC_EXTERNAL_PORT` | `19132` | Public Bedrock UDP port |
-| `CCC_EXTERNAL_CHECK_MODE` | `external` | Internet-hosted external probe, local NAT-loopback probe, or both |
-| `CCC_BACKUP_ENABLED` | `true` | Enable admin-only backup/export |
-| `CCC_BACKUP_SOURCE_PATH` | `/config` | Path inside the Binhex container to export |
-| `CCC_BACKUP_DIR` | `/app/backups` | Persistent export destination inside CraftCommand Center |
-| `CCC_BACKUP_RETENTION` | `10` | Newest exports retained |
+| Variable | Purpose |
+|---|---|
+| `CCC_APP_TITLE` | Dashboard title |
+| `CCC_USERNAME` / `CCC_PASSWORD` | Bootstrap admin credentials |
+| `CCC_PASSWORD_HASH` | Optional scrypt hash instead of plaintext password |
+| `CCC_SESSION_HOURS` | Session lifetime |
+| `CCC_MINECRAFT_CONTAINER` | Default Minecraft Docker container name |
+| `CCC_DOCKER_USER` | User owning the Minecraft screen socket |
+| `CCC_SCREEN_SESSION` | Screen session name, or `auto` for discovery |
+| `CCC_COMMAND_METHOD` | Console attachment method, normally `attach` |
+| `CCC_AUTO_REFRESH_ATTACHMENT_ON_BOOT` | Rediscover and attach on startup |
+| `CCC_REFRESH_ATTACHMENT_BEFORE_COMMAND` | Refresh the screen attachment before commands |
+| `CCC_SHOW_RAW_OUTPUT` | Include raw command output in responses |
+| `CCC_MINECRAFT_WEBUI_URL` | Optional Minecraft WebUI link |
+| `CCC_AUDIT_ENABLED` / `CCC_AUDIT_MAX_ENTRIES` | Activity logging controls |
+| `CCC_EXTERNAL_CHECK_ENABLED` | Enable reachability at startup |
+| `CCC_EXTERNAL_HOST` / `CCC_EXTERNAL_PORT` | Public Bedrock endpoint |
+| `CCC_EXTERNAL_CHECK_MODE` | `external`, `local`, or `both` |
+| `CCC_EXTERNAL_TIMEOUT_MS` | Reachability probe timeout |
+| `CCC_BACKUP_ENABLED` | Enable admin backups |
+| `CCC_BACKUP_SOURCE_PATH` | Container path to export, normally `/config` |
+| `CCC_BACKUP_DIR` | CraftCommand backup directory |
+| `CCC_BACKUP_RETENTION` | Number of newest exports to retain |
+| `CCC_BACKUP_TIMEOUT_MS` | Backup/restore operation timeout |
+| `CCC_BACKUP_SAVE_HOLD` | Keep the server paused during backup operations |
+
+Admin-saved reachability and password settings are stored in `/app/data` and are applied after environment configuration.
 
 ## Development
 
@@ -297,4 +178,4 @@ npm run check
 node server.js
 ```
 
-The application intentionally has no runtime npm dependencies.
+The application intentionally has no runtime npm dependencies. GitHub Actions validates the project and publishes the `main` and `development` GHCR images.
