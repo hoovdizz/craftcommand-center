@@ -1592,6 +1592,7 @@ async function discoverKnownPlayers(cfg, reason = 'manual') {
   if (playerRefreshInFlight) return playerRefreshInFlight;
   playerRefreshInFlight = (async () => {
     const started = new Date().toISOString();
+    const networkMode = (cfg.connection || {}).mode === 'rcon';
     const container = safeDockerName(cfg.minecraftContainerName, 'Minecraft container name');
     const user = safeDockerName(cfg.dockerUser || 'nobody', 'Docker user');
     const discoveryCfg = cfg.playerDiscovery || {};
@@ -1607,12 +1608,11 @@ async function discoverKnownPlayers(cfg, reason = 'manual') {
     }
 
     try {
-      const inspect = await runDocker(['inspect', '-f', '{{.State.Running}}', container], 7000);
-      if (!inspect.ok || inspect.stdout.trim() !== 'true') {
-        throw new Error(`Minecraft container is not running or not found: ${container}`);
-      }
-
-      if (discoveryCfg.useDockerLogs !== false) {
+      if (!networkMode && discoveryCfg.useDockerLogs !== false) {
+        const inspect = await runDocker(['inspect', '-f', '{{.State.Running}}', container], 7000);
+        if (!inspect.ok || inspect.stdout.trim() !== 'true') {
+          throw new Error(`Minecraft container is not running or not found: ${container}`);
+        }
         const tail = String(Number(discoveryCfg.dockerLogTail || 50000));
         const logs = await runDocker(['logs', '--tail', tail, container], Number(discoveryCfg.dockerLogTimeoutMs || 12000));
         if (logs.ok || logs.stdout || logs.stderr) {
@@ -1635,7 +1635,7 @@ ${online.stderr || ''}`, map);
         }
       }
 
-      if (discoveryCfg.useServerFiles !== false) {
+      if (!networkMode && discoveryCfg.useServerFiles !== false) {
         const shell = String.raw`set -e
 for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
   if [ -d "$p" ]; then
