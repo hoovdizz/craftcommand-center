@@ -33,7 +33,7 @@
     <section class="card wide hidden" data-min-role="admin">
       <div class="sectionHeading"><div><h2>Minecraft Server Connection</h2><p class="hint">Attach to the Minecraft container's GNU screen console through Docker. Choose the host platform and enter the exact container name shown by <code>docker ps</code>.</p></div></div>
       <form id="connectionForm" class="formGrid twoCol">
-        <label>Connection method<select id="connectionMode"><option value="binhex">Binhex Unraid / screen</option><option value="windows">Binhex Windows Docker / screen</option></select></label>
+        <label>Connection method<select id="connectionMode"><option value="binhex">Binhex Docker / screen</option><option value="windows">Binhex Windows Docker / screen</option></select></label>
         <label>Docker container name<input id="connectionContainerName" placeholder="binhex-minecraftbedrockserver" autocomplete="off" required /></label>
         <button class="good" type="submit">Save and Attach</button>
       </form>

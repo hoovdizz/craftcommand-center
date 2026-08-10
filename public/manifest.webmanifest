@@ -1,7 +1,7 @@
 {
   "name": "CraftCommand Center",
   "short_name": "CraftCommand",
-  "description": "Mobile companion dashboard for binhex-minecraftbedrockserver on Unraid.",
+  "description": "Mobile companion dashboard for Binhex Minecraft Bedrock Docker containers.",
   "id": "/",
   "start_url": "/",
   "scope": "/",

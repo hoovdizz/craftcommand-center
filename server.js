@@ -829,7 +829,7 @@ async function runDiagnostics(cfg, req) {
   const add = (id, label, ok, detail, severity = 'error') => checks.push({ id, label, ok: Boolean(ok), detail: String(detail || ''), severity });
   add('app', 'CraftCommand Center', true, `Version ${APP_VERSION}`);
   const windowsMode = (cfg.connection || {}).mode === 'windows';
-  add('connection-mode', 'Minecraft connection', true, windowsMode ? 'Binhex Windows Docker / GNU screen' : 'Binhex Unraid / GNU screen');
+  add('connection-mode', 'Minecraft connection', true, windowsMode ? 'Binhex Windows Docker / GNU screen' : 'Binhex Docker / GNU screen');
   add('docker-socket', 'Docker socket', fs.existsSync('/var/run/docker.sock'), fs.existsSync('/var/run/docker.sock') ? 'Available' : 'Missing /var/run/docker.sock');
   add('data', 'Persistent data', dataDirectoryWritable(), dataDirectoryWritable() ? `${DEFAULT_DATA_DIR} is writable` : `${DEFAULT_DATA_DIR} is not writable`);
   add('https', 'Encrypted browser connection', requestIsHttps(req), requestIsHttps(req) ? 'HTTPS detected' : 'HTTP detected; use a reverse proxy for encryption', 'warning');
@@ -1028,7 +1028,7 @@ async function checkExternalReachability(cfg) {
   try {
     if (settings.mode === 'local') {
       const local = await queryBedrockUdp(settings.host, settings.port, settings.timeoutMs);
-      return { ...local, mode: 'local', externalConfirmed: false, provider: 'Unraid local UDP probe', note: 'This is a local/NAT-loopback test, not confirmation from outside your network.' };
+      return { ...local, mode: 'local', externalConfirmed: false, provider: 'Docker host local UDP probe', note: 'This is a local/NAT-loopback test, not confirmation from outside your network.' };
     }
     const external = await queryExternalBedrockStatus(settings.host, settings.port, settings.timeoutMs);
     if (settings.mode === 'external') {
@@ -1136,6 +1136,94 @@ function validateWorldName(value) {
   const name = String(value || '').trim();
   if (!name || name.length > 64 || !/^[A-Za-z0-9 _.-]+$/.test(name)) throw new Error('World name must be 1-64 characters using letters, numbers, spaces, dots, dashes, or underscores');
   return name;
+}
+
+const SERVER_PROPERTY_DEFINITIONS = {
+  performance: [
+    { key: 'view-distance', label: 'View distance', type: 'number', min: 5, max: 96, default: 32, description: 'Simulation/render range for players.' },
+    { key: 'tick-distance', label: 'Tick distance', type: 'number', min: 4, max: 96, default: 4, description: 'Range where the world continues ticking.' },
+    { key: 'max-threads', label: 'Max threads', type: 'number', min: 1, max: 64, default: 8, description: 'Maximum worker threads used by the server.' },
+    { key: 'player-idle-timeout', label: 'Player idle timeout', type: 'number', min: 0, max: 1440, default: 30, description: 'Minutes before an idle player is disconnected; 0 disables it.' }
+  ],
+  security: [
+    { key: 'allow-list', label: 'Allow-list', type: 'boolean', default: false, description: 'Only allow listed players to join.' },
+    { key: 'online-mode', label: 'Online mode', type: 'boolean', default: true, description: 'Require authenticated Xbox accounts.' },
+    { key: 'texturepack-required', label: 'Texture pack required', type: 'boolean', default: false, description: 'Require the configured texture pack.' },
+    { key: 'allow-cheats', label: 'Allow cheats', type: 'boolean', default: false, description: 'Enable commands and cheat gameplay.' }
+  ],
+  gameplay: [
+    { key: 'gamemode', label: 'Game mode', type: 'select', options: ['survival', 'creative', 'adventure', 'spectator'], default: 'survival', description: 'Default game mode for new players.' },
+    { key: 'difficulty', label: 'Difficulty', type: 'select', options: ['peaceful', 'easy', 'normal', 'hard'], default: 'normal', description: 'Default world difficulty.' },
+    { key: 'force-gamemode', label: 'Force game mode', type: 'boolean', default: false, description: 'Force players into the default game mode.' },
+    { key: 'default-player-permission-level', label: 'Default player permission', type: 'select', options: ['visitor', 'member', 'operator'], default: 'member', description: 'Permission level assigned to new players.' }
+  ]
+};
+const SERVER_PROPERTY_KEYS = Object.values(SERVER_PROPERTY_DEFINITIONS).flat().map(definition => definition.key);
+
+function parseServerProperties(content) {
+  const values = {};
+  for (const line of String(content || '').split(/\r?\n/)) {
+    const match = line.match(/^\s*([^#;:=\s]+)\s*=\s*(.*?)\s*$/);
+    if (match && SERVER_PROPERTY_KEYS.includes(match[1])) values[match[1]] = match[2];
+  }
+  return values;
+}
+
+async function readServerProperties(cfg) {
+  const container = configuredMinecraftContainer(cfg);
+  const shell = String.raw`set +e
+for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
+  [ -d "$p" ] || continue
+  FILE=$(find "$p" -maxdepth 6 -iname 'server.properties' -type f -print -quit 2>/dev/null || true)
+  [ -n "$FILE" ] && { cat "$FILE"; exit 0; }
+done
+echo 'server.properties was not found' >&2
+exit 2`;
+  const result = await runDocker(['exec', '-u', 'root', container, 'bash', '-lc', shell], 10000);
+  if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Could not read server.properties').trim());
+  return { values: parseServerProperties(result.stdout), definitions: SERVER_PROPERTY_DEFINITIONS };
+}
+
+function validateServerPropertyValues(input) {
+  const values = {};
+  for (const definition of Object.values(SERVER_PROPERTY_DEFINITIONS).flat()) {
+    if (input[definition.key] === undefined) continue;
+    const raw = String(input[definition.key]).trim();
+    if (definition.type === 'boolean') {
+      if (!['true', 'false'].includes(raw.toLowerCase())) throw new Error(`${definition.label} must be true or false`);
+      values[definition.key] = raw.toLowerCase();
+    } else if (definition.type === 'number') {
+      const number = Number(raw);
+      if (!Number.isInteger(number) || number < definition.min || number > definition.max) throw new Error(`${definition.label} must be a whole number from ${definition.min} to ${definition.max}`);
+      values[definition.key] = String(number);
+    } else {
+      if (!definition.options.includes(raw.toLowerCase())) throw new Error(`${definition.label} has an invalid value`);
+      values[definition.key] = raw.toLowerCase();
+    }
+  }
+  if (!Object.keys(values).length) throw new Error('No server properties were supplied');
+  return values;
+}
+
+async function saveServerProperties(cfg, input) {
+  const values = validateServerPropertyValues(input);
+  const assignments = Object.entries(values).map(([key, value]) => {
+    return `if grep -q "^${key}=" "$FILE"; then sed -i "s|^${key}=.*$|${key}=${value}|" "$FILE"; else printf '\\n${key}=${value}\\n' >> "$FILE"; fi`;
+  }).join('\n');
+  const container = configuredMinecraftContainer(cfg);
+  const shell = String.raw`set -eu
+FILE=""
+for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
+  [ -d "$p" ] || continue
+  FILE=$(find "$p" -maxdepth 6 -iname 'server.properties' -type f -print -quit 2>/dev/null || true)
+  [ -n "$FILE" ] && break
+done
+[ -n "$FILE" ] || { echo 'server.properties was not found' >&2; exit 2; }
+${assignments}`;
+  const result = await runDocker(['exec', '-u', 'root', container, 'bash', '-lc', shell], 10000);
+  if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Could not save server.properties').trim());
+  worldIdentityCache = null;
+  return readServerProperties(cfg);
 }
 
 async function renameWorld(cfg, value) {
@@ -2155,6 +2243,11 @@ async function handleApi(req, res, url, cfg) {
       return;
     }
 
+    if (req.method === 'GET' && url.pathname === '/api/server-properties') {
+      requireRole(session, 'admin');
+      json(res, 200, { ok: true, ...(await readServerProperties(cfg)) }); return;
+    }
+
     if (req.method === 'GET' && url.pathname === '/api/players') {
       if (!playerState.checkedAt && (cfg.playerDiscovery || {}).autoRefreshOnPageLoad === true) {
         discoverKnownPlayers(cfg, 'page-load').catch(() => {});
@@ -2219,6 +2312,13 @@ async function handleApi(req, res, url, cfg) {
       json(res, 200, { ok: true, world }); return;
     }
 
+    if (url.pathname === '/api/server-properties/save') {
+      requireRole(session, 'admin');
+      const properties = await saveServerProperties(cfg, body);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'save-server-properties', summary: `Updated ${Object.keys(body).filter(key => SERVER_PROPERTY_KEYS.includes(key)).length} server properties`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, ...properties }); return;
+    }
+
     if (url.pathname === '/api/connection/scan') {
       requireRole(session, 'admin');
       const servers = await scanLanBedrockServers(body.port || (cfg.connection || {}).gamePort || 19132, 1800, clientIp(req));
@@ -2232,7 +2332,7 @@ async function handleApi(req, res, url, cfg) {
       const connection = writeConnectionSettings({ ...existing, ...body });
       const fresh = { ...cfg, connection };
       const state = await refreshAttachment(fresh, 'settings-save');
-      appendActivity(cfg, { username: session.username, role: session.role, action: 'connection-save', target: connection.containerName, summary: `Selected ${connection.mode === 'windows' ? 'Binhex Windows Docker' : 'Binhex Unraid'} connection mode`, ok: state.ok, error: state.error, ip: clientIp(req) });
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'connection-save', target: connection.containerName, summary: `Selected ${connection.mode === 'windows' ? 'Binhex Windows Docker' : 'Binhex Docker'} connection mode`, ok: state.ok, error: state.error, ip: clientIp(req) });
       json(res, state.ok ? 200 : 400, { ok: state.ok, connection: publicConnectionSettings(fresh), attachment: publicAttachmentState(fresh), error: state.error || undefined }); return;
     }
 

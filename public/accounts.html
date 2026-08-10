@@ -11,8 +11,8 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="/theme.js?v=2.3.0-beta.15"></script>
-  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.15" />
+  <script src="/theme.js?v=2.3.0-beta.16"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.16" />
 </head>
 <body>
   <header class="topbar">
@@ -54,15 +54,17 @@
     <section class="card wide">
       <h2>Common Minecraft server properties</h2>
       <p class="hint">Most server-property adjustments fall into three categories. These values are edited in the container's <code>server.properties</code> file and generally require a server restart.</p>
-      <div class="roleCards">
-        <article><strong>Performance optimization</strong><p><code>view-distance</code>, <code>tick-distance</code>, <code>max-threads</code>, and <code>player-idle-timeout</code> balance simulation range, CPU use, and memory.</p></article>
-        <article><strong>Security</strong><p><code>allow-list</code>, <code>online-mode</code>, <code>texturepack-required</code>, and <code>allow-cheats</code> control who can join and which server privileges are enabled.</p></article>
-        <article><strong>Core gameplay</strong><p><code>gamemode</code>, <code>difficulty</code>, <code>force-gamemode</code>, and <code>default-player-permission-level</code> define the default player experience.</p></article>
-      </div>
+      <form id="serverPropertiesForm">
+        <details><summary>Performance optimization</summary><p class="hint"><code>view-distance</code>, <code>tick-distance</code>, <code>max-threads</code>, and <code>player-idle-timeout</code> balance simulation range, CPU use, and memory.</p><div id="performanceProperties" class="formGrid twoCol"></div></details>
+        <details><summary>Security</summary><p class="hint"><code>allow-list</code>, <code>online-mode</code>, <code>texturepack-required</code>, and <code>allow-cheats</code> control who can join and which server privileges are enabled.</p><div id="securityProperties" class="formGrid twoCol"></div></details>
+        <details><summary>Core gameplay</summary><p class="hint"><code>gamemode</code>, <code>difficulty</code>, <code>force-gamemode</code>, and <code>default-player-permission-level</code> define the default player experience.</p><div id="gameplayProperties" class="formGrid twoCol"></div></details>
+        <button class="good" type="submit">Save Server Properties</button>
+      </form>
+      <p id="serverPropertiesResult" class="notice">Loading server propertiesâ€¦</p>
     </section>
     <section class="card wide">
       <h2>Internet reachability</h2>
-      <p class="hint">Configure the public Bedrock hostname/IP and UDP port here. This applies to Windows and Unraid deployments; no Unraid Edit-screen changes are required.</p>
+      <p class="hint">Configure the public Bedrock hostname/IP and UDP port here for any Docker deployment.</p>
       <form id="externalServerForm" class="formGrid twoCol">
         <label>Public hostname or IP<input id="externalHost" type="text" placeholder="play.example.com" /></label>
         <label>UDP port<input id="externalPort" type="number" min="1" max="65535" value="19132" required /></label>
@@ -86,7 +88,7 @@
       </div>
     </section>
     <section class="card wide">
-      <div class="sectionHeading"><div><h2>Accounts</h2><p class="hint">The primary admin is controlled by the Unraid template. Additional accounts are saved in <code>/app/data/users.json</code>.</p></div><button id="refreshUsers" class="warn">🔄 Refresh</button></div>
+      <div class="sectionHeading"><div><h2>Accounts</h2><p class="hint">The primary admin is controlled by the Docker container configuration. Additional accounts are saved in <code>/app/data/users.json</code>.</p></div><button id="refreshUsers" class="warn">🔄 Refresh</button></div>
       <div id="accountList" class="accountList"></div>
     </section>
     <section class="card wide">
@@ -112,7 +114,7 @@
       <p id="adminPasswordResult" class="notice">Ready.</p>
     </section>
   </main>
-  <script src="/pwa.js?v=2.3.0-beta.15"></script>
-  <script src="/accounts.js?v=2.3.0-beta.15"></script>
+  <script src="/pwa.js?v=2.3.0-beta.16"></script>
+  <script src="/accounts.js?v=2.3.0-beta.16"></script>
 </body>
 </html>
