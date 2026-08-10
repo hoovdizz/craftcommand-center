@@ -128,7 +128,7 @@ async function init() {
   if (!auth.authenticated) { location.href = '/'; return; }
   currentUser = { username: auth.username || '', role: auth.role || 'viewer' };
   applyRole();
-  const [config] = await Promise.all([request('/api/config'), loadDiagnostics(), loadOverview(false), loadBackups()]);
+  const [config] = await Promise.all([request('/api/config'), loadDiagnostics(), loadOverview(false)]);
   document.body.dataset.display = localStorage.getItem('cccDisplayMode') || config.display?.defaultMode || 'both';
   if (can('admin')) renderServerLinks(config);
   if (can('admin')) renderConnection(config.connection || {});
@@ -137,5 +137,4 @@ $('#connectionForm')?.addEventListener('submit', async event => { event.preventD
 $('#runDiagnostics').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await loadDiagnostics(); setResult('Diagnostics refreshed.'); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });
 $('#refreshOverview').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await loadOverview(true); setResult('Server status refreshed.'); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });
 $('#refreshAttachment').addEventListener('click', async event => { if (!can('operator')) return; const button = event.currentTarget; button.disabled = true; try { const data = await request('/api/refresh-attachment', { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}' }); renderAttachment(data.attachment); setResult(`Attached to ${data.attachment.activeScreenSession}`); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });
-$('#createBackup').addEventListener('click', async event => { if (!can('admin')) return; if (!confirm('Create a compressed export of the Binhex server data now? Large worlds can take several minutes.')) return; const button = event.currentTarget; button.disabled = true; button.textContent = 'Creating Export…'; setResult('Creating server export. Keep this page open…'); try { const data = await request('/api/backups/create', { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}' }); renderBackups({ backups: data.backups || [], settings: { enabled: true, retention: 10, sourcePath: data.backup.sourcePath } }); setResult(`Created ${data.backup.name} (${formatBytes(data.backup.size)})${data.backup.warning ? `\nWarning: ${data.backup.warning}` : ''}`); } catch (error) { setResult(`Backup failed: ${error.message}`); } finally { button.disabled = false; button.textContent = 'Create Server Export'; await loadBackups().catch(() => {}); } });
 init().catch(error => { setResult(`Could not load status: ${error.message}`); });

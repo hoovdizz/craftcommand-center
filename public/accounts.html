@@ -11,8 +11,8 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="/theme.js?v=2.3.0-beta.12"></script>
-  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.12" />
+  <script src="/theme.js?v=2.3.0-beta.13"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.13" />
 </head>
 <body>
   <header class="topbar">
@@ -44,6 +44,19 @@
       </div>
     </section>
     <section class="card wide">
+      <div class="sectionHeading"><div><h2>World settings</h2><p class="hint">Rename the active Bedrock world by changing <code>level-name</code> in its server properties. Restart the Minecraft container after renaming if the running server does not pick it up immediately.</p></div></div>
+      <form id="worldNameForm" class="formGrid twoCol">
+        <label>World name<input id="worldName" maxlength="64" pattern="[A-Za-z0-9 _.-]+" required /></label>
+        <button class="good" type="submit">Save World Name</button>
+      </form>
+      <p id="worldNameResult" class="notice">Loading current world name…</p>
+    </section>
+    <section class="card wide">
+      <div class="sectionHeading"><div><h2>Backup / Export Server</h2><p class="hint">Admin-only compressed exports of the selected Minecraft container. By default this exports <code>/config</code> into persistent backup storage.</p></div><button id="createBackup" class="good" type="button">Create Server Export</button></div>
+      <div id="backupSettings" class="statusBox"></div>
+      <div id="backupList" class="backupList"><p class="hint">Loading exports…</p></div>
+    </section>
+    <section class="card wide">
       <h2>Access levels</h2>
       <div class="roleCards">
         <article><strong>Viewer</strong><p>Can view status, known players, kits, the item catalog, and only their own activity. Cannot send commands.</p></article>
@@ -67,7 +80,7 @@
       <p id="accountResult" class="notice">Ready.</p>
     </section>
   </main>
-  <script src="/pwa.js?v=2.3.0-beta.12"></script>
-  <script src="/accounts.js?v=2.3.0-beta.12"></script>
+  <script src="/pwa.js?v=2.3.0-beta.13"></script>
+  <script src="/accounts.js?v=2.3.0-beta.13"></script>
 </body>
 </html>

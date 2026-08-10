@@ -1101,6 +1101,37 @@ done`;
   finally { worldIdentityInFlight = null; }
 }
 
+function validateWorldName(value) {
+  const name = String(value || '').trim();
+  if (!name || name.length > 64 || !/^[A-Za-z0-9 _.-]+$/.test(name)) throw new Error('World name must be 1-64 characters using letters, numbers, spaces, dots, dashes, or underscores');
+  return name;
+}
+
+async function renameWorld(cfg, value) {
+  const name = validateWorldName(value);
+  const container = configuredMinecraftContainer(cfg);
+  const nameQ = shellQuote(name);
+  const shell = String.raw`set -eu
+FILE=""
+for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
+  if [ -d "$p" ]; then
+    FILE=$(find "$p" -maxdepth 6 -iname 'server.properties' -type f -print -quit 2>/dev/null || true)
+    [ -n "$FILE" ] && break
+  fi
+done
+[ -n "$FILE" ] || { echo 'server.properties was not found' >&2; exit 2; }
+if grep -q '^level-name=' "$FILE"; then
+  sed -i "s|^level-name=.*$|level-name=$NAME|" "$FILE"
+else
+  printf '\nlevel-name=%s\n' "$NAME" >> "$FILE"
+fi`;
+  const command = `NAME=${nameQ}; ${shell}`;
+  const result = await runDocker(['exec', '-u', 'root', container, 'bash', '-lc', command], 10000);
+  if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Could not rename world').trim());
+  worldIdentityCache = null;
+  return getWorldIdentity(cfg, true);
+}
+
 function accessRecordsFromJson(value, source, out = []) {
   if (Array.isArray(value)) {
     for (const entry of value) accessRecordsFromJson(entry, source, out);
@@ -1328,6 +1359,24 @@ function deleteServerBackup(cfg, fileName) {
   if (!fs.existsSync(full)) throw new Error('Backup not found');
   fs.unlinkSync(full);
   return name;
+}
+
+function restoreServerBackup(cfg, fileName) {
+  const settings = backupSettings(cfg);
+  const name = path.basename(String(fileName || ''));
+  if (name !== String(fileName || '') || !/^craftcommand-bedrock-[A-Za-z0-9_.-]+\.tar\.gz$/.test(name)) throw new Error('Invalid backup file name');
+  const full = path.join(settings.directory, name);
+  if (!fs.existsSync(full)) throw new Error('Backup not found');
+  const container = configuredMinecraftContainer(cfg);
+  return new Promise((resolve, reject) => {
+    const child = spawn('docker', ['exec', '-i', '-u', 'root', container, 'tar', '-C', settings.sourcePath, '-xzf', '-']);
+    let stderr = '';
+    const timer = setTimeout(() => { child.kill('SIGKILL'); reject(new Error('Restore timed out')); }, settings.timeoutMs);
+    child.stderr.on('data', data => { if (stderr.length < 200000) stderr += data.toString(); });
+    child.on('error', error => { clearTimeout(timer); reject(error); });
+    child.on('close', code => { clearTimeout(timer); if (code === 0) resolve({ name, sourcePath: settings.sourcePath }); else reject(new Error(stripAnsi(stderr || `Restore exited with code ${code}`).trim())); });
+    fs.createReadStream(full).on('error', error => { child.kill('SIGKILL'); clearTimeout(timer); reject(error); }).pipe(child.stdin);
+  });
 }
 
 function streamBackupDownload(res, cfg, fileName) {
@@ -2132,6 +2181,13 @@ async function handleApi(req, res, url, cfg) {
 
     const body = await readBody(req);
 
+    if (url.pathname === '/api/world/name') {
+      requireRole(session, 'admin');
+      const world = await renameWorld(cfg, body.name);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'rename-world', target: world.name, summary: `Renamed world to ${world.name}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, world }); return;
+    }
+
     if (url.pathname === '/api/connection/scan') {
       requireRole(session, 'admin');
       const servers = await scanLanBedrockServers(body.port || (cfg.connection || {}).gamePort || 19132, 1800, clientIp(req));
@@ -2179,6 +2235,13 @@ async function handleApi(req, res, url, cfg) {
       appendActivity(cfg, { username: session.username, role: session.role, action: 'delete-backup', target: deleted, summary: `Deleted server export ${deleted}`, ok: true, ip: clientIp(req) });
       json(res, 200, { ok: true, deleted, backups: listServerBackups(cfg) });
       return;
+    }
+
+    if (url.pathname === '/api/backups/restore') {
+      requireRole(session, 'admin');
+      const restored = await restoreServerBackup(cfg, body.file || body.name);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'restore-backup', target: restored.name, summary: `Restored server export ${restored.name}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, restored }); return;
     }
 
     if (url.pathname === '/api/activity/clear') {
