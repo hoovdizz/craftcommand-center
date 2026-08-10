@@ -286,10 +286,27 @@ function loadConfig() {
   const p = fs.existsSync(CONFIG_PATH) ? CONFIG_PATH : FALLBACK_CONFIG;
   const cfg = JSON.parse(fs.readFileSync(p, 'utf8'));
   const resolved = applyEnvOverrides(cfg);
+  const externalOverride = readPersistentExternalServer();
+  if (externalOverride) resolved.externalServer = { ...(resolved.externalServer || {}), ...externalOverride };
   resolved.connection = readConnectionSettings(resolved);
   resolved.quickItems = readQuickItems(resolved);
   resolved.teleportLocations = readTeleportLocations(resolved);
   return resolved;
+}
+
+function externalServerSettingsPath() { return path.join(DEFAULT_DATA_DIR, 'external-server.json'); }
+function readPersistentExternalServer() {
+  try { return JSON.parse(fs.readFileSync(externalServerSettingsPath(), 'utf8')); } catch { return null; }
+}
+function savePersistentExternalServer(input) {
+  const host = String(input.host || '').trim();
+  if (host) validateExternalHost(host);
+  const port = sanitizePort(input.port || 19132, 19132);
+  const mode = ['external', 'local', 'both'].includes(String(input.mode || 'external').toLowerCase()) ? String(input.mode || 'external').toLowerCase() : 'external';
+  const settings = { enabled: input.enabled === true && Boolean(host), host, port, timeoutMs: Math.max(1000, Math.min(30000, Number(input.timeoutMs || 5000))), mode };
+  fs.mkdirSync(DEFAULT_DATA_DIR, { recursive: true });
+  fs.writeFileSync(externalServerSettingsPath(), `${JSON.stringify(settings, null, 2)}\n`, 'utf8');
+  return settings;
 }
 
 function connectionSettingsPath() { return path.join(DEFAULT_DATA_DIR, 'connection.json'); }
@@ -846,7 +863,9 @@ async function runDiagnostics(cfg, req) {
 
   const users = normalizedAuthUsers(cfg);
   add('auth', 'Dashboard account', users.length > 0, `${users.length} enabled account(s)`);
-  const weakDefault = String(process.env.CCC_PASSWORD || '') === 'changemenow' || String(process.env.MCQB_PASSWORD || '') === 'changemenow';
+  const effectivePrimary = findAuthUser(cfg, cfg.auth?.username);
+  const weakEnvironmentPassword = String(process.env.CCC_PASSWORD || '') === 'changemenow' || String(process.env.MCQB_PASSWORD || '') === 'changemenow';
+  const weakDefault = weakEnvironmentPassword && effectivePrimary?.source !== 'persistent';
   add('default-password', 'Default password changed', !weakDefault, weakDefault ? 'Change the default password before beta testing' : 'No default environment password detected', 'warning');
 
   const errors = checks.filter(c => !c.ok && c.severity !== 'warning').length;
@@ -2051,7 +2070,7 @@ function publicConfig(cfg, req, session = null) {
     copy.links = copy.links.map(link => ({ ...link, url: resolveTemplateUrl(link.url, req) }));
   } else delete copy.links;
   if (copy.backup) copy.backup = { enabled: copy.backup.enabled !== false };
-  if (copy.externalServer) copy.externalServer = { enabled: copy.externalServer.enabled === true, host: copy.externalServer.host || '', port: Number(copy.externalServer.port || 19132), mode: copy.externalServer.mode || 'external' };
+  if (copy.externalServer) copy.externalServer = { enabled: copy.externalServer.enabled === true, host: copy.externalServer.host || '', port: Number(copy.externalServer.port || 19132), timeoutMs: Number(copy.externalServer.timeoutMs || 5000), mode: copy.externalServer.mode || 'external' };
   copy.connection = publicConnectionSettings(cfg);
   return copy;
 }
@@ -2234,6 +2253,14 @@ async function handleApi(req, res, url, cfg) {
       const changed = changeAdminPassword(session.username, body.newPassword);
       appendActivity(cfg, { username: session.username, role: session.role, action: 'change-password', target: changed.username, summary: 'Changed admin password', ok: true, ip: clientIp(req) });
       json(res, 200, { ok: true, user: changed }); return;
+    }
+
+    if (url.pathname === '/api/external-server/save') {
+      requireRole(session, 'admin');
+      const externalServer = savePersistentExternalServer(body);
+      serverOverviewCache = null;
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'save-reachability', summary: externalServer.enabled ? `Configured ${externalServer.host}:${externalServer.port}` : 'Disabled internet reachability check', ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, externalServer }); return;
     }
 
     if (url.pathname === '/api/users/delete') {

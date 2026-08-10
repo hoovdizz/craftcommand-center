@@ -92,7 +92,7 @@ function renderOverview(data) {
   externalBox.className = external.reachable ? 'statusBox ok' : 'statusBox bad';
   externalBox.innerHTML = external.configured
     ? `<div><strong>Endpoint:</strong> <code>${escapeHtml(external.endpoint || '')}</code></div><div><strong>Status:</strong> ${external.reachable ? 'Reachable from this probe' : 'No public Bedrock response'}</div><div><strong>Latency:</strong> ${external.latencyMs == null ? 'N/A' : `${external.latencyMs} ms`}</div>${external.motd ? `<div><strong>MOTD:</strong> ${escapeHtml(external.motd)}</div>` : ''}${external.version ? `<div><strong>Version:</strong> ${escapeHtml(external.version)}</div>` : ''}${external.provider ? `<div><strong>Probe:</strong> ${escapeHtml(external.provider)}${external.providerCached ? ' (cached)' : ''}</div>` : ''}${external.error ? `<div><strong>Detail:</strong> ${escapeHtml(external.error)}</div>` : ''}${external.localProbe ? `<div><strong>Local probe:</strong> ${external.localProbe.reachable ? 'reachable' : escapeHtml(external.localProbe.error || 'no response')}</div>` : ''}`
-    : `<div><strong>Not configured.</strong> Set the external hostname/IP and UDP port in the Unraid Edit screen, then enable the reachability check.</div>`;
+    : `<div><strong>Not configured.</strong> Set the public hostname/IP, UDP port, and probe mode from the Admin page, then enable the reachability check.</div>`;
 
   const online = data.online || { online: 0, max: 0, players: [] };
   $('#onlineSummary').textContent = online.error ? `Query warning: ${online.error}` : `${online.online || 0} of ${online.max || 0} player slots currently in use.`;

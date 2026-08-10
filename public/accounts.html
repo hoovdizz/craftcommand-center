@@ -11,8 +11,8 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="/theme.js?v=2.3.0-beta.14"></script>
-  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.14" />
+  <script src="/theme.js?v=2.3.0-beta.15"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.15" />
 </head>
 <body>
   <header class="topbar">
@@ -61,6 +61,18 @@
       </div>
     </section>
     <section class="card wide">
+      <h2>Internet reachability</h2>
+      <p class="hint">Configure the public Bedrock hostname/IP and UDP port here. This applies to Windows and Unraid deployments; no Unraid Edit-screen changes are required.</p>
+      <form id="externalServerForm" class="formGrid twoCol">
+        <label>Public hostname or IP<input id="externalHost" type="text" placeholder="play.example.com" /></label>
+        <label>UDP port<input id="externalPort" type="number" min="1" max="65535" value="19132" required /></label>
+        <label>Probe mode<select id="externalMode"><option value="external">Internet-hosted probe</option><option value="local">Local probe</option><option value="both">Both probes</option></select></label>
+        <label class="checkboxLabel"><input id="externalEnabled" type="checkbox" /> Enable reachability check</label>
+        <button class="good" type="submit">Save Reachability</button>
+      </form>
+      <p id="externalServerResult" class="notice">Loading reachability settings…</p>
+    </section>
+    <section class="card wide">
       <div class="sectionHeading"><div><h2>Backup / Export Server</h2><p class="hint">Admin-only compressed exports of the selected Minecraft container. By default this exports <code>/config</code> into persistent backup storage.</p></div><button id="createBackup" class="good" type="button">Create Server Export</button></div>
       <div id="backupSettings" class="statusBox"></div>
       <div id="backupList" class="backupList"><p class="hint">Loading exports…</p></div>
@@ -100,7 +112,7 @@
       <p id="adminPasswordResult" class="notice">Ready.</p>
     </section>
   </main>
-  <script src="/pwa.js?v=2.3.0-beta.14"></script>
-  <script src="/accounts.js?v=2.3.0-beta.14"></script>
+  <script src="/pwa.js?v=2.3.0-beta.15"></script>
+  <script src="/accounts.js?v=2.3.0-beta.15"></script>
 </body>
 </html>
