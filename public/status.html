@@ -31,17 +31,13 @@
 
   <main>
     <section class="card wide hidden" data-min-role="admin">
-      <div class="sectionHeading"><div><h2>Minecraft Server Connection</h2><p class="hint">Choose the Binhex Unraid console integration, or connect to Binhex Windows through RCON.</p></div><button id="scanLan" class="warn" type="button">Scan LAN</button></div>
+      <div class="sectionHeading"><div><h2>Minecraft Server Connection</h2><p class="hint">Attach to the Minecraft container's GNU screen console through Docker. Choose the host platform and enter the exact container name shown by <code>docker ps</code>.</p></div></div>
       <form id="connectionForm" class="formGrid twoCol">
-        <label>Connection method<select id="connectionMode"><option value="binhex">Binhex Unraid / screen</option><option value="rcon">Binhex Windows / RCON</option></select></label>
-        <label>Server host or IP<input id="connectionHost" placeholder="192.168.1.50" autocomplete="off" /></label>
-        <label>Minecraft game port<input id="connectionGamePort" type="number" min="1" max="65535" value="19132" required /></label>
-        <label>RCON port<input id="connectionRconPort" type="number" min="1" max="65535" value="25575" required /></label>
-        <label>RCON password<input id="connectionPassword" type="password" maxlength="512" placeholder="Leave blank to keep saved password" autocomplete="new-password" /></label>
-        <button class="good" type="submit">Save and Authenticate</button>
+        <label>Connection method<select id="connectionMode"><option value="binhex">Binhex Unraid / screen</option><option value="windows">Binhex Windows Docker / screen</option></select></label>
+        <label>Docker container name<input id="connectionContainerName" placeholder="binhex-minecraftbedrockserver" autocomplete="off" required /></label>
+        <button class="good" type="submit">Save and Attach</button>
       </form>
-      <p class="hint">LAN scanning checks the selected Bedrock UDP game port across directly connected IPv4 /24 networks. Binhex Windows' web console uses TCP <code>8222</code> and WEBUI credentials; this dashboard's Windows mode requires a separate standard RCON endpoint and password.</p>
-      <div id="lanServers" class="accessList"></div>
+      <p class="hint">For Windows Docker Desktop, mount <code>/var/run/docker.sock</code> into CraftCommand and use the exact name from <code>docker ps</code>, such as <code>minecraftbedrockserver</code>. No RCON port, password, or LAN scan is needed.</p>
     </section>
 
     <section class="card wide hidden" data-min-role="admin">
