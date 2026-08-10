@@ -11,8 +11,8 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="/theme.js?v=2.3.0-beta.11"></script>
-  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.11" />
+  <script src="/theme.js?v=2.3.0-beta.12"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.12" />
 </head>
 <body data-display="text">
   <section id="loginView" class="loginShell">
@@ -44,36 +44,9 @@
         <a class="navButton" href="/items.html">Item Catalog</a>
         <a class="navButton" href="/achievements.html">Achievements</a>
         <a class="navButton" href="/activity.html">Activity</a>
-        <a class="navButton" href="/accounts.html" data-admin-nav>Accounts</a>
+        <a class="navButton" href="/accounts.html" data-admin-nav>Admin</a>
         <a class="navButton" href="/help.html">Help</a>
       <span id="userBadge" class="badge">Signed in</span>
-        <label class="compactLabel">Button view
-          <select id="displayMode">
-            <option value="both">Icon + text</option>
-            <option value="icon">Icons only</option>
-            <option value="text">Text only</option>
-          </select>
-        </label>
-        <label class="compactLabel">Color scheme
-          <select data-color-theme aria-label="Color scheme">
-            <option value="deep-ocean">Deep Ocean</option>
-            <option value="ember">Ember</option>
-            <option value="daylight">Daylight</option>
-            <option value="minecraft">Minecraft</option>
-          </select>
-        </label>
-        <label class="compactLabel">Background
-          <select data-background-choice aria-label="Background image">
-            <option value="default">Theme background</option>
-            <option value="minecraft-wallpaper-1">Minecraft wallpaper 1</option>
-            <option value="minecraft-wallpaper-2">Minecraft wallpaper 2</option>
-            <option value="custom">Custom image URL</option>
-          </select>
-        </label>
-        <label class="compactLabel backgroundUrlLabel">Custom background URL
-          <input data-background-url type="url" placeholder="https://example.com/wallpaper.jpg" />
-        </label>
-        <button type="button" class="compact" data-background-apply>Apply background</button>
         <button id="logout" class="danger smallButton">Log out</button>
       </nav>
     </header>
@@ -239,7 +212,7 @@
   </dialog>
 
   <script src="/item-icons.js?v=2.3.0-beta.6"></script>
-  <script src="/pwa.js?v=2.3.0-beta.11"></script>
-  <script src="/app.js?v=2.3.0-beta.11"></script>
+  <script src="/pwa.js?v=2.3.0-beta.12"></script>
+  <script src="/app.js?v=2.3.0-beta.12"></script>
 </body>
 </html>

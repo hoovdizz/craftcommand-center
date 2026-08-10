@@ -7,18 +7,18 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="CraftCommand" />
-  <title>Accounts | CraftCommand Center</title>
+  <title>Admin | CraftCommand Center</title>
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="/theme.js?v=2.3.0-beta.11"></script>
-  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.11" />
+  <script src="/theme.js?v=2.3.0-beta.12"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.3.0-beta.12" />
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
       <img class="appLogo" src="/icon.png" alt="CraftCommand Center logo" />
-      <div><h1>Dashboard Accounts</h1><p>Create safer viewer and operator access without sharing the main admin password.</p></div>
+      <div><h1>Admin</h1><p>Manage dashboard accounts and personalize the dashboard experience.</p></div>
     </div>
     <nav class="topActions">
       <a class="navButton" href="/">Dashboard</a>
@@ -26,12 +26,23 @@
       <a class="navButton" href="/items.html">Item Catalog</a>
       <a class="navButton" href="/achievements.html">Achievements</a>
       <a class="navButton" href="/activity.html">Activity</a>
-      <a class="navButton active" href="/accounts.html" data-admin-nav>Accounts</a>
+      <a class="navButton active" href="/accounts.html" data-admin-nav>Admin</a>
       <a class="navButton" href="/help.html">Help</a>
       <span id="userBadge" class="badge">Signed in</span>
     </nav>
   </header>
   <main class="catalogMain">
+    <section class="card wide">
+      <h2>Dashboard appearance</h2>
+      <p class="hint">These preferences are saved in this browser and apply across the dashboard.</p>
+      <div class="formGrid twoCol">
+        <label>Button view<select id="displayMode"><option value="both">Icon + text</option><option value="icon">Icons only</option><option value="text">Text only</option></select></label>
+        <label>Color scheme<select data-color-theme aria-label="Color scheme"><option value="deep-ocean">Deep Ocean</option><option value="ember">Ember</option><option value="daylight">Daylight</option><option value="minecraft">Minecraft</option></select></label>
+        <label>Background<select data-background-choice aria-label="Background image"><option value="default">Theme background</option><option value="minecraft-wallpaper-1">Minecraft wallpaper 1</option><option value="minecraft-wallpaper-2">Minecraft wallpaper 2</option><option value="custom">Custom image URL</option></select></label>
+        <label>Custom background URL<input data-background-url type="url" placeholder="https://example.com/wallpaper.jpg" /></label>
+        <button type="button" class="compact" data-background-apply>Apply background</button>
+      </div>
+    </section>
     <section class="card wide">
       <h2>Access levels</h2>
       <div class="roleCards">
@@ -56,7 +67,7 @@
       <p id="accountResult" class="notice">Ready.</p>
     </section>
   </main>
-  <script src="/pwa.js?v=2.2.0"></script>
-  <script src="/accounts.js?v=2.2.0"></script>
+  <script src="/pwa.js?v=2.3.0-beta.12"></script>
+  <script src="/accounts.js?v=2.3.0-beta.12"></script>
 </body>
 </html>

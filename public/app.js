@@ -548,7 +548,7 @@ async function initializeApp() {
   $('#title').textContent=cfg.appTitle||'CraftCommand Center'; $('#subtitle').textContent=cfg.appSubtitle||'Companion dashboard for binhex-minecraftbedrockserver.';
   if ($('#transportBadge')) { $('#transportBadge').textContent=cfg.security?.transportEncrypted?'HTTPS':'HTTP'; $('#transportBadge').title=cfg.security?.note||''; }
   setDisplayMode(localStorage.getItem('cccDisplayMode') || cfg.display?.defaultMode || 'both');
-  $('#displayMode').addEventListener('change',e=>setDisplayMode(e.target.value));
+  $('#displayMode')?.addEventListener('change',e=>setDisplayMode(e.target.value));
   populateCatalogInputs(); renderWorldTimeButtons(); renderTeleportLocations(); renderQuickItems(); renderXpButtons(); updateCustomHelp();
   await Promise.all([loadPlayers(),loadKits()]);
   document.querySelectorAll('[data-admin-nav]').forEach(el => el.classList.toggle('hidden', !can('admin')));
