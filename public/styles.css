@@ -90,28 +90,28 @@
   color-scheme: dark;
   --bg: #121b18;
   --bg-glow: #385c47;
-  --card: #24352e;
-  --card2: #2d4438;
-  --surface: #17231f;
-  --surface2: #1e3028;
-  --text: #f2f0df;
-  --muted: #bdc9b5;
+  --card: rgba(38, 44, 49, .82);
+  --card2: rgba(52, 58, 63, .78);
+  --surface: rgba(24, 29, 33, .78);
+  --surface2: rgba(43, 48, 53, .78);
+  --text: #ffffff;
+  --muted: #d2d5d8;
   --accent: #8fca4a;
   --accent2: #68b4ac;
   --danger: #e26b55;
   --warn: #d9a447;
-  --border: #536d5b;
+  --border: #8a8f94;
   --shadow: 0 12px 35px rgba(0,0,0,.42);
   --topbar: rgba(18,27,24,.95);
-  --button: #3a5e48;
-  --button-hover: #4b7654;
-  --button-border: #729365;
-  --input: #17231f;
+  --button: #70757a;
+  --button-hover: #858b90;
+  --button-border: #c1c5c8;
+  --input: rgba(20, 24, 27, .88);
   --focus: rgba(143,202,74,.4);
 }
 * { box-sizing: border-box; }
 html { min-height: 100%; background: var(--bg); }
-body { margin: 0; min-height: 100vh; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; background-image: var(--page-background-image, radial-gradient(circle at 15% 0%, var(--bg-glow), var(--bg) 46%)); background-size: cover; background-position: center; background-attachment: fixed; background-color: var(--bg); color: var(--text); }
+body { margin: 0; min-height: 100vh; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; background-image: var(--page-background-image, radial-gradient(circle at 15% 0%, var(--bg-glow), var(--bg) 46%)); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; background-color: var(--bg); color: var(--text); }
 button, input, select { font: inherit; }
 button, .linkButton, .navButton { touch-action: manipulation; }
 .hidden { display: none !important; }
@@ -199,6 +199,16 @@ body[data-display="icon"] .btnIcon { font-size: 1.85rem; }
 body[data-display="text"] .btnIcon { display: none; }
 .kitButton { border-color: #7769d8; background: #392f78; }
 :root[data-theme="daylight"] .kitButton { color: #fff; background: #4c3b91; border-color: #7563c4; }
+:root[data-theme="minecraft"] button,
+:root[data-theme="minecraft"] .linkButton,
+:root[data-theme="minecraft"] .navButton,
+:root[data-theme="minecraft"] button.good,
+:root[data-theme="minecraft"] .linkButton.good,
+:root[data-theme="minecraft"] button.warn,
+:root[data-theme="minecraft"] button.danger { color: #fff; background: linear-gradient(#858a8f, #656a6f); border-color: #d5d8da; text-shadow: 1px 1px 0 #303236; box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 2px 0 rgba(0,0,0,.3); }
+:root[data-theme="minecraft"] button:hover,
+:root[data-theme="minecraft"] .linkButton:hover,
+:root[data-theme="minecraft"] .navButton:hover { background: linear-gradient(#9a9fa3, #777c81); }
 :root[data-theme="minecraft"] button.good,
 :root[data-theme="minecraft"] .linkButton.good { background: #477d3f; border-color: #91c65a; }
 :root[data-theme="minecraft"] button.warn { background: #765326; border-color: #d9a447; }
