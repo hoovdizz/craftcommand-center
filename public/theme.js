@@ -31,7 +31,14 @@
     } catch {}
     const safeUrl = url.replace(/["\\\r\n]/g, '');
     document.documentElement.dataset.background = selected;
-    document.documentElement.style.setProperty('--page-background-image', safeUrl ? `linear-gradient(rgba(10, 16, 14, .48), rgba(10, 16, 14, .48)), url("${safeUrl}")` : '');
+    const image = safeUrl ? `linear-gradient(rgba(10, 16, 14, .48), rgba(10, 16, 14, .48)), url("${safeUrl}")` : '';
+    document.documentElement.style.setProperty('--page-background-image', image);
+    if (document.body) {
+      document.body.style.backgroundImage = image;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundAttachment = 'fixed';
+    }
     localStorage.setItem('cccBackground', selected);
     if (selected === 'custom') localStorage.setItem('cccCustomBackground', String(customUrl || ''));
     document.querySelectorAll('[data-background-choice]').forEach(select => { select.value = selected; });
@@ -41,6 +48,7 @@
   applyTheme(localStorage.getItem('cccColorTheme') || 'deep-ocean');
   document.addEventListener('DOMContentLoaded', () => {
     applyTheme(localStorage.getItem('cccColorTheme') || 'deep-ocean');
+    applyBackground(localStorage.getItem('cccBackground') || 'default', localStorage.getItem('cccCustomBackground') || '');
     document.querySelectorAll('[data-color-theme]').forEach(select => {
       select.addEventListener('change', event => applyTheme(event.target.value));
     });

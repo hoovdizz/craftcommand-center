@@ -2,10 +2,10 @@ name: Validate and Publish Docker Image
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "development"]
     tags: ["v*.*.*"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "development"]
   workflow_dispatch:
 
 permissions:
@@ -51,6 +51,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
             type=ref,event=tag
             type=sha,prefix=sha-
 

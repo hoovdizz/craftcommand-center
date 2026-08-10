@@ -120,7 +120,7 @@ The included workflow publishes:
 ghcr.io/hoovdizz/craftcommand-center:latest
 ```
 
-It also creates version-tag and immutable SHA-tag images. See [BETA_TESTING.md](BETA_TESTING.md).
+It also creates a `development` image from the `development` branch, plus version-tag and immutable SHA-tag images. See [BETA_TESTING.md](BETA_TESTING.md).
 
 ## Install from GHCR on Unraid
 
@@ -145,6 +145,14 @@ ghcr.io/hoovdizz/craftcommand-center:latest
 ```
 
 Unraid can then pull updates with **Docker → Check for Updates** without rebuilding locally.
+
+To explicitly use the development image on Unraid, edit the container's **Repository** field to:
+
+```text
+ghcr.io/hoovdizz/craftcommand-center:development
+```
+
+Then choose **Apply** and **Check for Updates**. Use `:latest` for the stable `main` build.
 
 ## Install with Docker Desktop on Windows
 
@@ -174,7 +182,7 @@ This is the recommended setup for Windows users who are not running the Binhex U
 
 The dashboard container does not need the Docker socket for LAN/RCON mode. Do not add the Unraid-only `/var/run/docker.sock` mount to a Windows installation. The **Scan LAN** button checks the selected Bedrock UDP game port; if Docker Desktop's network translation prevents discovery, enter the server's LAN IP manually. The Windows host firewall and the Minecraft server firewall must allow the game and RCON ports from the local network.
 
-To update the image later:
+To update the stable `main` image later:
 
 ```powershell
 docker pull ghcr.io/hoovdizz/craftcommand-center:latest
@@ -183,7 +191,22 @@ docker rm craftcommand-center
 # Run the same docker run command above again; .\craftcommand-data preserves settings.
 ```
 
-The stock Bedrock Dedicated Server does not expose native RCON. For remote commands, use an RCON-capable wrapper/controller or use a Minecraft server implementation that supports RCON. Status discovery can still work through the Bedrock UDP protocol.
+To run the current `development` image instead, use this image name in the original `docker run` command:
+
+```powershell
+ghcr.io/hoovdizz/craftcommand-center:development
+```
+
+Then update it later with:
+
+```powershell
+docker pull ghcr.io/hoovdizz/craftcommand-center:development
+docker stop craftcommand-center
+docker rm craftcommand-center
+# Run the same docker run command again with :development.
+```
+
+Binhex's web console is a separate HTTP service on TCP `8222`, protected by `WEBUI_USER` and `WEBUI_PASS`. Those credentials are not RCON credentials. The **Binhex Windows / RCON** mode in CraftCommand Center requires a standard RCON listener and its password on a separate TCP port; pointing it at port `8222` will result in an RCON handshake timeout. The stock Bedrock Dedicated Server does not expose native RCON, so use an RCON-capable wrapper/controller or a server implementation that supports it. Status discovery can still work through the Bedrock UDP protocol.
 
 ## Persistent data
 

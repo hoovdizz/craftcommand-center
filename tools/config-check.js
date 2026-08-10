@@ -86,7 +86,7 @@ if (!serverSource.includes("session?.role === 'admin' && Array.isArray(copy.link
 if (!serverSource.includes("/^level-name\\s*=\\s*(.*?)\\s*$/mi")) throw new Error('Bedrock level-name discovery is missing');
 const dashboardHtml = fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8');
 const dashboardSource = fs.readFileSync(path.join(root, 'public', 'app.js'), 'utf8');
-const statusHtml = fs.readFileSync(path.join(root, 'public', 'status.html'), 'utf8');
+const statusHtml = fs.readFileSync(path.join(root, 'public', 'status.html'), 'utf8').replace(/\r\n/g, '\n');
 if (!dashboardHtml.includes('id="worldConnection"') || !dashboardSource.includes("request('/api/world')")) throw new Error('Dashboard world connection label is incomplete');
 if (!serverSource.includes("url.pathname === '/api/teleport-locations/update'") || !dashboardSource.includes("'/api/teleport-locations/update'")) {
   throw new Error('Teleport location in-place editing is incomplete');

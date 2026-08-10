@@ -951,10 +951,10 @@ function runRconCommand(command, cfg) {
   const settings = sanitizeConnectionSettings(cfg.connection || {});
   return new Promise(resolve => {
     if (!settings.host || !settings.rconPassword) { resolve({ ok: false, code: 1, stdout: '', stderr: 'RCON host or password is not configured', command, method: 'rcon' }); return; }
-    const socket = net.createConnection({ host: settings.host, port: settings.rconPort }); let buffer = Buffer.alloc(0); let authenticated = false; let settled = false;
+    const socket = net.createConnection({ host: settings.host, port: settings.rconPort }); let buffer = Buffer.alloc(0); let authenticated = false; let settled = false; let connected = false;
     const finish = result => { if (settled) return; settled = true; clearTimeout(timer); socket.destroy(); resolve(compactResult({ command, method: 'rcon', endpoint: `${settings.host}:${settings.rconPort}`, ...result }, cfg)); };
-    const timer = setTimeout(() => finish({ ok: false, code: 1, stdout: '', stderr: 'RCON connection timed out', timedOut: true }), Number(cfg.commandTimeoutMs || 15000));
-    socket.on('connect', () => socket.write(rconPacket(1, 3, settings.rconPassword)));
+    const timer = setTimeout(() => finish({ ok: false, code: 1, stdout: '', stderr: connected ? 'TCP connected, but the endpoint did not answer the RCON handshake. Check that this is the RCON port (not the Binhex web console port 8222) and that RCON is enabled.' : 'Could not connect to the RCON endpoint. Check the host, TCP port mapping, and Windows firewall.', timedOut: true }), Number(cfg.commandTimeoutMs || 15000));
+    socket.on('connect', () => { connected = true; socket.write(rconPacket(1, 3, settings.rconPassword)); });
     socket.on('error', err => finish({ ok: false, code: 1, stdout: '', stderr: err.message }));
     socket.on('data', chunk => {
       buffer = Buffer.concat([buffer, chunk]);
