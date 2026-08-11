@@ -30,7 +30,7 @@
     </nav>
   </header>
   <main>
-    <section class="card wide">
+    <section class="card wide" data-min-role="operator">
       <div class="sectionHeading"><div><h2>Connection Readiness</h2><p class="hint">Use this before changing settings. It checks the common causes of a blank page or commands that do nothing.</p></div><button id="runHelpDiagnostics" class="warn">🩺 Run Diagnostics</button></div>
       <div id="helpSummary" class="healthSummary">Checking…</div>
       <div id="helpChecks" class="diagnosticGrid"></div>
@@ -50,9 +50,9 @@
     <section class="card">
       <h2>Account Roles</h2>
       <div class="roleCards">
-        <article><strong>Viewer</strong><p>Can browse items, status, players, kits, diagnostics, and only their own activity. Cannot send commands.</p></article>
-        <article><strong>Operator</strong><p>Can give items, XP, send kits, refresh players, and repair the screen attachment.</p></article>
-        <article><strong>Admin</strong><p>Can also manage dashboard accounts, add manual players, create/delete custom kits, review all activity, and create/download server exports.</p></article>
+        <article><strong>Viewer</strong><p>Can view the dashboard, passive server status and health, players, item catalog, achievements, and only their own activity. Cannot send commands.</p></article>
+        <article><strong>Operator</strong><p>Can also use item, XP, kit, teleport, and time controls; refresh players and the console attachment; and run diagnostics.</p></article>
+        <article><strong>Admin</strong><p>Has full access to moderation, configuration, accounts, schedules, backups, and Minecraft lifecycle controls.</p></article>
       </div>
     </section>
     <section class="card wide">

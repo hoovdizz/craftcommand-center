@@ -150,8 +150,38 @@ function renderPlayers(data) {
   });
   if ([...select.options].some(o => o.value === previous)) select.value = previous;
   if (playerStatus) playerStatus.textContent = `${data.players.length} target(s) loaded. ${data.discoveredCount || 0} discovered, ${data.manualCount || 0} manually saved.`;
+  updateModerationControls();
+}
+function updateModerationControls() {
+  const player = target();
+  const specific = Boolean(player) && !player.startsWith('@');
+  document.querySelectorAll('[data-moderation]').forEach(button => { button.disabled = !can('admin') || !specific; });
+  const notice = $('#moderationResult');
+  if (notice && !specific) notice.textContent = 'Select a specific player to use moderation controls.';
+}
+const moderationLabels = { kick:'Kick', 'allowlist-add':'add to the allowlist', 'allowlist-remove':'remove from the allowlist', operator:'set to Operator', deop:'de-op and return to Member' };
+async function moderatePlayer(action, button) {
+  const player = target();
+  const label = moderationLabels[action];
+  if (!label || !player || player.startsWith('@')) return;
+  if (!confirm(`${label.charAt(0).toUpperCase()+label.slice(1)} ${player}?`)) return;
+  const old = button.textContent; button.disabled = true; button.textContent = 'Working...';
+  try {
+    const data = await request('/api/players/moderate', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action, player }) });
+    $('#moderationResult').textContent = data.message || `${label} completed for ${player}.`;
+  } catch (error) {
+    $('#moderationResult').textContent = `Moderation failed: ${error.message}`;
+  } finally { button.textContent = old; updateModerationControls(); }
 }
 async function loadPlayers() { const data = await request('/api/players'); renderPlayers(data); return data; }
+function renderPlayerHistory(data) {
+  const status = $('#playerHistoryStatus'); const list = $('#playerHistoryList'); const players = data.players || [];
+  if (status) status.textContent = `${data.scope === 'all' ? 'All players' : 'Your matching Minecraft player'} | ${players.length} record(s) | ${data.retentionDays || 90}-day session retention. Online status is the latest observation.`;
+  if (!list) return;
+  if (!players.length) { list.innerHTML = `<p class="hint">${data.scope === 'self' ? 'No connection history matches your CraftCommand username.' : 'No timestamped Bedrock connection events have been observed yet.'}</p>`; return; }
+  list.innerHTML = players.map(record => { const sessions=(record.sessions||[]).slice(-5).reverse();return `<article class="backupEntry"><div><strong>${escapeHtml(record.player)} ${record.online?'<span class="badge">Online</span>':'<span class="badge">Offline</span>'}</strong><span>Last seen: ${record.lastSeen?escapeHtml(formatTime(record.lastSeen)):'Unknown'} | Status checked: ${record.onlineObservedAt?escapeHtml(formatTime(record.onlineObservedAt)):'Not observed'}</span>${sessions.map(session=>`<span>Joined: ${session.joinedAt?escapeHtml(formatTime(session.joinedAt)):'Not present in retained logs'} | Left: ${session.leftAt?escapeHtml(formatTime(session.leftAt)):'Not detected'}</span>`).join('')}</div></article>`; }).join('');
+}
+async function loadPlayerHistory(){const data=await request('/api/player-history');renderPlayerHistory(data);return data;}
 async function loadStatus() { const data = await request('/api/status'); renderAttachment(data.attachment); return data; }
 function renderWorldConnection(world) {
   const element = $('#worldConnection');
@@ -551,6 +581,7 @@ async function initializeApp() {
   $('#displayMode')?.addEventListener('change',e=>setDisplayMode(e.target.value));
   populateCatalogInputs(); renderWorldTimeButtons(); renderTeleportLocations(); renderQuickItems(); renderXpButtons(); updateCustomHelp();
   await Promise.all([loadPlayers(),loadKits()]);
+  await loadPlayerHistory();
   document.querySelectorAll('[data-admin-nav]').forEach(el => el.classList.toggle('hidden', !can('admin')));
   const urlItem=new URLSearchParams(location.search).get('item'); if(urlItem){$('#customItem').value=urlItem;updateCustomHelp();$('#customItem').scrollIntoView({behavior:'smooth'});}
 }
@@ -565,7 +596,9 @@ $('#runDiagnostics')?.addEventListener('click', async e=>{const b=e.currentTarge
 $('#refreshAttachment')?.addEventListener('click',()=>api('/api/refresh-attachment',{}));
 $('#loadStatus')?.addEventListener('click',()=>loadStatus().then(show));
 $('#refreshPlayers').addEventListener('click',async e=>{const b=e.currentTarget,old=b.textContent;b.disabled=true;b.textContent='Pulling…';try{const data=await api('/api/players/refresh',{});renderPlayers(data);}finally{b.disabled=false;b.textContent=old;}});
-$('#target').addEventListener('change', renderTeleportLocations);
+$('#target').addEventListener('change',()=>{renderTeleportLocations();updateModerationControls();});
+$('#refreshPlayerHistory')?.addEventListener('click',async e=>{const b=e.currentTarget,old=b.textContent;b.disabled=true;b.textContent='Refreshing...';try{if(can('operator'))await request('/api/players/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});await loadPlayerHistory();}catch(error){$('#playerHistoryStatus').textContent=`Could not refresh history: ${error.message}`;}finally{b.disabled=false;b.textContent=old;}});
+document.querySelectorAll('[data-moderation]').forEach(button=>button.addEventListener('click',()=>moderatePlayer(button.dataset.moderation,button)));
 const addPlayer=async()=>{const input=$('#manualPlayer');const name=input.value.trim();if(!name)return show('Type a player name first.');const data=await api('/api/players/add',{name});renderPlayers(data);input.value='';};
 $('#addPlayer').addEventListener('click',addPlayer); $('#manualPlayer').addEventListener('keydown',e=>{if(e.key==='Enter')addPlayer();});
 $('#sendCustom').addEventListener('click',()=>api('/api/give',{target:target(),item:$('#customItem').value,amount:Number($('#customAmount').value)})); $('#customItem').addEventListener('input',updateCustomHelp);

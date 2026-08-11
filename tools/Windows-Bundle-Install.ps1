@@ -22,7 +22,8 @@
  - Prompts for CraftCommand latest or development
  - Preserves persistent Minecraft data
  - Preserves persistent CraftCommand data
- - Preserves existing usernames/passwords where possible
+ - Prompts for shared WebUI credentials
+ - Applies the credentials to Minecraft and CraftCommand Center
  - Removes old containers
  - Removes cached images
  - Pulls fresh images
@@ -81,7 +82,7 @@ $MinecraftPort = 19132
 $MinecraftPortV6 = 19133
 
 
-# Binhex defaults
+# Binhex values are replaced by the shared credential prompt.
 
 $MinecraftBackupHours = "12"
 
@@ -126,7 +127,8 @@ $CraftData = Join-Path `
 $CraftPort = 8223
 
 
-# Defaults only used if there is no existing CraftCommand container
+# These values seed the username prompt and are never deployed unchanged
+# without an explicit credential confirmation.
 
 $CraftUsername = "admin"
 
@@ -271,6 +273,32 @@ function Get-ContainerEnvironmentValue {
 
 
     return $Default
+
+}
+
+
+
+function ConvertFrom-SecureCredentialString {
+
+    param(
+        [Parameter(Mandatory = $true)]
+        [Security.SecureString]$SecureValue
+    )
+
+
+    $Pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecureValue)
+
+
+    try {
+
+        return [Runtime.InteropServices.Marshal]::PtrToStringBSTR($Pointer)
+
+    }
+    finally {
+
+        [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($Pointer)
+
+    }
 
 }
 
@@ -992,13 +1020,6 @@ if (Test-DockerContainerExists $MinecraftContainer) {
             $MinecraftWebUser
 
 
-    $MinecraftWebPassword = `
-        Get-ContainerEnvironmentValue `
-            $MinecraftContainer `
-            "WEBUI_PASS" `
-            $MinecraftWebPassword
-
-
     $MinecraftWebTitle = `
         Get-ContainerEnvironmentValue `
             $MinecraftContainer `
@@ -1042,12 +1063,6 @@ if (Test-DockerContainerExists $CraftContainer) {
             $CraftUsername
 
 
-    $CraftPassword = `
-        Get-ContainerEnvironmentValue `
-            $CraftContainer `
-            "CCC_PASSWORD" `
-            $CraftPassword
-
 }
 else {
 
@@ -1056,6 +1071,130 @@ else {
         -ForegroundColor DarkGray
 
 }
+
+
+
+# ====================================================================
+# 7B. CONFIGURE SHARED WEB CREDENTIALS
+# ====================================================================
+
+
+Write-Section "7B. Configure WebUI Credentials"
+
+
+Write-Host `
+    "These credentials will be used for both:" `
+    -ForegroundColor Cyan
+
+Write-Host "  - Binhex Minecraft WebUI console"
+
+Write-Host "  - CraftCommand Center administrator"
+
+Write-Host ""
+
+
+$SuggestedUsername = $CraftUsername
+
+
+do {
+
+    $EnteredUsername = Read-Host "Username [$SuggestedUsername]"
+
+
+    if ([string]::IsNullOrWhiteSpace($EnteredUsername)) {
+
+        $EnteredUsername = $SuggestedUsername
+
+    }
+
+
+    $EnteredUsername = $EnteredUsername.Trim()
+
+
+    if ($EnteredUsername -notmatch '^[A-Za-z0-9_.-]{3,32}$') {
+
+        Write-Host `
+            "Username must be 3-32 characters using letters, numbers, dots, dashes, or underscores." `
+            -ForegroundColor Yellow
+
+    }
+
+}
+until ($EnteredUsername -match '^[A-Za-z0-9_.-]{3,32}$')
+
+
+do {
+
+    $SecurePassword = Read-Host `
+        "Password (minimum 10 characters)" `
+        -AsSecureString
+
+
+    $EnteredPassword = ConvertFrom-SecureCredentialString $SecurePassword
+
+
+    if ($EnteredPassword.Length -lt 10) {
+
+        Write-Host `
+            "Password must contain at least 10 characters." `
+            -ForegroundColor Yellow
+
+        continue
+
+    }
+
+
+    $SecureConfirmation = Read-Host `
+        "Confirm password" `
+        -AsSecureString
+
+
+    $ConfirmedPassword = ConvertFrom-SecureCredentialString $SecureConfirmation
+
+
+    if ($EnteredPassword -cne $ConfirmedPassword) {
+
+        Write-Host `
+            "Passwords do not match. Try again." `
+            -ForegroundColor Yellow
+
+        $EnteredPassword = $null
+
+    }
+
+}
+until (
+    $EnteredPassword -and
+    $EnteredPassword.Length -ge 10 -and
+    $EnteredPassword -ceq $ConfirmedPassword
+)
+
+
+$MinecraftWebUser = $EnteredUsername
+
+$MinecraftWebPassword = $EnteredPassword
+
+$CraftUsername = $EnteredUsername
+
+$CraftPassword = $EnteredPassword
+
+
+Write-Host ""
+
+Write-Host `
+    "Shared username configured: $EnteredUsername" `
+    -ForegroundColor Green
+
+Write-Host `
+    "Password accepted and will not be displayed." `
+    -ForegroundColor Green
+
+
+$SecurePassword = $null
+
+$SecureConfirmation = $null
+
+$ConfirmedPassword = $null
 
 
 

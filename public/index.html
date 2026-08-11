@@ -67,6 +67,23 @@
           <button id="addPlayer" class="good">➕ Add Player</button>
         </div>
         <p id="playerStatus" class="hint">Loading known players…</p>
+        <div id="playerModeration" class="quickItemManager" data-min-role="admin">
+          <div class="sectionHeading"><div><h3>Player moderation</h3><p class="hint">Actions apply to the specific player selected above. Bedrock provides operator/de-op commands, but no supported commands for Visitor, ban, or unban.</p></div></div>
+          <div class="buttonRow moderationActions">
+            <button type="button" class="warn" data-moderation="kick">Kick</button>
+            <button type="button" class="good" data-moderation="allowlist-add">Allowlist</button>
+            <button type="button" class="danger" data-moderation="allowlist-remove">Remove from allowlist</button>
+            <button type="button" class="warn" data-moderation="operator">Set Operator</button>
+            <button type="button" data-moderation="deop">Set Member / De-op</button>
+          </div>
+          <p id="moderationResult" class="notice">Ready.</p>
+        </div>
+      </section>
+
+      <section class="card wide">
+        <div class="sectionHeading"><div><h2>Player connection history</h2><p class="hint">Derived from retained Bedrock join/leave log lines. Missing log lines are shown as unknown rather than estimated.</p></div><button id="refreshPlayerHistory" class="compact" type="button">Refresh</button></div>
+        <p id="playerHistoryStatus" class="hint">Loading connection history...</p>
+        <div id="playerHistoryList" class="backupList"></div>
       </section>
 
       <section class="card wide" data-min-role="operator">

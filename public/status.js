@@ -129,13 +129,13 @@ async function init() {
   if (!auth.authenticated) { location.href = '/'; return; }
   currentUser = { username: auth.username || '', role: auth.role || 'viewer' };
   applyRole();
-  const [config] = await Promise.all([request('/api/config'), loadDiagnostics(), loadOverview(false)]);
+  const [config] = await Promise.all([request('/api/config'), can('operator') ? loadDiagnostics() : Promise.resolve(null), loadOverview(false)]);
   document.body.dataset.display = localStorage.getItem('cccDisplayMode') || config.display?.defaultMode || 'both';
   if (can('admin')) renderServerLinks(config);
   if (can('admin')) renderConnection(config.connection || {});
 }
 $('#connectionForm')?.addEventListener('submit', async event => { event.preventDefault(); const button = event.submitter || event.currentTarget.querySelector('button[type="submit"]'); const mode = $('#connectionMode'); const container = $('#connectionContainerName') || $('#connectionHost'); if (!button || !mode || !container) { setResult('This Status page is outdated. Refresh the page or clear the site cache, then try again.'); return; } button.disabled = true; try { const body = { mode: mode.value, containerName: container.value.trim() }; const data = await request('/api/connection/save', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) }); renderConnection(data.connection); renderAttachment(data.attachment); setResult(data.attachment?.ok ? 'Docker connection saved and screen attached.' : `Saved, but attachment failed: ${data.attachment?.error || 'unknown error'}`); } catch (error) { setResult(`Connection failed: ${error.message}`); } finally { button.disabled = false; } });
-$('#runDiagnostics').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await loadDiagnostics(); setResult('Diagnostics refreshed.'); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });
+$('#runDiagnostics')?.addEventListener('click', async event => { if (!can('operator')) return; const button = event.currentTarget; button.disabled = true; try { await loadDiagnostics(); setResult('Diagnostics refreshed.'); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });
 $('#refreshOverview').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await loadOverview(true); setResult('Server status refreshed.'); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });
 $('#refreshAttachment').addEventListener('click', async event => { if (!can('operator')) return; const button = event.currentTarget; button.disabled = true; try { const data = await request('/api/refresh-attachment', { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}' }); renderAttachment(data.attachment); setResult(`Attached to ${data.attachment.activeScreenSession}`); } catch (error) { setResult(error.message); } finally { button.disabled = false; } });
 init().catch(error => { setResult(`Could not load status: ${error.message}`); });

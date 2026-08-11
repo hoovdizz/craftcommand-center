@@ -1,7 +1,7 @@
-const CACHE_NAME = 'craftcommand-center-v2.3.0-beta.18';
+const CACHE_NAME = 'craftcommand-center-v2.3.0-beta.18-role-model';
 const STATIC_ASSETS = [
   '/', '/index.html', '/status.html', '/items.html', '/achievements.html', '/activity.html', '/accounts.html', '/help.html',
-  '/styles.css', '/theme.js', '/app.js', '/status.js', '/catalog.js', '/achievements.js', '/achievements.json', '/activity.js', '/accounts.js', '/help.js',
+  '/styles.css', '/theme.js', '/app.js', '/status.js', '/catalog.js', '/achievements.js', '/achievements.json', '/activity.js', '/accounts.js', '/scheduler.js', '/help.js',
   '/item-icons.js', '/pwa.js', '/manifest.webmanifest', '/icon.png', '/favicon.png',
   '/apple-touch-icon.png', '/app-icon-192.png', '/app-icon-512.png'
 ];

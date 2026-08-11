@@ -51,20 +51,36 @@
       <p id="worldNameResult" class="notice">Loading current world name…</p>
     </section>
     <section class="card wide">
-      <h2>Common Minecraft server properties</h2>
-      <p class="hint">Values are synced from the server's <code>server.properties</code> file. Settings supported by the live Bedrock console can be applied here; file-only settings are read-only.</p>
+      <h2>Safe server.properties editor</h2>
+      <p class="hint">Only supported Bedrock settings found in the current file are shown. Saving preserves comments and unsupported settings, updates only changed values, and creates a timestamped backup.</p>
       <form id="serverPropertiesForm">
-        <details><summary>Performance optimization</summary><p class="hint"><code>view-distance</code>, <code>tick-distance</code>, <code>max-threads</code>, and <code>player-idle-timeout</code> balance simulation range, CPU use, and memory.</p><div id="performanceProperties" class="formGrid twoCol"></div></details>
-        <details><summary>Security</summary><p class="hint"><code>allow-list</code>, <code>online-mode</code>, <code>texturepack-required</code>, and <code>allow-cheats</code> control who can join and which server privileges are enabled.</p><div id="securityProperties" class="formGrid twoCol"></div></details>
-        <details><summary>Core gameplay</summary><p class="hint"><code>gamemode</code>, <code>difficulty</code>, <code>force-gamemode</code>, and <code>default-player-permission-level</code> define the default player experience.</p><div id="gameplayProperties" class="formGrid twoCol"></div></details>
-        <button class="good" type="submit">Apply Live Settings</button>
+        <details open><summary>General</summary><div id="generalProperties" class="formGrid twoCol"></div></details>
+        <details><summary>Gameplay</summary><div id="gameplayProperties" class="formGrid twoCol"></div></details>
+        <details><summary>Network</summary><div id="networkProperties" class="formGrid twoCol"></div></details>
+        <details><summary>Performance</summary><div id="performanceProperties" class="formGrid twoCol"></div></details>
+        <details><summary>Security</summary><div id="securityProperties" class="formGrid twoCol"></div></details>
+        <button class="good" type="submit">Review & Save Changes</button>
       </form>
       <p id="serverPropertiesResult" class="notice">Loading server propertiesâ€¦</p>
-      <div id="motdForm" class="formGrid twoCol">
-        <label>Server name / MOTD<input id="serverMotd" maxlength="63" placeholder="Dedicated Server" readonly /></label>
-      </div>
-      <p class="hint">Bedrock uses the <code>server-name</code> property for the name shown in the server list. The console cannot change it, so it is shown for reference only.</p>
       <div class="buttonRow"><button id="restartMinecraft" class="warn" type="button">Restart Minecraft Container</button><span id="restartMinecraftResult" class="notice">Live setting commands do not require a restart.</span></div>
+    </section>
+    <section class="card wide">
+      <div class="sectionHeading"><div><h2>Scheduled Actions</h2><p class="hint">Run routine Minecraft maintenance without an external cron service. Times use the CraftCommand container's local timezone.</p></div><button id="newSchedule" class="good" type="button">New Schedule</button></div>
+      <div id="scheduleList" class="backupList"><p class="hint">Loading schedules...</p></div>
+      <form id="scheduleForm" class="formGrid twoCol hidden">
+        <input id="scheduleId" type="hidden" />
+        <label>Name<input id="scheduleName" maxlength="80" required /></label>
+        <label class="checkboxLabel"><input id="scheduleEnabled" type="checkbox" checked /> Enabled</label>
+        <label>Action<select id="scheduleAction"><option value="minecraft-backup">Minecraft backup</option><option value="minecraft-restart">Minecraft restart</option><option value="message">Server message / say</option><option value="day">Day</option><option value="night">Night</option><option value="save">Save</option><option value="player-refresh">Player refresh</option><option value="minecraft-command">Custom safe Minecraft command</option><option value="craftcommand-backup">CraftCommand backup/export</option></select></label>
+        <label>Schedule type<select id="scheduleType"><option value="daily">Daily</option><option value="weekdays">Specific weekdays</option><option value="weekly">Weekly</option><option value="once">One-time</option></select></label>
+        <label>Time<input id="scheduleTime" type="time" value="03:00" required /></label>
+        <label id="scheduleRunAtWrap" class="hidden">Run once at<input id="scheduleRunAt" type="datetime-local" /></label>
+        <fieldset id="scheduleDays"><legend>Day(s)</legend><div class="buttonRow"><label><input type="checkbox" value="0" /> Sun</label><label><input type="checkbox" value="1" /> Mon</label><label><input type="checkbox" value="2" /> Tue</label><label><input type="checkbox" value="3" /> Wed</label><label><input type="checkbox" value="4" /> Thu</label><label><input type="checkbox" value="5" /> Fri</label><label><input type="checkbox" value="6" /> Sat</label></div></fieldset>
+        <label id="scheduleCommandWrap" class="hidden">Command or message<input id="scheduleCommand" maxlength="200" /></label>
+        <label id="scheduleWarningWrap" class="hidden">Warning time (minutes)<input id="scheduleWarning" type="number" min="0" max="1440" value="0" /></label>
+        <div class="buttonRow"><button class="good" type="submit">Save Schedule</button><button id="cancelSchedule" type="button">Cancel</button></div>
+      </form>
+      <p id="scheduleResult" class="notice">Ready.</p>
     </section>
     <section class="card wide">
       <h2>Internet reachability</h2>
@@ -86,9 +102,9 @@
     <section class="card wide">
       <h2>Access levels</h2>
       <div class="roleCards">
-        <article><strong>Viewer</strong><p>Can view status, known players, kits, the item catalog, and only their own activity. Cannot send commands.</p></article>
-        <article><strong>Operator</strong><p>Can send item, XP, and kit commands, refresh player/attachment data, and view only their own activity.</p></article>
-        <article><strong>Admin</strong><p>Can also manage accounts, manually save players, create/delete kits, and clear activity.</p></article>
+        <article><strong>Viewer</strong><p>Can view dashboard data, passive status and health, players, catalog, achievements, and only their own activity. Cannot send commands.</p></article>
+        <article><strong>Operator</strong><p>Can also use item, XP, kit, teleport, and time controls; refresh players and the attachment; and run diagnostics.</p></article>
+        <article><strong>Admin</strong><p>Has full access to moderation, configuration, accounts, schedules, backups, and lifecycle controls.</p></article>
       </div>
     </section>
     <section class="card wide">
@@ -120,5 +136,6 @@
   </main>
   <script src="/pwa.js?v=2.3.0-beta.18"></script>
   <script src="/accounts.js?v=2.3.0-beta.18"></script>
+  <script src="/scheduler.js?v=2.3.0-beta.18"></script>
 </body>
 </html>

@@ -231,7 +231,11 @@ function roleAtLeast(session, minimum) {
 }
 
 function requireRole(session, minimum) {
-  if (!roleAtLeast(session, minimum)) throw new Error(`This action requires the ${minimum} role`);
+  if (!roleAtLeast(session, minimum)) {
+    const error = new Error(`This action requires the ${minimum} role`);
+    error.statusCode = 403;
+    throw error;
+  }
 }
 
 const sessions = new Map();
@@ -1146,26 +1150,40 @@ done`;
 }
 
 const SERVER_PROPERTY_DEFINITIONS = {
-  performance: [
-    { key: 'view-distance', label: 'View distance', type: 'number', min: 5, max: 96, default: 32, description: 'Simulation/render range for players.' },
-    { key: 'tick-distance', label: 'Tick distance', type: 'number', min: 4, max: 96, default: 4, description: 'Range where the world continues ticking.' },
-    { key: 'max-threads', label: 'Max threads', type: 'number', min: 1, max: 64, default: 8, description: 'Maximum worker threads used by the server.' },
-    { key: 'player-idle-timeout', label: 'Player idle timeout', type: 'number', min: 0, max: 1440, default: 30, description: 'Minutes before an idle player is disconnected; 0 disables it.' }
-  ],
-  security: [
-    { key: 'allow-list', label: 'Allow-list', type: 'boolean', default: false, command: value => `allowlist ${value === 'true' ? 'on' : 'off'}`, description: 'Only allow listed players to join.' },
-    { key: 'online-mode', label: 'Online mode', type: 'boolean', default: true, description: 'Require authenticated Xbox accounts.' },
-    { key: 'texturepack-required', label: 'Texture pack required', type: 'boolean', default: false, description: 'Require the configured texture pack.' },
-    { key: 'allow-cheats', label: 'Allow cheats', type: 'boolean', default: false, description: 'Enable commands and cheat gameplay.' }
+  general: [
+    { key: 'server-name', label: 'Server name', type: 'text', maxLength: 63 },
+    { key: 'gamemode', label: 'Game mode', type: 'select', options: ['survival', 'creative', 'adventure'] },
+    { key: 'difficulty', label: 'Difficulty', type: 'select', options: ['peaceful', 'easy', 'normal', 'hard'] },
+    { key: 'max-players', label: 'Max players', type: 'number', min: 1, max: 1000 }
   ],
   gameplay: [
-    { key: 'gamemode', label: 'Game mode', type: 'select', options: ['survival', 'creative', 'adventure', 'spectator'], default: 'survival', command: value => `gamemode ${value} @a`, description: 'Game mode for currently online players.' },
-    { key: 'difficulty', label: 'Difficulty', type: 'select', options: ['peaceful', 'easy', 'normal', 'hard'], default: 'normal', command: value => `difficulty ${value}`, description: 'Current world difficulty.' },
-    { key: 'force-gamemode', label: 'Force game mode', type: 'boolean', default: false, description: 'Force players into the default game mode.' },
-    { key: 'default-player-permission-level', label: 'Default player permission', type: 'select', options: ['visitor', 'member', 'operator'], default: 'member', description: 'Permission level assigned to new players.' }
+    { key: 'allow-cheats', label: 'Allow cheats', type: 'boolean' },
+    { key: 'force-gamemode', label: 'Force game mode', type: 'boolean' },
+    { key: 'default-player-permission-level', label: 'Default player permission', type: 'select', options: ['visitor', 'member', 'operator'] },
+    { key: 'level-name', label: 'Level name', type: 'text', maxLength: 64 },
+    { key: 'level-seed', label: 'Level seed', type: 'text', maxLength: 128 },
+    { key: 'texturepack-required', label: 'Texture pack required', type: 'boolean' },
+    { key: 'content-log-file-enabled', label: 'Content log file', type: 'boolean' }
+  ],
+  network: [
+    { key: 'server-port', label: 'IPv4 port', type: 'number', min: 1, max: 65535 },
+    { key: 'server-portv6', label: 'IPv6 port', type: 'number', min: 1, max: 65535 },
+    { key: 'enable-lan-visibility', label: 'LAN visibility', type: 'boolean' },
+    { key: 'compression-threshold', label: 'Compression threshold', type: 'number', min: 0, max: 65535 },
+    { key: 'compression-algorithm', label: 'Compression algorithm', type: 'select', options: ['zlib', 'snappy'] }
+  ],
+  performance: [
+    { key: 'view-distance', label: 'View distance', type: 'number', min: 5, max: 96 },
+    { key: 'tick-distance', label: 'Tick distance', type: 'number', min: 4, max: 96 },
+    { key: 'player-idle-timeout', label: 'Player idle timeout', type: 'number', min: 0, max: 1440 },
+    { key: 'max-threads', label: 'Max threads', type: 'number', min: 0, max: 256 }
+  ],
+  security: [
+    { key: 'online-mode', label: 'Online mode', type: 'boolean' },
+    { key: 'allow-list', label: 'Allow list', type: 'boolean' }
   ]
 };
-const SERVER_PROPERTY_KEYS = [...Object.values(SERVER_PROPERTY_DEFINITIONS).flat().map(definition => definition.key), 'server-name'];
+const SERVER_PROPERTY_KEYS = Object.values(SERVER_PROPERTY_DEFINITIONS).flat().map(definition => definition.key);
 
 function parseServerProperties(content) {
   const values = {};
@@ -1176,20 +1194,29 @@ function parseServerProperties(content) {
   return values;
 }
 
-async function readServerProperties(cfg) {
+async function findServerProperties(cfg) {
   const container = configuredMinecraftContainer(cfg);
   const shell = String.raw`set +e
 for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
   [ -d "$p" ] || continue
   FILE=$(find "$p" -maxdepth 6 -iname 'server.properties' -type f -print -quit 2>/dev/null || true)
-  [ -n "$FILE" ] && { cat "$FILE"; exit 0; }
+  [ -n "$FILE" ] && { printf '%s\n' "$FILE"; cat "$FILE"; exit 0; }
 done
 echo 'server.properties was not found' >&2
 exit 2`;
   const result = await runDocker(['exec', '-u', 'root', container, 'bash', '-lc', shell], 10000);
   if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Could not read server.properties').trim());
-  const definitions = Object.fromEntries(Object.entries(SERVER_PROPERTY_DEFINITIONS).map(([category, entries]) => [category, entries.map(({ command, ...definition }) => ({ ...definition, liveEditable: typeof command === 'function' }))]));
-  return { values: parseServerProperties(result.stdout), definitions };
+  const newline = result.stdout.indexOf('\n');
+  const file = result.stdout.slice(0, newline).trim();
+  if (!file.startsWith('/') || /[\r\n]/.test(file)) throw new Error('Invalid server.properties path');
+  return { container, file, content: result.stdout.slice(newline + 1) };
+}
+
+async function readServerProperties(cfg) {
+  const found = await findServerProperties(cfg);
+  const values = parseServerProperties(found.content);
+  const definitions = Object.fromEntries(Object.entries(SERVER_PROPERTY_DEFINITIONS).map(([category, entries]) => [category, entries.filter(definition => values[definition.key] !== undefined)]));
+  return { values, definitions, file: found.file };
 }
 
 function validateServerPropertyValues(input) {
@@ -1204,30 +1231,145 @@ function validateServerPropertyValues(input) {
       const number = Number(raw);
       if (!Number.isInteger(number) || number < definition.min || number > definition.max) throw new Error(`${definition.label} must be a whole number from ${definition.min} to ${definition.max}`);
       values[definition.key] = String(number);
-    } else {
+    } else if (definition.type === 'select') {
       if (!definition.options.includes(raw.toLowerCase())) throw new Error(`${definition.label} has an invalid value`);
       values[definition.key] = raw.toLowerCase();
+    } else {
+      if (!raw || raw.length > definition.maxLength || /[\r\n=]/.test(raw)) throw new Error(`${definition.label} has an invalid value`);
+      values[definition.key] = raw;
     }
   }
-  if (!Object.keys(values).length && input['server-name'] === undefined) throw new Error('No server properties were supplied');
+  if (!Object.keys(values).length) throw new Error('No server properties were supplied');
   return values;
 }
 
-async function applyServerPropertyCommands(cfg, input) {
+function updateServerPropertiesContent(content, changes) {
+  const remaining = new Map(Object.entries(changes));
+  const newline = String(content).includes('\r\n') ? '\r\n' : '\n';
+  const lines = String(content).split(/\r?\n/).map(line => {
+    const match = line.match(/^\s*([^#;:=\s]+)\s*=/);
+    if (!match || !remaining.has(match[1])) return line;
+    const value = remaining.get(match[1]); remaining.delete(match[1]);
+    return `${match[1]}=${value}`;
+  });
+  for (const [key, value] of remaining) lines.push(`${key}=${value}`);
+  return lines.join(newline);
+}
+
+async function saveServerProperties(cfg, input) {
   const values = validateServerPropertyValues(input);
-  const definitions = Object.values(SERVER_PROPERTY_DEFINITIONS).flat();
-  const requested = Object.entries(values).map(([key, value]) => ({ definition: definitions.find(item => item.key === key), value }));
-  const unsupported = requested.filter(item => typeof item.definition?.command !== 'function').map(item => item.definition?.label || item.definition?.key);
-  if (input['server-name'] !== undefined) unsupported.push('Server name / MOTD');
-  if (unsupported.length) throw new Error(`${unsupported.join(', ')} cannot be changed through the live server console`);
-  const commands = requested.map(item => item.definition.command(item.value));
-  if (!commands.length) throw new Error('No live-editable server settings were supplied');
-  const result = await runMinecraftCommands(commands, cfg);
-  if (!result.ok) {
-    const failed = result.results.find(entry => !entry.ok);
-    throw new Error(stripAnsi(failed?.stderr || failed?.stdout || 'Could not apply server settings through the console').trim());
+  if (input.confirmed !== true) throw new Error('Admin confirmation is required');
+  const found = await findServerProperties(cfg);
+  const current = parseServerProperties(found.content);
+  const changes = Object.fromEntries(Object.entries(values).filter(([key, value]) => current[key] !== value));
+  if (!Object.keys(changes).length) throw new Error('No server property values changed');
+  const updated = updateServerPropertiesContent(found.content, changes);
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const script = 'set -eu; f="$1"; b="$f.bak.$2"; t="$f.tmp.$$"; cp -- "$f" "$b"; base64 -d > "$t"; chmod --reference="$f" "$t" 2>/dev/null || true; chown --reference="$f" "$t" 2>/dev/null || true; mv -f -- "$t" "$f"; printf "%s" "$b"';
+  const result = await runDocker(['exec', '-i', '-u', 'root', found.container, 'bash', '-c', script, 'ccc-properties', found.file, stamp], 15000, Buffer.from(updated, 'utf8').toString('base64'));
+  if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Could not save server.properties').trim());
+  worldIdentityCache = null;
+  return { changes: Object.entries(changes).map(([key, value]) => ({ key, from: current[key] ?? null, to: value })), backup: result.stdout.trim(), restartRequired: true };
+}
+
+const SCHEDULE_ACTIONS = ['minecraft-backup', 'minecraft-restart', 'message', 'day', 'night', 'save', 'player-refresh', 'minecraft-command', 'craftcommand-backup'];
+const SCHEDULE_TYPES = ['daily', 'weekdays', 'weekly', 'once'];
+let schedulerRunning = false;
+
+function schedulesPath() { return path.join(DEFAULT_DATA_DIR, 'schedules.json'); }
+function atomicWriteJson(filePath, value) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  const temp = `${filePath}.tmp-${process.pid}-${crypto.randomBytes(4).toString('hex')}`;
+  fs.writeFileSync(temp, `${JSON.stringify(value, null, 2)}\n`, { encoding: 'utf8', mode: 0o600 });
+  fs.renameSync(temp, filePath);
+}
+function readSchedules() {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(schedulesPath(), 'utf8'));
+    return Array.isArray(parsed.schedules) ? parsed.schedules : [];
+  } catch { return []; }
+}
+function writeSchedules(schedules) { atomicWriteJson(schedulesPath(), { schedules, updatedAt: new Date().toISOString() }); }
+function safeScheduledCommand(value) {
+  const command = String(value || '').trim().replace(/^\//, '');
+  if (!command || command.length > 200 || !/^[A-Za-z0-9_:@ .,/"'\-]+$/.test(command)) throw new Error('Minecraft command contains blocked characters');
+  if (/^(stop|reload|permission|op|deop)\b/i.test(command)) throw new Error('That Minecraft command is not allowed in schedules');
+  return command;
+}
+function normalizeSchedule(input, existing = {}) {
+  const name = String(input.name || '').trim();
+  if (!name || name.length > 80) throw new Error('Schedule name must be 1 to 80 characters');
+  const action = String(input.action || '');
+  const scheduleType = String(input.scheduleType || 'daily');
+  if (!SCHEDULE_ACTIONS.includes(action)) throw new Error('Unsupported scheduled action');
+  if (!SCHEDULE_TYPES.includes(scheduleType)) throw new Error('Unsupported schedule type');
+  const time = String(input.time || '');
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) throw new Error('Time must use HH:MM');
+  let days = Array.isArray(input.days) ? [...new Set(input.days.map(Number))].filter(day => Number.isInteger(day) && day >= 0 && day <= 6) : [];
+  if (scheduleType === 'weekly') days = days.slice(0, 1);
+  if (['weekdays', 'weekly'].includes(scheduleType) && !days.length) throw new Error('Select at least one weekday');
+  let runAt = null;
+  if (scheduleType === 'once') {
+    runAt = new Date(input.runAt);
+    if (!Number.isFinite(runAt.getTime()) || runAt.getTime() <= Date.now()) throw new Error('One-time schedule must be in the future');
+    runAt = runAt.toISOString();
   }
-  return { commands };
+  const command = ['message', 'minecraft-command'].includes(action) ? safeScheduledCommand(action === 'message' ? `say ${String(input.command || '').trim()}` : input.command) : '';
+  const warningMinutes = action === 'minecraft-restart' ? Math.max(0, Math.min(1440, Number(input.warningMinutes || 0))) : 0;
+  if (!Number.isInteger(warningMinutes)) throw new Error('Warning time must be whole minutes');
+  return { id: existing.id || crypto.randomUUID(), name, enabled: input.enabled !== false, action, scheduleType, time, days, runAt, command, warningMinutes, createdAt: existing.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString(), lastRun: existing.lastRun || null, lastResult: existing.lastResult || null, lastOk: existing.lastOk ?? null, lastSlot: existing.lastSlot || null };
+}
+function nextScheduleRun(schedule, from = new Date()) {
+  if (!schedule.enabled) return null;
+  if (schedule.scheduleType === 'once') return new Date(schedule.runAt) > from ? schedule.runAt : null;
+  const [hour, minute] = schedule.time.split(':').map(Number);
+  for (let offset = 0; offset <= 8; offset += 1) {
+    const candidate = new Date(from); candidate.setSeconds(0, 0); candidate.setDate(candidate.getDate() + offset); candidate.setHours(hour, minute, 0, 0);
+    if (candidate <= from) continue;
+    if (schedule.scheduleType === 'daily' || schedule.days.includes(candidate.getDay())) return candidate.toISOString();
+  }
+  return null;
+}
+function publicSchedules() { return readSchedules().map(schedule => ({ ...schedule, nextRun: nextScheduleRun(schedule) })); }
+async function executeSchedule(schedule, cfg) {
+  if (schedule.action === 'minecraft-backup' || schedule.action === 'craftcommand-backup') { const backup = await createServerBackup(cfg); return `Created ${backup.name}`; }
+  if (schedule.action === 'minecraft-restart') { await restartMinecraftContainer(cfg); return 'Restarted Minecraft container'; }
+  if (schedule.action === 'player-refresh') { const state = await discoverKnownPlayers(cfg, `schedule:${schedule.id}`); return `Refreshed ${state.players.length} players`; }
+  const commands = { day: 'time set day', night: 'time set night', save: 'save hold' };
+  const command = commands[schedule.action] || schedule.command;
+  const result = await runMinecraftCommand(command, cfg);
+  if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Minecraft command failed').trim());
+  if (schedule.action === 'save') await runMinecraftCommand('save resume', cfg);
+  return `Ran Minecraft command: ${command}`;
+}
+async function schedulerTick() {
+  if (schedulerRunning) return;
+  schedulerRunning = true;
+  try {
+    const cfg = loadConfig(); const schedules = readSchedules(); const now = new Date(); let changed = false;
+    for (const schedule of schedules) {
+      if (!schedule.enabled) continue;
+      if (schedule.action === 'minecraft-restart' && schedule.warningMinutes > 0) {
+        const warningFor = nextScheduleRun(schedule, new Date(now.getTime() - (schedule.warningMinutes * 60000) - 1000));
+        if (warningFor && Math.abs(new Date(warningFor).getTime() - now.getTime() - schedule.warningMinutes * 60000) < 60000 && schedule.lastWarningSlot !== warningFor) {
+          const result = await runMinecraftCommand(`say Server restarting in ${schedule.warningMinutes} minute${schedule.warningMinutes === 1 ? '' : 's'}`, cfg);
+          schedule.lastWarningSlot = warningFor; changed = true;
+          appendActivity(cfg, { username: 'scheduler', role: 'admin', action: 'scheduled-restart-warning', target: configuredMinecraftContainer(cfg), summary: `${schedule.name}: warning sent`, ok: result.ok, error: result.ok ? null : (result.stderr || result.error), commands: 1 });
+        }
+      }
+      const slot = schedule.scheduleType === 'once' ? schedule.runAt : `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${schedule.time}`;
+      const due = schedule.scheduleType === 'once' ? new Date(schedule.runAt) <= now : schedule.time === `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}` && (schedule.scheduleType === 'daily' || schedule.days.includes(now.getDay()));
+      if (!due || schedule.lastSlot === slot) continue;
+      schedule.lastSlot = slot; schedule.lastRun = now.toISOString(); changed = true;
+      try { schedule.lastResult = await executeSchedule(schedule, cfg); schedule.lastOk = true; }
+      catch (error) { schedule.lastResult = error.message; schedule.lastOk = false; }
+      if (schedule.scheduleType === 'once') schedule.enabled = false;
+      appendActivity(cfg, { username: 'scheduler', role: 'admin', action: `scheduled-${schedule.action}`, target: configuredMinecraftContainer(cfg), summary: `${schedule.name}: ${schedule.lastResult}`, ok: schedule.lastOk, error: schedule.lastOk ? null : schedule.lastResult, commands: 1 });
+      writeSchedules(schedules);
+    }
+    if (changed) writeSchedules(schedules);
+  } catch (error) { console.log(`Scheduler tick failed: ${error.message}`); }
+  finally { schedulerRunning = false; }
 }
 
 async function restartMinecraftContainer(cfg) {
@@ -1730,6 +1872,8 @@ async function discoverKnownPlayers(cfg, reason = 'manual') {
     const map = new Map();
     const sources = [];
     const errors = [];
+    const connectionEvents = [];
+    let observedOnlinePlayers = null;
 
     for (const p of cfg.players || []) {
       if (p && p.target && !String(p.target).startsWith('@')) addPlayer(map, p.target, 'config.json');
@@ -1745,10 +1889,12 @@ async function discoverKnownPlayers(cfg, reason = 'manual') {
           throw new Error(`Minecraft container is not running or not found: ${container}`);
         }
         const tail = String(Number(discoveryCfg.dockerLogTail || 50000));
-        const logs = await runDocker(['logs', '--tail', tail, container], Number(discoveryCfg.dockerLogTimeoutMs || 12000));
+        const logs = await runDocker(['logs', '--timestamps', '--tail', tail, container], Number(discoveryCfg.dockerLogTimeoutMs || 12000));
         if (logs.ok || logs.stdout || logs.stderr) {
-          parsePlayersFromLogs(`${logs.stdout || ''}\n${logs.stderr || ''}`, map);
-          sources.push(`docker logs --tail ${tail}`);
+          const logText = `${logs.stdout || ''}\n${logs.stderr || ''}`;
+          parsePlayersFromLogs(logText, map);
+          connectionEvents.push(...parsePlayerConnectionEvents(logText));
+          sources.push(`docker logs --timestamps --tail ${tail}`);
         } else {
           errors.push(`docker logs failed: ${stripAnsi(logs.stderr || logs.stdout || '').trim()}`);
         }
@@ -1758,8 +1904,10 @@ async function discoverKnownPlayers(cfg, reason = 'manual') {
         const listCfg = { ...cfg, showRawOutput: true, commandTimeoutMs: Number(discoveryCfg.onlineListTimeoutMs || cfg.commandTimeoutMs || 15000) };
         const online = await runMinecraftCommand('list', listCfg);
         if (online.ok || online.stdout || online.stderr) {
-          parsePlayersFromLogs(`${online.stdout || ''}
-${online.stderr || ''}`, map);
+          const onlineText = `${online.stdout || ''}\n${online.stderr || ''}`;
+          parsePlayersFromLogs(onlineText, map);
+          const parsedOnline = parseOnlinePlayerList(onlineText);
+          if (online.ok || parsedOnline.raw) observedOnlinePlayers = parsedOnline.players;
           sources.push('server list command');
         } else if (online.stderr) {
           errors.push(`online list failed: ${stripAnsi(online.stderr || '').trim()}`);
@@ -1791,6 +1939,8 @@ done`;
         .map(p => ({ label: p.label, target: p.target, sources: Array.from(p.sources).sort() }))
         .sort((a, b) => a.label.localeCompare(b.label));
 
+      updatePlayerHistory(connectionEvents, observedOnlinePlayers, started);
+
       playerState = {
         ok: true,
         checkedAt: started,
@@ -1801,6 +1951,7 @@ done`;
       };
       return playerState;
     } catch (err) {
+      if (connectionEvents.length) updatePlayerHistory(connectionEvents, null, started);
       playerState = {
         ok: false,
         checkedAt: started,
@@ -1872,7 +2023,7 @@ function safeDockerName(value, label = 'Docker name') {
   return v;
 }
 
-function runDocker(args, timeoutMs = 15000) {
+function runDocker(args, timeoutMs = 15000, input = null) {
   return new Promise((resolve) => {
     const child = spawn('docker', args);
     let stdout = '';
@@ -1884,6 +2035,7 @@ function runDocker(args, timeoutMs = 15000) {
     }, timeoutMs);
     child.stdout.on('data', d => stdout += d.toString());
     child.stderr.on('data', d => stderr += d.toString());
+    if (input !== null) child.stdin.end(input);
     child.on('error', err => {
       clearTimeout(timer);
       resolve({ ok: false, code: 1, stdout, stderr: err.message, timedOut });
@@ -1893,6 +2045,77 @@ function runDocker(args, timeoutMs = 15000) {
       resolve({ ok: code === 0, code, stdout, stderr, timedOut });
     });
   });
+}
+
+function playerHistoryPath() { return path.join(DEFAULT_DATA_DIR, 'player-history.json'); }
+function readPlayerHistory() {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(playerHistoryPath(), 'utf8'));
+    return { players: Array.isArray(parsed.players) ? parsed.players : [], updatedAt: parsed.updatedAt || null };
+  } catch { return { players: [], updatedAt: null }; }
+}
+function parsePlayerConnectionEvents(text) {
+  const events = [];
+  for (const rawLine of stripAnsi(text || '').split(/\r?\n/)) {
+    const stamped = stripDockerTimestamp(rawLine);
+    if (!stamped.at) continue;
+    const joined = stamped.body.match(/Player connected:\s*([^,\r\n]+)/i) || stamped.body.match(/\b([A-Za-z0-9_ .-]{2,32})\s+joined the game\b/i);
+    const left = stamped.body.match(/Player disconnected:\s*([^,\r\n]+)/i) || stamped.body.match(/\b([A-Za-z0-9_ .-]{2,32})\s+left the game\b/i);
+    const match = joined || left;
+    const player = normalizePlayerName(match?.[1]);
+    if (match && isValidPlayerName(player)) events.push({ player, type: joined ? 'join' : 'leave', at: stamped.at });
+  }
+  return events.sort((a, b) => String(a.at).localeCompare(String(b.at)));
+}
+function updatePlayerHistory(events, onlinePlayers = null, observedAt = new Date().toISOString()) {
+  const history = readPlayerHistory();
+  const map = new Map(history.players.map(record => [String(record.player || '').toLowerCase(), { ...record, sessions: Array.isArray(record.sessions) ? record.sessions : [] }]));
+  const getRecord = name => {
+    const key = name.toLowerCase();
+    if (!map.has(key)) map.set(key, { player: name, sessions: [], lastSeen: null, online: false, onlineObservedAt: null });
+    return map.get(key);
+  };
+  for (const event of events) {
+    const record = getRecord(event.player);
+    if (event.type === 'join') {
+      if (!record.sessions.some(session => session.joinedAt === event.at)) record.sessions.push({ joinedAt: event.at, leftAt: null });
+      record.lastSeen = !record.lastSeen || event.at > record.lastSeen ? event.at : record.lastSeen;
+    } else {
+      let session = [...record.sessions].reverse().find(item => item.joinedAt && !item.leftAt && item.joinedAt <= event.at);
+      if (session) session.leftAt = event.at;
+      else if (!record.sessions.some(item => item.leftAt === event.at)) record.sessions.push({ joinedAt: null, leftAt: event.at });
+      record.lastSeen = !record.lastSeen || event.at > record.lastSeen ? event.at : record.lastSeen;
+    }
+  }
+  if (Array.isArray(onlinePlayers)) {
+    const online = new Set(onlinePlayers.map(name => normalizePlayerName(name).toLowerCase()).filter(Boolean));
+    for (const record of map.values()) { record.online = online.has(record.player.toLowerCase()); record.onlineObservedAt = observedAt; }
+    for (const name of onlinePlayers) { const record = getRecord(normalizePlayerName(name)); record.online = true; record.onlineObservedAt = observedAt; record.lastSeen = observedAt; }
+  }
+  const cutoff = Date.now() - 90 * 24 * 60 * 60 * 1000;
+  const players = Array.from(map.values()).map(record => ({ ...record, sessions: record.sessions.filter(session => new Date(session.leftAt || session.joinedAt || 0).getTime() >= cutoff).slice(-100) })).filter(record => record.lastSeen || record.sessions.length).sort((a, b) => String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''))).slice(0, 500);
+  atomicWriteJson(playerHistoryPath(), { players, updatedAt: observedAt, retentionDays: 90 });
+  return { players, updatedAt: observedAt };
+}
+function playerHistoryForSession(session) {
+  const history = readPlayerHistory();
+  const admin = normalizeRole(session?.role) === 'admin';
+  const username = String(session?.username || '').trim().toLowerCase();
+  return { ...history, scope: admin ? 'all' : 'self', retentionDays: 90, players: admin ? history.players : history.players.filter(record => String(record.player || '').toLowerCase() === username) };
+}
+
+const PLAYER_MODERATION_ACTIONS = {
+  kick: { command: player => `kick ${player} Kicked by a CraftCommand administrator`, label: 'Kick' },
+  'allowlist-add': { command: player => `allowlist add ${player}`, label: 'Add to allowlist' },
+  'allowlist-remove': { command: player => `allowlist remove ${player}`, label: 'Remove from allowlist' },
+  operator: { command: player => `op ${player}`, label: 'Set Operator' },
+  deop: { command: player => `deop ${player}`, label: 'De-op' }
+};
+
+function moderationPlayer(value) {
+  const raw = normalizePlayerName(value);
+  if (!isValidPlayerName(raw) || raw.startsWith('@')) throw new Error('Select a specific Minecraft player');
+  return { name: raw, target: safeMinecraftTargetValue(raw) };
 }
 
 function parseMinecraftScreenSession(screenList, configured = 'auto') {
@@ -2237,6 +2460,11 @@ async function handleApi(req, res, url, cfg) {
       json(res, 200, { ok: true, ...(await readServerProperties(cfg)) }); return;
     }
 
+    if (req.method === 'GET' && url.pathname === '/api/schedules') {
+      requireRole(session, 'admin');
+      json(res, 200, { ok: true, schedules: publicSchedules(), actions: SCHEDULE_ACTIONS, scheduleTypes: SCHEDULE_TYPES }); return;
+    }
+
     if (req.method === 'GET' && url.pathname === '/api/players') {
       if (!playerState.checkedAt && (cfg.playerDiscovery || {}).autoRefreshOnPageLoad === true) {
         discoverKnownPlayers(cfg, 'page-load').catch(() => {});
@@ -2276,6 +2504,7 @@ async function handleApi(req, res, url, cfg) {
     }
 
     if (req.method === 'GET' && url.pathname === '/api/diagnostics') {
+      requireRole(session, 'operator');
       const diagnostics = await runDiagnostics(cfg, req);
       json(res, 200, diagnostics);
       return;
@@ -2308,9 +2537,41 @@ async function handleApi(req, res, url, cfg) {
 
     if (url.pathname === '/api/server-properties/save') {
       requireRole(session, 'admin');
-      const properties = await applyServerPropertyCommands(cfg, body);
-      appendActivity(cfg, { username: session.username, role: session.role, action: 'apply-server-settings', summary: `Applied ${properties.commands.length} live server setting command(s)`, ok: true, commands: properties.commands.length, ip: clientIp(req) });
+      const properties = await saveServerProperties(cfg, body);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'save-server-properties', target: configuredMinecraftContainer(cfg), summary: `Changed ${properties.changes.length} server.properties value(s); backup ${properties.backup}`, ok: true, ip: clientIp(req) });
       json(res, 200, { ok: true, ...properties }); return;
+    }
+
+    if (url.pathname === '/api/schedules/save') {
+      requireRole(session, 'admin');
+      const schedules = readSchedules(); const index = schedules.findIndex(item => item.id === String(body.id || ''));
+      const saved = normalizeSchedule(body, index >= 0 ? schedules[index] : {});
+      if (index >= 0) schedules[index] = saved; else schedules.push(saved);
+      writeSchedules(schedules);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'save-schedule', target: saved.name, summary: `Saved ${saved.action} schedule ${saved.name}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, schedule: saved, schedules: publicSchedules() }); return;
+    }
+
+    if (url.pathname === '/api/schedules/delete') {
+      requireRole(session, 'admin');
+      const schedules = readSchedules(); const index = schedules.findIndex(item => item.id === String(body.id || ''));
+      if (index < 0) throw new Error('Schedule not found');
+      const [deleted] = schedules.splice(index, 1); writeSchedules(schedules);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'delete-schedule', target: deleted.name, summary: `Deleted schedule ${deleted.name}`, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, deleted: deleted.id, schedules: publicSchedules() }); return;
+    }
+
+    if (url.pathname === '/api/schedules/run') {
+      requireRole(session, 'admin');
+      const schedules = readSchedules();
+      const schedule = schedules.find(item => item.id === String(body.id || ''));
+      if (!schedule) throw new Error('Schedule not found');
+      schedule.lastRun = new Date().toISOString();
+      let result; try { result = await executeSchedule(schedule, cfg); schedule.lastResult = result; schedule.lastOk = true; }
+      catch (error) { schedule.lastResult = error.message; schedule.lastOk = false; writeSchedules(schedules); appendActivity(cfg, { username: session.username, role: session.role, action: `scheduled-${schedule.action}`, target: schedule.name, summary: error.message, ok: false, error: error.message, ip: clientIp(req) }); throw error; }
+      writeSchedules(schedules);
+      appendActivity(cfg, { username: session.username, role: session.role, action: `scheduled-${schedule.action}`, target: schedule.name, summary: result, ok: true, ip: clientIp(req) });
+      json(res, 200, { ok: true, result }); return;
     }
 
     if (url.pathname === '/api/connection/scan') {
@@ -2417,6 +2678,36 @@ async function handleApi(req, res, url, cfg) {
       const addedPlayer = addManualPlayer(cfg, body.name || body.player || body.target);
       appendActivity(cfg, { username: session.username, role: session.role, action: 'add-player', target: addedPlayer.target, summary: `Added player ${addedPlayer.label}`, ok: true, ip: clientIp(req) });
       json(res, 200, publicPlayers(cfg));
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/player-history') {
+      const history = playerHistoryForSession(session);
+      json(res, 200, { ok: true, ...history, note: 'Join and leave times come from retained Bedrock log lines. Online status is the latest observed server-list result.' });
+      return;
+    }
+
+    if (url.pathname === '/api/players/moderate') {
+      requireRole(session, 'admin');
+      const action = String(body.action || '').trim();
+      const definition = PLAYER_MODERATION_ACTIONS[action];
+      if (!definition) throw new Error('Unsupported Bedrock moderation action');
+      const player = moderationPlayer(body.player || body.target);
+      const command = definition.command(player.target);
+      let result;
+      try {
+        result = await runMinecraftCommand(command, { ...cfg, showRawOutput: true });
+        const output = commandOutput(result);
+        const failed = !result.ok || /unknown command|syntax error|failed to execute|no targets matched|player not found|could not|does not exist|not in (?:the )?allowlist/i.test(output);
+        const error = failed ? (output.slice(-800) || `${definition.label} failed`) : null;
+        const summary = `${definition.label}: ${command}${output ? ` | ${output.slice(-160)}` : ' | command sent'}`;
+        appendActivity(cfg, { username: session.username, role: session.role, action: `moderation-${action}`, target: player.name, summary, ok: !failed, error, commands: failed ? 0 : 1, ip: clientIp(req) });
+        if (failed) { json(res, 500, { ok: false, error, command, result }); return; }
+      } catch (error) {
+        appendActivity(cfg, { username: session.username, role: session.role, action: `moderation-${action}`, target: player.name, summary: `${definition.label}: ${command}`, ok: false, error: error.message, commands: 0, ip: clientIp(req) });
+        throw error;
+      }
+      json(res, 200, { ok: true, action, player: player.name, command, message: `${definition.label} completed for ${player.name}`, result });
       return;
     }
 
@@ -2568,7 +2859,7 @@ async function handleApi(req, res, url, cfg) {
     appendActivity(cfg, { username: session.username, role: session.role, action: url.pathname === '/api/xp' ? 'give-xp' : url.pathname === '/api/give' ? 'give-item' : 'raw-command', target: body.target || null, summary: command, ok: result.ok, error: result.ok ? null : (result.stderr || result.error), commands: result.ok ? 1 : 0, ip: clientIp(req) });
     json(res, result.ok ? 200 : 500, result);
   } catch (err) {
-    json(res, 400, { ok: false, error: err.message });
+    json(res, Number(err.statusCode) || 400, { ok: false, error: err.message });
   }
 }
 
@@ -2620,4 +2911,7 @@ server.listen(PORT, '0.0.0.0', () => {
   } catch (err) {
     console.log(`Minecraft attachment startup check skipped: ${err.message}`);
   }
+  schedulerTick();
+  const schedulerTimer = setInterval(schedulerTick, 30000);
+  schedulerTimer.unref();
 });
