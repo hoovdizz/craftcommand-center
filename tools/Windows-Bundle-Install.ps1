@@ -39,6 +39,7 @@
 
  CraftCommand:
    C:\Docker\craftcommand-center\data
+   C:\Docker\craftcommand-center\backups
 
 =====================================================================
 #>
@@ -123,6 +124,10 @@ $CraftRoot = Join-Path `
 $CraftData = Join-Path `
     $CraftRoot `
     "data"
+
+$CraftBackups = Join-Path `
+    $CraftRoot `
+    "backups"
 
 $CraftPort = 8223
 
@@ -1214,7 +1219,9 @@ $RequiredDirectories = @(
 
     $CraftRoot,
 
-    $CraftData
+    $CraftData,
+
+    $CraftBackups
 
 )
 
@@ -1264,6 +1271,9 @@ Write-Host `
 
 Write-Host `
     "  $CraftData"
+
+Write-Host `
+    "  $CraftBackups"
 
 
 Write-Host ""
@@ -1579,6 +1589,10 @@ $CraftArguments = @(
 
 
     "-v",
+    "${CraftBackups}:/app/backups",
+
+
+    "-v",
     "/var/run/docker.sock:/var/run/docker.sock",
 
 
@@ -1867,6 +1881,9 @@ Write-Host `
 
 Write-Host `
     "  $CraftData"
+
+Write-Host `
+    "  $CraftBackups"
 
 
 Write-Host ""
