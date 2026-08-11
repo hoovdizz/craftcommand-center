@@ -2473,6 +2473,12 @@ async function handleApi(req, res, url, cfg) {
       return;
     }
 
+    if (req.method === 'GET' && url.pathname === '/api/player-history') {
+      const history = playerHistoryForSession(session);
+      json(res, 200, { ok: true, ...history, note: 'Join and leave times come from retained Bedrock log lines. Online status is the latest observed server-list result.' });
+      return;
+    }
+
     if (req.method === 'GET' && url.pathname === '/api/kits') {
       json(res, 200, { ok: true, kits: mergedKits(cfg) });
       return;
@@ -2678,12 +2684,6 @@ async function handleApi(req, res, url, cfg) {
       const addedPlayer = addManualPlayer(cfg, body.name || body.player || body.target);
       appendActivity(cfg, { username: session.username, role: session.role, action: 'add-player', target: addedPlayer.target, summary: `Added player ${addedPlayer.label}`, ok: true, ip: clientIp(req) });
       json(res, 200, publicPlayers(cfg));
-      return;
-    }
-
-    if (req.method === 'GET' && url.pathname === '/api/player-history') {
-      const history = playerHistoryForSession(session);
-      json(res, 200, { ok: true, ...history, note: 'Join and leave times come from retained Bedrock log lines. Online status is the latest observed server-list result.' });
       return;
     }
 

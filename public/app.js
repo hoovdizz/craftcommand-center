@@ -661,4 +661,4 @@ $('#deleteKit').addEventListener('click',async()=>{if(!selectedKit?.custom)retur
 window.addEventListener('resize', () => fitVisualButtons());
 window.addEventListener('orientationchange', () => setTimeout(() => fitVisualButtons(), 120));
 
-(async()=>{setDisplayMode(localStorage.getItem('cccDisplayMode')||'both');try{const auth=await request('/api/auth/status');if(auth.authenticated)await initializeApp();else showLogin();}catch(err){showLogin(err.message);}})();
+(async()=>{setDisplayMode(localStorage.getItem('cccDisplayMode')||'both');try{const auth=await request('/api/auth/status');if(!auth.authenticated){showLogin();return;}try{await initializeApp();}catch(err){showApp();show(`Dashboard initialization failed: ${err.message}`);}}catch(err){showLogin(err.message);}})();
