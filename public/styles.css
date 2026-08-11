@@ -227,6 +227,13 @@ body[data-display="text"] .btnIcon { display: none; }
 
 .formGrid { display: grid; grid-template-columns: 1fr 130px 160px; gap: .7rem; align-items: end; }
 .formGrid.twoCol { grid-template-columns: 1fr 160px; }
+.formGrid.twoCol.serverPropertyGrid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); align-items: stretch; gap: .7rem; margin-top: .65rem; }
+.serverPropertyField { align-content: start; gap: .4rem; padding: .7rem; border: 1px solid var(--border); border-radius: 11px; background: var(--surface); }
+.booleanProperty { display: grid; grid-template-columns: 1fr; }
+.booleanControl { display: inline-flex; align-items: center; justify-content: flex-start; gap: .55rem; color: var(--text); font-weight: 800; }
+.booleanControl input[type="checkbox"] { width: 1.1rem; height: 1.1rem; margin: 0; flex: 0 0 auto; accent-color: var(--accent); }
+.propertyHelp { display: block; color: var(--muted); font-size: .72rem; font-weight: 500; line-height: 1.42; }
+.propertyHelp strong { color: var(--text); }
 .manualPlayerGrid { display: grid; grid-template-columns: 1fr 150px; gap: .7rem; align-items: end; margin-top: .75rem; }
 .statusBox { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: .8rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .38rem .8rem; margin-bottom: .8rem; }
 .statusBox.ok { border-color: #289d72; background: rgba(21,99,70,.22); }

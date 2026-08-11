@@ -1,4 +1,4 @@
-const CACHE_NAME = 'craftcommand-center-v2.3.0-beta.18-dashboard-navigation-fix';
+const CACHE_NAME = 'craftcommand-center-v2.3.0-beta.18-property-help';
 const STATIC_ASSETS = [
   '/', '/index.html', '/status.html', '/items.html', '/achievements.html', '/activity.html', '/accounts.html', '/help.html',
   '/styles.css', '/theme.js', '/app.js', '/status.js', '/catalog.js', '/achievements.js', '/achievements.json', '/activity.js', '/accounts.js', '/scheduler.js', '/help.js',

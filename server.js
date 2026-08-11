@@ -1151,36 +1151,36 @@ done`;
 
 const SERVER_PROPERTY_DEFINITIONS = {
   general: [
-    { key: 'server-name', label: 'Server name', type: 'text', maxLength: 63 },
-    { key: 'gamemode', label: 'Game mode', type: 'select', options: ['survival', 'creative', 'adventure'] },
-    { key: 'difficulty', label: 'Difficulty', type: 'select', options: ['peaceful', 'easy', 'normal', 'hard'] },
-    { key: 'max-players', label: 'Max players', type: 'number', min: 1, max: 1000 }
+    { key: 'server-name', label: 'Server name', type: 'text', maxLength: 63, default: 'Dedicated Server', description: 'The name shown in the multiplayer server list.' },
+    { key: 'gamemode', label: 'Game mode', type: 'select', options: ['survival', 'creative', 'adventure'], default: 'survival', description: 'The starting mode for new players: survival gathers resources, creative has unlimited building, and adventure restricts block interaction.' },
+    { key: 'difficulty', label: 'Difficulty', type: 'select', options: ['peaceful', 'easy', 'normal', 'hard'], default: 'easy', description: 'Controls hostile mobs and damage. Peaceful removes hostile survival pressure; harder choices increase danger.' },
+    { key: 'max-players', label: 'Max players', type: 'number', min: 1, max: 1000, default: 10, description: 'Maximum simultaneous players. Larger limits can increase CPU, memory, and network use.' }
   ],
   gameplay: [
-    { key: 'allow-cheats', label: 'Allow cheats', type: 'boolean' },
-    { key: 'force-gamemode', label: 'Force game mode', type: 'boolean' },
-    { key: 'default-player-permission-level', label: 'Default player permission', type: 'select', options: ['visitor', 'member', 'operator'] },
-    { key: 'level-name', label: 'Level name', type: 'text', maxLength: 64 },
-    { key: 'level-seed', label: 'Level seed', type: 'text', maxLength: 128 },
-    { key: 'texturepack-required', label: 'Texture pack required', type: 'boolean' },
-    { key: 'content-log-file-enabled', label: 'Content log file', type: 'boolean' }
+    { key: 'allow-cheats', label: 'Allow cheats', type: 'boolean', default: false, description: 'Enabled allows cheat commands; disabled blocks them. Enabling cheats can affect achievement eligibility.' },
+    { key: 'force-gamemode', label: 'Force game mode', type: 'boolean', default: false, description: 'Enabled forces the configured game mode when players connect; disabled preserves the mode saved with the world/player.' },
+    { key: 'default-player-permission-level', label: 'Default player permission', type: 'select', options: ['visitor', 'member', 'operator'], default: 'member', description: 'Permission granted to first-time players. Visitor is restricted, Member is normal play, and Operator grants administrative commands.' },
+    { key: 'level-name', label: 'Level name', type: 'text', maxLength: 64, default: 'Bedrock level', description: 'Selects the world folder under worlds/. Changing it can make the server load or generate a different world.' },
+    { key: 'level-seed', label: 'Level seed', type: 'text', maxLength: 128, default: 'none', description: 'Seed used when generating a new world. Leaving it empty chooses a random seed; it does not regenerate an existing world.' },
+    { key: 'texturepack-required', label: 'Texture pack required', type: 'boolean', default: false, description: 'Enabled requires clients to accept the world texture packs; disabled lets clients decline optional packs.' },
+    { key: 'content-log-file-enabled', label: 'Content log file', type: 'boolean', default: false, description: 'Enabled writes add-on/content errors to a file for troubleshooting; disabled avoids that extra log file.' }
   ],
   network: [
-    { key: 'server-port', label: 'IPv4 port', type: 'number', min: 1, max: 65535 },
-    { key: 'server-portv6', label: 'IPv6 port', type: 'number', min: 1, max: 65535 },
-    { key: 'enable-lan-visibility', label: 'LAN visibility', type: 'boolean' },
-    { key: 'compression-threshold', label: 'Compression threshold', type: 'number', min: 0, max: 65535 },
-    { key: 'compression-algorithm', label: 'Compression algorithm', type: 'select', options: ['zlib', 'snappy'] }
+    { key: 'server-port', label: 'IPv4 port', type: 'number', min: 1, max: 65535, default: 19132, description: 'IPv4 listening port. Router forwarding and firewall rules must match this value.' },
+    { key: 'server-portv6', label: 'IPv6 port', type: 'number', min: 1, max: 65535, default: 19133, description: 'IPv6 listening port. Clients and firewall rules must use the same port.' },
+    { key: 'enable-lan-visibility', label: 'LAN visibility', type: 'boolean', default: true, description: 'Enabled advertises the server on the local network and also binds default Bedrock ports; disabled avoids LAN discovery and possible multi-server port conflicts.' },
+    { key: 'compression-threshold', label: 'Compression threshold', type: 'number', min: 0, max: 65535, default: 1, description: 'Smallest raw network payload to compress. Lower values save bandwidth but use more CPU.' },
+    { key: 'compression-algorithm', label: 'Compression algorithm', type: 'select', options: ['zlib', 'snappy'], default: 'zlib', description: 'zlib generally compresses more; snappy favors speed and lower CPU use.' }
   ],
   performance: [
-    { key: 'view-distance', label: 'View distance', type: 'number', min: 5, max: 96 },
-    { key: 'tick-distance', label: 'Tick distance', type: 'number', min: 4, max: 96 },
-    { key: 'player-idle-timeout', label: 'Player idle timeout', type: 'number', min: 0, max: 1440 },
-    { key: 'max-threads', label: 'Max threads', type: 'number', min: 0, max: 256 }
+    { key: 'view-distance', label: 'View distance', type: 'number', min: 5, max: 96, default: 32, description: 'Maximum visible distance in chunks. Higher values show more world but cost memory, CPU, and bandwidth.' },
+    { key: 'tick-distance', label: 'Tick distance', type: 'number', min: 4, max: 12, default: 4, description: 'Distance in chunks where the world actively updates. Higher values increase simulation load.' },
+    { key: 'player-idle-timeout', label: 'Player idle timeout', type: 'number', min: 0, max: 1440, default: 30, description: 'Minutes before an idle player is kicked. Set 0 to allow unlimited idle time.' },
+    { key: 'max-threads', label: 'Max threads', type: 'number', min: 0, max: 256, default: 8, description: 'Maximum server worker threads. Set 0 to let Bedrock use as many as possible.' }
   ],
   security: [
-    { key: 'online-mode', label: 'Online mode', type: 'boolean' },
-    { key: 'allow-list', label: 'Allow list', type: 'boolean' }
+    { key: 'online-mode', label: 'Online mode', type: 'boolean', default: true, description: 'Enabled requires Xbox Live authentication and is strongly recommended for internet servers; disabled relaxes local authentication only.' },
+    { key: 'allow-list', label: 'Allow list', type: 'boolean', default: false, description: 'Enabled permits only players in allowlist.json; disabled allows any otherwise valid player to connect.' }
   ]
 };
 const SERVER_PROPERTY_KEYS = Object.values(SERVER_PROPERTY_DEFINITIONS).flat().map(definition => definition.key);
