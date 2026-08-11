@@ -29,9 +29,9 @@ ghcr.io/hoovdizz/craftcommand-center:development   # development
 - Player discovery, item catalog, XP, kits, teleport locations, and day/night controls.
 - Status page with Docker state, uptime, image, online players, access lists, permissions, world name, and recent player connections.
 - GNU `screen` attachment rediscovery after container restarts.
-- Admin-only account management, audit history, backups, restores, world renaming, and reachability settings.
-- Admin-only server-property editor for performance, security, and core gameplay settings.
-- Admin restart action to apply saved server properties, plus Bedrock `server-name` (server-list name/MOTD) editing.
+- Admin-only account management, audit history, backups, restores, world visibility, and reachability settings.
+- Admin-only server-property sync with live console controls for supported settings.
+- Admin live-setting controls use Bedrock console commands; file-only properties and `server-name` are synced as read-only values.
 - Public Bedrock reachability checks using an internet probe, local Docker-host probe, or both.
 
 ## Roles
@@ -42,7 +42,7 @@ ghcr.io/hoovdizz/craftcommand-center:development   # development
 | Operator | Viewer access plus Minecraft commands, XP/items/kits, time, teleports, player refresh, and screen attachment refresh. |
 | Admin | Operator access plus accounts, server properties, world settings, backups/restores, reachability, links, and full activity history. |
 
-Only administrators can change server properties. Changes are written to the Minecraft container's `server.properties`; restart the Minecraft container after saving when the server does not reload a value automatically.
+Only administrators can apply supported live server settings. Property values are synced from the Minecraft container's `server.properties` without modifying it; supported changes are sent through the server console and file-only values are read-only.
 
 ### Server properties in Admin
 

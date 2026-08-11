@@ -1145,12 +1145,6 @@ done`;
   finally { worldIdentityInFlight = null; }
 }
 
-function validateWorldName(value) {
-  const name = String(value || '').trim();
-  if (!name || name.length > 64 || !/^[A-Za-z0-9 _.-]+$/.test(name)) throw new Error('World name must be 1-64 characters using letters, numbers, spaces, dots, dashes, or underscores');
-  return name;
-}
-
 const SERVER_PROPERTY_DEFINITIONS = {
   performance: [
     { key: 'view-distance', label: 'View distance', type: 'number', min: 5, max: 96, default: 32, description: 'Simulation/render range for players.' },
@@ -1159,14 +1153,14 @@ const SERVER_PROPERTY_DEFINITIONS = {
     { key: 'player-idle-timeout', label: 'Player idle timeout', type: 'number', min: 0, max: 1440, default: 30, description: 'Minutes before an idle player is disconnected; 0 disables it.' }
   ],
   security: [
-    { key: 'allow-list', label: 'Allow-list', type: 'boolean', default: false, description: 'Only allow listed players to join.' },
+    { key: 'allow-list', label: 'Allow-list', type: 'boolean', default: false, command: value => `allowlist ${value === 'true' ? 'on' : 'off'}`, description: 'Only allow listed players to join.' },
     { key: 'online-mode', label: 'Online mode', type: 'boolean', default: true, description: 'Require authenticated Xbox accounts.' },
     { key: 'texturepack-required', label: 'Texture pack required', type: 'boolean', default: false, description: 'Require the configured texture pack.' },
     { key: 'allow-cheats', label: 'Allow cheats', type: 'boolean', default: false, description: 'Enable commands and cheat gameplay.' }
   ],
   gameplay: [
-    { key: 'gamemode', label: 'Game mode', type: 'select', options: ['survival', 'creative', 'adventure', 'spectator'], default: 'survival', description: 'Default game mode for new players.' },
-    { key: 'difficulty', label: 'Difficulty', type: 'select', options: ['peaceful', 'easy', 'normal', 'hard'], default: 'normal', description: 'Default world difficulty.' },
+    { key: 'gamemode', label: 'Game mode', type: 'select', options: ['survival', 'creative', 'adventure', 'spectator'], default: 'survival', command: value => `gamemode ${value} @a`, description: 'Game mode for currently online players.' },
+    { key: 'difficulty', label: 'Difficulty', type: 'select', options: ['peaceful', 'easy', 'normal', 'hard'], default: 'normal', command: value => `difficulty ${value}`, description: 'Current world difficulty.' },
     { key: 'force-gamemode', label: 'Force game mode', type: 'boolean', default: false, description: 'Force players into the default game mode.' },
     { key: 'default-player-permission-level', label: 'Default player permission', type: 'select', options: ['visitor', 'member', 'operator'], default: 'member', description: 'Permission level assigned to new players.' }
   ]
@@ -1194,7 +1188,8 @@ echo 'server.properties was not found' >&2
 exit 2`;
   const result = await runDocker(['exec', '-u', 'root', container, 'bash', '-lc', shell], 10000);
   if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Could not read server.properties').trim());
-  return { values: parseServerProperties(result.stdout), definitions: SERVER_PROPERTY_DEFINITIONS };
+  const definitions = Object.fromEntries(Object.entries(SERVER_PROPERTY_DEFINITIONS).map(([category, entries]) => [category, entries.map(({ command, ...definition }) => ({ ...definition, liveEditable: typeof command === 'function' }))]));
+  return { values: parseServerProperties(result.stdout), definitions };
 }
 
 function validateServerPropertyValues(input) {
@@ -1218,30 +1213,21 @@ function validateServerPropertyValues(input) {
   return values;
 }
 
-async function saveServerProperties(cfg, input) {
+async function applyServerPropertyCommands(cfg, input) {
   const values = validateServerPropertyValues(input);
-  if (input['server-name'] !== undefined) {
-    const serverName = String(input['server-name']).trim();
-    if (!serverName || serverName.length > 63 || serverName.includes(';') || /[\r\n]/.test(serverName)) throw new Error('MOTD/server name must be 1-63 characters and cannot contain semicolons or new lines');
-    values['server-name'] = serverName;
+  const definitions = Object.values(SERVER_PROPERTY_DEFINITIONS).flat();
+  const requested = Object.entries(values).map(([key, value]) => ({ definition: definitions.find(item => item.key === key), value }));
+  const unsupported = requested.filter(item => typeof item.definition?.command !== 'function').map(item => item.definition?.label || item.definition?.key);
+  if (input['server-name'] !== undefined) unsupported.push('Server name / MOTD');
+  if (unsupported.length) throw new Error(`${unsupported.join(', ')} cannot be changed through the live server console`);
+  const commands = requested.map(item => item.definition.command(item.value));
+  if (!commands.length) throw new Error('No live-editable server settings were supplied');
+  const result = await runMinecraftCommands(commands, cfg);
+  if (!result.ok) {
+    const failed = result.results.find(entry => !entry.ok);
+    throw new Error(stripAnsi(failed?.stderr || failed?.stdout || 'Could not apply server settings through the console').trim());
   }
-  const assignments = Object.entries(values).map(([key, value]) => {
-    return `if grep -q "^${key}=" "$FILE"; then sed -i "s|^${key}=.*$|${key}=${value}|" "$FILE"; else printf '\\n${key}=${value}\\n' >> "$FILE"; fi`;
-  }).join('\n');
-  const container = configuredMinecraftContainer(cfg);
-  const shell = String.raw`set -eu
-FILE=""
-for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
-  [ -d "$p" ] || continue
-  FILE=$(find "$p" -maxdepth 6 -iname 'server.properties' -type f -print -quit 2>/dev/null || true)
-  [ -n "$FILE" ] && break
-done
-[ -n "$FILE" ] || { echo 'server.properties was not found' >&2; exit 2; }
-${assignments}`;
-  const result = await runDocker(['exec', '-u', 'root', container, 'bash', '-lc', shell], 10000);
-  if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Could not save server.properties').trim());
-  worldIdentityCache = null;
-  return readServerProperties(cfg);
+  return { commands };
 }
 
 async function restartMinecraftContainer(cfg) {
@@ -1251,31 +1237,6 @@ async function restartMinecraftContainer(cfg) {
   await sleep(1500);
   const attachment = await refreshAttachment(cfg, 'admin-restart');
   return { container, attachment: publicAttachmentState(cfg) };
-}
-
-async function renameWorld(cfg, value) {
-  const name = validateWorldName(value);
-  const container = configuredMinecraftContainer(cfg);
-  const nameQ = shellQuote(name);
-  const shell = String.raw`set -eu
-FILE=""
-for p in /config /data /minecraft /server /serverdata /home/nobody /home/nobody/minecraft; do
-  if [ -d "$p" ]; then
-    FILE=$(find "$p" -maxdepth 6 -iname 'server.properties' -type f -print -quit 2>/dev/null || true)
-    [ -n "$FILE" ] && break
-  fi
-done
-[ -n "$FILE" ] || { echo 'server.properties was not found' >&2; exit 2; }
-if grep -q '^level-name=' "$FILE"; then
-  sed -i "s|^level-name=.*$|level-name=$NAME|" "$FILE"
-else
-  printf '\nlevel-name=%s\n' "$NAME" >> "$FILE"
-fi`;
-  const command = `NAME=${nameQ}; ${shell}`;
-  const result = await runDocker(['exec', '-u', 'root', container, 'bash', '-lc', command], 10000);
-  if (!result.ok) throw new Error(stripAnsi(result.stderr || result.stdout || 'Could not rename world').trim());
-  worldIdentityCache = null;
-  return getWorldIdentity(cfg, true);
 }
 
 function accessRecordsFromJson(value, source, out = []) {
@@ -2335,9 +2296,7 @@ async function handleApi(req, res, url, cfg) {
 
     if (url.pathname === '/api/world/name') {
       requireRole(session, 'admin');
-      const world = await renameWorld(cfg, body.name);
-      appendActivity(cfg, { username: session.username, role: session.role, action: 'rename-world', target: world.name, summary: `Renamed world to ${world.name}`, ok: true, ip: clientIp(req) });
-      json(res, 200, { ok: true, world }); return;
+      json(res, 409, { ok: false, error: 'The world name is file-only and cannot be changed through the live server console' }); return;
     }
 
     if (url.pathname === '/api/minecraft/restart') {
@@ -2349,8 +2308,8 @@ async function handleApi(req, res, url, cfg) {
 
     if (url.pathname === '/api/server-properties/save') {
       requireRole(session, 'admin');
-      const properties = await saveServerProperties(cfg, body);
-      appendActivity(cfg, { username: session.username, role: session.role, action: 'save-server-properties', summary: `Updated ${Object.keys(body).filter(key => SERVER_PROPERTY_KEYS.includes(key)).length} server properties`, ok: true, ip: clientIp(req) });
+      const properties = await applyServerPropertyCommands(cfg, body);
+      appendActivity(cfg, { username: session.username, role: session.role, action: 'apply-server-settings', summary: `Applied ${properties.commands.length} live server setting command(s)`, ok: true, commands: properties.commands.length, ip: clientIp(req) });
       json(res, 200, { ok: true, ...properties }); return;
     }
 

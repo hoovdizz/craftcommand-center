@@ -44,29 +44,27 @@
       </div>
     </section>
     <section class="card wide">
-      <div class="sectionHeading"><div><h2>World settings</h2><p class="hint">Rename the active Bedrock world by changing <code>level-name</code> in its server properties. Restart the Minecraft container after renaming if the running server does not pick it up immediately.</p></div></div>
+      <div class="sectionHeading"><div><h2>World settings</h2><p class="hint">The active world name is synced from the server. Bedrock has no live console command for renaming it, so this value is read-only.</p></div></div>
       <form id="worldNameForm" class="formGrid twoCol">
-        <label>World name<input id="worldName" maxlength="64" pattern="[A-Za-z0-9 _.-]+" required /></label>
-        <button class="good" type="submit">Save World Name</button>
+        <label>World name<input id="worldName" maxlength="64" readonly /></label>
       </form>
       <p id="worldNameResult" class="notice">Loading current world name…</p>
     </section>
     <section class="card wide">
       <h2>Common Minecraft server properties</h2>
-      <p class="hint">Most server-property adjustments fall into three categories. These values are edited in the container's <code>server.properties</code> file and generally require a server restart.</p>
+      <p class="hint">Values are synced from the server's <code>server.properties</code> file. Settings supported by the live Bedrock console can be applied here; file-only settings are read-only.</p>
       <form id="serverPropertiesForm">
         <details><summary>Performance optimization</summary><p class="hint"><code>view-distance</code>, <code>tick-distance</code>, <code>max-threads</code>, and <code>player-idle-timeout</code> balance simulation range, CPU use, and memory.</p><div id="performanceProperties" class="formGrid twoCol"></div></details>
         <details><summary>Security</summary><p class="hint"><code>allow-list</code>, <code>online-mode</code>, <code>texturepack-required</code>, and <code>allow-cheats</code> control who can join and which server privileges are enabled.</p><div id="securityProperties" class="formGrid twoCol"></div></details>
         <details><summary>Core gameplay</summary><p class="hint"><code>gamemode</code>, <code>difficulty</code>, <code>force-gamemode</code>, and <code>default-player-permission-level</code> define the default player experience.</p><div id="gameplayProperties" class="formGrid twoCol"></div></details>
-        <button class="good" type="submit">Save Server Properties</button>
+        <button class="good" type="submit">Apply Live Settings</button>
       </form>
       <p id="serverPropertiesResult" class="notice">Loading server propertiesâ€¦</p>
-      <form id="motdForm" class="formGrid twoCol">
-        <label>Server name / MOTD<input id="serverMotd" maxlength="63" placeholder="Dedicated Server" required /></label>
-        <button class="good" type="submit">Save MOTD</button>
-      </form>
-      <p class="hint">Bedrock uses the <code>server-name</code> property for the name shown in the server list. It is not an RCON MOTD field.</p>
-      <div class="buttonRow"><button id="restartMinecraft" class="warn" type="button">Restart Minecraft Container</button><span id="restartMinecraftResult" class="notice">Restart after saving settings to apply them.</span></div>
+      <div id="motdForm" class="formGrid twoCol">
+        <label>Server name / MOTD<input id="serverMotd" maxlength="63" placeholder="Dedicated Server" readonly /></label>
+      </div>
+      <p class="hint">Bedrock uses the <code>server-name</code> property for the name shown in the server list. The console cannot change it, so it is shown for reference only.</p>
+      <div class="buttonRow"><button id="restartMinecraft" class="warn" type="button">Restart Minecraft Container</button><span id="restartMinecraftResult" class="notice">Live setting commands do not require a restart.</span></div>
     </section>
     <section class="card wide">
       <h2>Internet reachability</h2>
